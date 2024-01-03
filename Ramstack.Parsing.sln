@@ -1,0 +1,46 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34526.213
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ramstack.Parsing", "src\Ramstack.Parsing\Ramstack.Parsing.csproj", "{9E887E80-4BF5-406D-B974-0922FFFEEF0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ramstack.Parsing.Tests", "tests\Ramstack.Parsing.Tests\Ramstack.Parsing.Tests.csproj", "{9C30F905-1B21-472F-B7EB-C39DE26E78A0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".root", ".root", "{A196393E-961A-4775-8D04-A1E60860B683}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		Directory.Packages.props = Directory.Packages.props
+		LICENSE = LICENSE
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{318F25FE-27BC-42F4-961C-37A36009128D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4B96CFAE-EBE6-4AD2-86DC-CA4C0400E2C7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9E887E80-4BF5-406D-B974-0922FFFEEF0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E887E80-4BF5-406D-B974-0922FFFEEF0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E887E80-4BF5-406D-B974-0922FFFEEF0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E887E80-4BF5-406D-B974-0922FFFEEF0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C30F905-1B21-472F-B7EB-C39DE26E78A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C30F905-1B21-472F-B7EB-C39DE26E78A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C30F905-1B21-472F-B7EB-C39DE26E78A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C30F905-1B21-472F-B7EB-C39DE26E78A0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9E887E80-4BF5-406D-B974-0922FFFEEF0A} = {318F25FE-27BC-42F4-961C-37A36009128D}
+		{9C30F905-1B21-472F-B7EB-C39DE26E78A0} = {4B96CFAE-EBE6-4AD2-86DC-CA4C0400E2C7}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ECF1FA11-1570-44B7-9FD9-C0F65366D6F7}
+	EndGlobalSection
+EndGlobal

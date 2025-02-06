@@ -8,17 +8,17 @@ partial class Literal
     /// and the value indicates the integer value of the hexadecimal digit (0-15).
     /// A value of <c>-1</c> indicates that the character is not a valid hexadecimal digit.
     /// </summary>
-    internal static ReadOnlySpan<sbyte> HexTable => new sbyte[]
-    {
+    internal static ReadOnlySpan<sbyte> HexTable =>
+    [
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -1, -1, -1, -1, -1,
+         0,  1,  2,  3,  4,  5,  6,  7,  8,  9, -1, -1, -1, -1, -1, -1,
         -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
         -1, 10, 11, 12, 13, 14, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1,
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
-    };
+    ];
 
     private static Parser<char>? _unicodeEscapeSequence;
 

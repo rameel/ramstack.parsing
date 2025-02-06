@@ -1,0 +1,28 @@
+name: Build & Test
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    name: "Test projects"
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          6.x
+          7.x
+          8.x
+          9.x
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Test Projects (Debug)
+      run: dotnet test -c Debug
+
+    - name: Test Projects (Release)
+      run: dotnet test -c Release

@@ -2,11 +2,12 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
-    <Description>A .NET lightweight parser combinator library.</Description>
+    <Description>A blazing-fast, lightweight, and intuitive parser combinator library for .NET</Description>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -34,14 +35,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Using Include="System.ComponentModel"/>
-    <Using Include="System.Diagnostics"/>
-    <Using Include="System.Diagnostics.CodeAnalysis"/>
-    <Using Include="System.Globalization"/>
-    <Using Include="System.Runtime.CompilerServices"/>
-    <Using Include="System.Runtime.InteropServices"/>
-    <Using Include="Ramstack.Parsing.Collections"/>
-    <Using Include="Ramstack.Parsing.Utilities"/>
+    <Using Include="System.ComponentModel" />
+    <Using Include="System.Diagnostics" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
+    <Using Include="System.Globalization" />
+    <Using Include="System.Runtime.CompilerServices" />
+    <Using Include="System.Runtime.InteropServices" />
+    <Using Include="Ramstack.Parsing.Collections" />
+    <Using Include="Ramstack.Parsing.Utilities" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(SkipInternalsVisibleTo)' != 'true'">
@@ -74,6 +75,24 @@
 
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Link="Properties\README.md">
+      <Pack>true</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="MinVer">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

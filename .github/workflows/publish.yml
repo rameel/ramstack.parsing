@@ -1,0 +1,39 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+      - "[0-9]+.[0-9]+.[0-9]+-[a-z]+.[0-9]+"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Publish packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Solution
+        run: dotnet build -c Release -p:SkipInternalsVisibleTo=true
+
+      - name: Create NuGet Packages
+        run: dotnet pack -c Release -o ./nuget --no-build
+
+      - name: Publish NuGet Packages
+        run: dotnet nuget push ./nuget/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate -s https://api.nuget.org/v3/index.json
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          files: nuget/*

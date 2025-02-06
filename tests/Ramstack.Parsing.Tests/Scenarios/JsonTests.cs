@@ -1,19 +1,16 @@
 using System.Text.Json;
 
-using static Ramstack.Parsing.Literal;
-using static Ramstack.Parsing.Parser;
+using Samples;
 
 namespace Ramstack.Parsing.Scenarios;
 
 [TestFixture]
 public class JsonTests
 {
-    public static readonly Parser<object?> JsonParser = CreateJsonParser();
-
     [Test]
     public void JsonParseTest()
     {
-        var s1 = JsonSerializer.Serialize(JsonParser.Parse(Json).Value);
+        var s1 = JsonSerializer.Serialize(JsonParser.Parser.Parse(Json).Value);
         var s2 = JsonSerializer.Serialize(JsonSerializer.Deserialize<object>(Json));
         Assert.That(s1, Is.EqualTo(s2));
     }
@@ -158,42 +155,4 @@ public class JsonTests
           }
         ]
         """;
-
-    private static Parser<object?> CreateJsonParser()
-    {
-        var value = Deferred<object?>();
-
-        var text = DoubleQuotedString.Do(object? (s) => s);
-        var number = Number<double>().Do(object? (n) => n);
-
-        var primitive = OneOf(["true", "false", "null"]).Do(s =>
-        {
-            object? r = null;
-            if (s.Length != 0 && s[0] != 'n')
-                r = s[0] == 't';
-
-            return r;
-        });
-
-        var array = value
-            .Separated(Seq(S, L(',')))
-            .Between(
-                L('['),
-                Seq(S, L(']')))
-            .Do(object? (list) => list);
-
-        var member = Seq(
-            S, DoubleQuotedString, S, L(':'), value
-        ).Do((_, name, _, _, v) => KeyValuePair.Create(name, v));
-
-        var map = member
-            .Separated(Seq(S, L(',')))
-            .Between(
-                L('{'),
-                Seq(S, L('}')))
-            .Do(object? (members) => new Dictionary<string, object?>(members));
-
-        value.Parser = S.Then(Choice(text, number, primitive, array, map));
-        return value;
-    }
 }

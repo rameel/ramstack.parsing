@@ -43,7 +43,7 @@ partial class Parser
     ///       Unicode general categories:<br/>
     ///       - <c>\p{</c>name<c>}</c>: any character in Unicode general category
     ///       (e.g., <c>\p{L}</c> for letters, <c>\p{Nd}</c> for decimal digits).<br/>
-    ///       Where <c>name</c> is a Unicode general category
+    ///       Where <c>name</c> is a Unicode general category: https://www.unicode.org/reports/tr44/#General_Category_Values
     ///     </description>
     ///   </item>
     ///   <item>

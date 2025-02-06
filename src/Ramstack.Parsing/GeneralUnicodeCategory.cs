@@ -6,6 +6,7 @@ namespace Ramstack.Parsing;
 /// <remarks>
 /// Unlike the standard <see cref="UnicodeCategory"/>, this enumeration is designed
 /// to work conveniently with flag-based combinations.<br/>
+/// https://www.unicode.org/reports/tr44/#General_Category_Values
 /// </remarks>
 [Flags]
 public enum GeneralUnicodeCategory

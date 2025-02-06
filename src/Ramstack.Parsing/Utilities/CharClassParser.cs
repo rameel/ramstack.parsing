@@ -51,6 +51,7 @@ internal static class CharClassParser
             // since it seems many parser users don't need it. If I'm wrong about that,
             // it can be fixed quickly - just a couple lines of code. For now though,
             // range definitions can be used instead.
+            // Unicode Block Names: https://www.unicode.org/Public/16.0.0/ucd/Blocks.txt
 
             var key = pattern[(p + 3)..end];
 

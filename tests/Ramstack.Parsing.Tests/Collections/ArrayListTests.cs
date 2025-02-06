@@ -50,7 +50,7 @@ public class ArrayListTests
         Assert.That(list[3], Is.EqualTo(20));
         Assert.That(
             list.ToArray(),
-            Is.EquivalentTo(new[] { 1, 10, 3, 20, 5 }));
+            Is.EquivalentTo([1, 10, 3, 20, 5]));
     }
 
     [Test]
@@ -86,7 +86,7 @@ public class ArrayListTests
         var list = new ArrayList<int> { 10 };
 
         Assert.That(list.Count, Is.EqualTo(1));
-        Assert.That(list.ToArray(), Is.EquivalentTo(new[] { 10 }));
+        Assert.That(list.ToArray(), Is.EquivalentTo([10]));
     }
 
     [Test]
@@ -254,15 +254,15 @@ public class ArrayListTests
         ref var r2 = ref list[2];
         ref var r3 = ref list[3];
 
-        Assert.That(list, Is.EquivalentTo(new [] { "0", "1", "2", "3" }));
+        Assert.That(list, Is.EquivalentTo(["0", "1", "2", "3"]));
 
         list.RemoveAt(3);
 
-        Assert.That(list, Is.EquivalentTo(new[] { "0", "1", "2" }));
+        Assert.That(list, Is.EquivalentTo(["0", "1", "2"]));
         Assert.That(r3, Is.Null);
 
         list.RemoveAt(0);
-        Assert.That(list, Is.EquivalentTo(new[] { "1", "2" }));
+        Assert.That(list, Is.EquivalentTo(["1", "2"]));
         Assert.That(r2, Is.Null);
     }
 

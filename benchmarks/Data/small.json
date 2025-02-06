@@ -1,0 +1,46 @@
+{
+    "order_id": "40b9a8bc-f679-48ef-92f6-0271295c7daa",
+    "customer": {
+        "first_name": "Alex",
+        "last_name": "Johnson",
+        "email": "alex.johnson@example.com",
+        "phone": "+1-555-123-4567"
+    },
+    "shipping_address": {
+        "street": "123 Main Street",
+        "house": "16",
+        "apartment": "7",
+        "city": "New York",
+        "zip_code": "10001",
+        "country": "USA"
+    },
+    "items": [
+        {
+            "item_id": "101",
+            "name": "Smartphone XYZ",
+            "quantity": 1,
+            "price": 699.99
+        },
+        {
+            "item_id": "202",
+            "name": "Phone Case XYZ",
+            "quantity": 1,
+            "price": 29.99
+        },
+        {
+            "item_id": "303",
+            "name": "Screen Protector XYZ",
+            "quantity": 2,
+            "price": 14.99
+        }
+    ],
+    "payment": {
+        "method": "credit_card",
+        "status": "paid",
+        "transaction_id": "txn_123456789"
+    },
+    "order_total": 759.95,
+    "status": "shipped",
+    "created_at": "2024-08-15T14:45:00Z",
+    "shipped_at": "2024-08-16T10:00:00Z"
+}

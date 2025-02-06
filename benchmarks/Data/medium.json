@@ -1,0 +1,317 @@
+[
+    {
+        "id": "6782fb719850cc2a7e8f5687",
+        "index": 0,
+        "guid": "39941455-532c-4c27-8952-7f44f7288123",
+        "isActive": false,
+        "balance": "$3,257.80",
+        "picture": "http://placehold.it/32x32",
+        "age": 22,
+        "eyeColor": "brown",
+        "name": "Susanna Kidd",
+        "gender": "female",
+        "company": "ISOLOGICS",
+        "email": "susannakidd@isologics.com",
+        "phone": "+1 (827) 420-2998",
+        "address": "723 Lafayette Avenue, Sterling, Arkansas, 790",
+        "about": "Magna ad minim qui non minim esse et cupidatat elit occaecat eiusmod fugiat dolore. Officia nisi nostrud duis nostrud et ipsum laboris. Commodo laboris ex deserunt sunt ex et mollit eiusmod labore do. Eu ipsum laboris occaecat laborum ex sit occaecat et. Qui est eiusmod labore adipisicing labore tempor do pariatur id dolor reprehenderit cillum. Non veniam incididunt Lorem reprehenderit incididunt. Magna consequat dolor incididunt et non quis ea elit ipsum anim ex magna.",
+        "registered": "2017-09-23T04:51:42 -06:00",
+        "latitude": -67.71782,
+        "longitude": 27.337068,
+        "tags": [
+            "officia",
+            "irure",
+            "reprehenderit",
+            "proident",
+            "deserunt",
+            "laborum",
+            "duis"
+        ],
+        "friends": [
+            {
+                "id": 0,
+                "name": "Fleming Chang"
+            },
+            {
+                "id": 1,
+                "name": "Horton Alvarado"
+            },
+            {
+                "id": 2,
+                "name": "Rosales Stanley"
+            }
+        ],
+        "greeting": "Hello, Susanna Kidd! You have 8 unread messages.",
+        "favoriteFruit": "apple"
+    },
+    {
+        "id": "6782fb71927cb4b18a76c5eb",
+        "index": 1,
+        "guid": "fa3bf5db-3caa-43c9-821b-cd5e126384a3",
+        "isActive": false,
+        "balance": "$2,378.85",
+        "picture": "http://placehold.it/32x32",
+        "age": 36,
+        "eyeColor": "brown",
+        "name": "Letha Navarro",
+        "gender": "female",
+        "company": "DYMI",
+        "email": "lethanavarro@dymi.com",
+        "phone": "+1 (992) 537-3991",
+        "address": "912 Cadman Plaza, Byrnedale, South Dakota, 1069",
+        "about": "Sunt esse amet sit ad nulla enim reprehenderit veniam dolore tempor nostrud dolore. Officia laborum id aliqua sint nulla excepteur aliqua. Nisi ad duis ullamco magna ea amet nostrud eu laboris minim quis voluptate occaecat voluptate.",
+        "registered": "2022-12-28T03:49:31 -05:00",
+        "latitude": 86.859753,
+        "longitude": 179.675296,
+        "tags": [
+            "aliqua",
+            "veniam",
+            "consequat",
+            "mollit",
+            "eu",
+            "veniam",
+            "do"
+        ],
+        "friends": [
+            {
+                "id": 0,
+                "name": "Carson Garner"
+            },
+            {
+                "id": 1,
+                "name": "Curtis Bird"
+            },
+            {
+                "id": 2,
+                "name": "Tisha Robbins"
+            }
+        ],
+        "greeting": "Hello, Letha Navarro! You have 1 unread messages.",
+        "favoriteFruit": "strawberry"
+    },
+    {
+        "id": "6782fb716669f6d74a495c08",
+        "index": 2,
+        "guid": "5fd0dbb8-790a-4ece-80ca-c7ed3d96d2e7",
+        "isActive": false,
+        "balance": "$3,941.05",
+        "picture": "http://placehold.it/32x32",
+        "age": 33,
+        "eyeColor": "blue",
+        "name": "Kane Solomon",
+        "gender": "male",
+        "company": "INTRADISK",
+        "email": "kanesolomon@intradisk.com",
+        "phone": "+1 (873) 534-2143",
+        "address": "275 McKibben Street, Bangor, Federated States Of Micronesia, 4521",
+        "about": "Consectetur ex irure dolor sunt adipisicing. Commodo do qui laboris magna non minim fugiat commodo. Laborum qui cupidatat exercitation laboris sint velit nisi cupidatat eu ipsum pariatur.",
+        "registered": "2024-02-07T07:04:09 -05:00",
+        "latitude": 69.139384,
+        "longitude": -51.308371,
+        "tags": [
+            "ex",
+            "ad",
+            "aliqua",
+            "consectetur",
+            "proident",
+            "mollit",
+            "et"
+        ],
+        "friends": [
+            {
+                "id": 0,
+                "name": "Nora Pickett"
+            },
+            {
+                "id": 1,
+                "name": "Billie Levine"
+            },
+            {
+                "id": 2,
+                "name": "Shields Davenport"
+            }
+        ],
+        "greeting": "Hello, Kane Solomon! You have 7 unread messages.",
+        "favoriteFruit": "banana"
+    },
+    {
+        "id": "6782fb710d1e6597d6a463f7",
+        "index": 3,
+        "guid": "fa0456c4-c686-435e-9a22-9a2b299368f5",
+        "isActive": true,
+        "balance": "$1,216.21",
+        "picture": "http://placehold.it/32x32",
+        "age": 27,
+        "eyeColor": "blue",
+        "name": "Orr Hill",
+        "gender": "male",
+        "company": "FURNITECH",
+        "email": "orrhill@furnitech.com",
+        "phone": "+1 (823) 455-3555",
+        "address": "152 Hornell Loop, Cawood, Alaska, 5220",
+        "about": "Labore dolor sint est culpa Lorem dolore veniam consequat. Officia Lorem eu labore esse esse proident sint consequat Lorem labore esse. In nostrud sint aute commodo ex proident. Nulla labore eiusmod in aliqua in ad. Eiusmod laborum dolor ex est velit incididunt et amet.",
+        "registered": "2021-08-22T10:59:13 -05:00",
+        "latitude": 53.896296,
+        "longitude": -45.046902,
+        "tags": [
+            "labore",
+            "nisi",
+            "cupidatat",
+            "excepteur",
+            "ex",
+            "Lorem",
+            "do"
+        ],
+        "friends": [
+            {
+                "id": 0,
+                "name": "Ophelia Villarreal"
+            },
+            {
+                "id": 1,
+                "name": "Velazquez Pena"
+            },
+            {
+                "id": 2,
+                "name": "Pena Gaines"
+            }
+        ],
+        "greeting": "Hello, Orr Hill! You have 1 unread messages.",
+        "favoriteFruit": "apple"
+    },
+    {
+        "id": "6782fb71eb7d28d8981ff9b1",
+        "index": 4,
+        "guid": "167c126b-71c9-4ece-9b1d-83a593e7a703",
+        "isActive": false,
+        "balance": "$2,812.13",
+        "picture": "http://placehold.it/32x32",
+        "age": 31,
+        "eyeColor": "brown",
+        "name": "Francisca Beard",
+        "gender": "female",
+        "company": "PHOTOBIN",
+        "email": "franciscabeard@photobin.com",
+        "phone": "+1 (817) 443-3427",
+        "address": "821 Hunterfly Place, Mathews, Iowa, 7047",
+        "about": "Magna ex Lorem dolore pariatur laboris ex. Fugiat id ad do occaecat sint ullamco commodo aliquip laborum commodo nisi exercitation Lorem occaecat. Quis excepteur laboris Lorem sint labore aute consectetur quis sint. Qui Lorem aute labore deserunt exercitation excepteur id consectetur eiusmod nisi in.",
+        "registered": "2014-10-04T04:47:30 -06:00",
+        "latitude": -12.564841,
+        "longitude": -81.998082,
+        "tags": [
+            "pariatur",
+            "sint",
+            "sit",
+            "anim",
+            "deserunt",
+            "quis",
+            "sunt"
+        ],
+        "friends": [
+            {
+                "id": 0,
+                "name": "Day Wheeler"
+            },
+            {
+                "id": 1,
+                "name": "Juana Martin"
+            },
+            {
+                "id": 2,
+                "name": "Wells Workman"
+            }
+        ],
+        "greeting": "Hello, Francisca Beard! You have 2 unread messages.",
+        "favoriteFruit": "apple"
+    },
+    {
+        "id": "6782fb71accf35c389e2bf14",
+        "index": 5,
+        "guid": "760e7769-0e65-4583-b3b8-4dee5401be8c",
+        "isActive": true,
+        "balance": "$3,776.56",
+        "picture": "http://placehold.it/32x32",
+        "age": 40,
+        "eyeColor": "blue",
+        "name": "Valentine Sellers",
+        "gender": "male",
+        "company": "EXOSPACE",
+        "email": "valentinesellers@exospace.com",
+        "phone": "+1 (918) 428-2199",
+        "address": "566 Robert Street, Boykin, Utah, 346",
+        "about": "Commodo sint aute esse aute. Id duis aliquip deserunt incididunt Lorem deserunt velit qui esse cillum. Quis occaecat eiusmod esse laboris pariatur fugiat nisi exercitation enim ex nisi. Aliqua magna cupidatat pariatur proident ipsum labore. Irure commodo qui eu dolore aliqua incididunt cillum nostrud.",
+        "registered": "2020-03-29T02:44:28 -05:00",
+        "latitude": 82.01843,
+        "longitude": 60.297166,
+        "tags": [
+            "nulla",
+            "quis",
+            "pariatur",
+            "esse",
+            "irure",
+            "eiusmod",
+            "nisi"
+        ],
+        "friends": [
+            {
+                "id": 0,
+                "name": "Rosemarie Delaney"
+            },
+            {
+                "id": 1,
+                "name": "Sheila Wade"
+            },
+            {
+                "id": 2,
+                "name": "Lawson Castillo"
+            }
+        ],
+        "greeting": "Hello, Valentine Sellers! You have 7 unread messages.",
+        "favoriteFruit": "strawberry"
+    },
+    {
+        "id": "6782fb71f5a8b906ba29ba8a",
+        "index": 6,
+        "guid": "1875e892-73d7-4fd1-b472-4760e5c84a19",
+        "isActive": true,
+        "balance": "$1,861.10",
+        "picture": "http://placehold.it/32x32",
+        "age": 37,
+        "eyeColor": "brown",
+        "name": "Lee Vaughn",
+        "gender": "male",
+        "company": "TEMORAK",
+        "email": "leevaughn@temorak.com",
+        "phone": "+1 (947) 509-3320",
+        "address": "429 Overbaugh Place, Baker, South Carolina, 4905",
+        "about": "Dolore dolor id nisi est elit elit cupidatat velit ut. Labore irure consequat ullamco consequat culpa aliqua voluptate Lorem do. Excepteur ea et mollit voluptate duis ad mollit occaecat nostrud nisi.",
+        "registered": "2014-12-25T09:54:15 -06:00",
+        "latitude": -18.166264,
+        "longitude": -20.595374,
+        "tags": [
+            "id",
+            "minim",
+            "velit",
+            "ex",
+            "commodo",
+            "ullamco",
+            "nostrud"
+        ],
+        "friends": [
+            {
+                "id": 0,
+                "name": "Reese Herring"
+            },
+            {
+                "id": 1,
+                "name": "Patel Jarvis"
+            },
+            {
+                "id": 2,
+                "name": "Blair Lewis"
+            }
+        ],
+        "greeting": "Hello, Lee Vaughn! You have 4 unread messages.",
+        "favoriteFruit": "banana"
+    }
+]

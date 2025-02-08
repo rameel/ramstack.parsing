@@ -4,6 +4,13 @@
 
 A blazing-fast, lightweight, and intuitive parser combinator library for .NET.
 
+## Getting Started
+
+To install the `Ramstack.Parsing` [NuGet package](https://www.nuget.org/packages/Ramstack.Parsing) to your project, run the following command:
+```shell
+dotnet add package Ramstack.Parsing
+```
+
 ## Usage
 
 Here's how to define a simple expression parser that parses and evaluates mathematical expressions in one step:
@@ -15,13 +22,14 @@ private static Parser<double> CreateParser()
 {
     // Grammar:
     // ----------------------------------------
+    // Start       :  Sum $
     // Sum         :  Product (S [+-] Product)*
     // Product     :  Unary (S [*/] Unary)*
-    // Unary       :  S -? Primary
+    // Unary       :  S '-'? Primary
     // Primary     :  Parenthesis / Value
     // Parenthesis :  S '(' Sum S ')'
     // Value       :  S Number
-    // S           :  Optional whitespaces
+    // S           :  Whitespace*
 
     var sum = Deferred<double>();
     var value = S.Then(Literal.Number<double>());
@@ -39,33 +47,15 @@ private static Parser<double> CreateParser()
         primary
         ).Do((_, u, d) => u.HasValue ? -d : d);
 
-    var product = Seq(
-        unary,
-        Seq(S, OneOf("*/"), unary).Many()
-        ).Do(Multiply);
+    var product = unary.Fold(
+        Seq(S, OneOf("*/"), unary),
+        (v, _, op, d) => op == '*' ? v * d : v / d);
 
-    sum.Parser = Seq(
-        product,
-        Seq(S, OneOf("+-"), product).Many()
-        ).Do(Add);
+    sum.Parser = product.Fold(
+        Seq(S, OneOf("+-"), product),
+        (v, _, op, d) => op == '+' ? v + d : v - d);
 
-    return sum;
-
-    double Multiply(double v, ArrayList<(Unit, char, double)> results)
-    {
-        foreach (var (_, op, d) in results)
-            v = op == '*' ? v * d : v / d;
-
-        return v;
-    }
-
-    double Add(double v, ArrayList<(Unit, char, double)> results)
-    {
-        foreach (var (_, op, d) in results)
-            v = op == '+' ? v + d : v - d;
-
-        return v;
-    }
+    return sum.Before(Eof);
 }
 ```
 

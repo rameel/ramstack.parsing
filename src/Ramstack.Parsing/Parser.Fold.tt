@@ -77,12 +77,16 @@ partial class Parser
         /// <inheritdoc />
         public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value)
         {
+            var bookmark = context.BookmarkPosition();
+
             if (parser.TryParse(ref context, out var result))
             {
                 while (item.TryParse(ref context, out var r))
                     result = reduce(result, <#=GenerateList(arity, n => $"r.Item{n}", from: 1)#>);
 
+                context.SetMatched(bookmark);
                 value = result!;
+
                 return true;
             }
 
@@ -110,6 +114,8 @@ partial class Parser
         /// <inheritdoc />
         public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value)
         {
+            var bookmark = context.BookmarkPosition();
+
             if (parser.TryParse(ref context, out var result))
             {
                 var values = new ArrayList<(<#=GenerateList(arity, n => $"T{n}", from: 1)#>)>();
@@ -122,7 +128,9 @@ partial class Parser
                     result = reduce(result, <#=GenerateList(arity, n => $"r.Item{n}", from: 1)#>);
                 }
 
+                context.SetMatched(bookmark);
                 value = result!;
+
                 return true;
             }
 

@@ -63,12 +63,16 @@ partial class Parser
         /// <inheritdoc />
         public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value)
         {
+            var bookmark = context.BookmarkPosition();
+
             if (parser.TryParse(ref context, out var result))
             {
                 while (item.TryParse(ref context, out var r))
                     result = reduce(result, r);
 
+                context.SetMatched(bookmark);
                 value = result!;
+
                 return true;
             }
 
@@ -98,6 +102,8 @@ partial class Parser
         /// <inheritdoc />
         public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value)
         {
+            var bookmark = context.BookmarkPosition();
+
             if (parser.TryParse(ref context, out var result))
             {
                 var values = new ArrayList<TItem>();
@@ -107,7 +113,9 @@ partial class Parser
                 for (var i = values.Count - 1; i >= 0; i--)
                     result = reduce(result, values[i]);
 
+                context.SetMatched(bookmark);
                 value = result!;
+
                 return true;
             }
 

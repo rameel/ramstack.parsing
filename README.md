@@ -4,6 +4,13 @@
 
 A blazing-fast, lightweight, and intuitive parser combinator library for .NET.
 
+## Getting Started
+
+To install the `Ramstack.Parsing` [NuGet package](https://www.nuget.org/packages/Ramstack.Parsing) to your project, run the following command:
+```shell
+dotnet add package Ramstack.Parsing
+```
+
 ## Usage
 
 Here's how to define a simple expression parser that parses and evaluates mathematical expressions in one step:
@@ -15,13 +22,14 @@ private static Parser<double> CreateParser()
 {
     // Grammar:
     // ----------------------------------------
+    // Start       :  Sum $
     // Sum         :  Product (S [+-] Product)*
     // Product     :  Unary (S [*/] Unary)*
-    // Unary       :  S -? Primary
+    // Unary       :  S '-'? Primary
     // Primary     :  Parenthesis / Value
     // Parenthesis :  S '(' Sum S ')'
     // Value       :  S Number
-    // S           :  Optional whitespaces
+    // S           :  Whitespace*
 
     var sum = Deferred<double>();
     var value = S.Then(Literal.Number<double>());
@@ -39,33 +47,15 @@ private static Parser<double> CreateParser()
         primary
         ).Do((_, u, d) => u.HasValue ? -d : d);
 
-    var product = Seq(
-        unary,
-        Seq(S, OneOf("*/"), unary).Many()
-        ).Do(Multiply);
+    var product = unary.Fold(
+        Seq(S, OneOf("*/"), unary),
+        (v, _, op, d) => op == '*' ? v * d : v / d);
 
-    sum.Parser = Seq(
-        product,
-        Seq(S, OneOf("+-"), product).Many()
-        ).Do(Add);
+    sum.Parser = product.Fold(
+        Seq(S, OneOf("+-"), product),
+        (v, _, op, d) => op == '+' ? v + d : v - d);
 
-    return sum;
-
-    double Multiply(double v, ArrayList<(Unit, char, double)> results)
-    {
-        foreach (var (_, op, d) in results)
-            v = op == '*' ? v * d : v / d;
-
-        return v;
-    }
-
-    double Add(double v, ArrayList<(Unit, char, double)> results)
-    {
-        foreach (var (_, op, d) in results)
-            v = op == '+' ? v + d : v - d;
-
-        return v;
-    }
+    return sum.Before(Eof);
 }
 ```
 
@@ -153,8 +143,8 @@ including compiled and source-generated regexes.
 BenchmarkDotNet v0.14.0, Windows 11 (10.0.26100.3037)
 AMD Ryzen 9 5900X, 1 CPU, 24 logical and 12 physical cores
 .NET SDK 9.0.200-preview.0.25057.12
-[Host]     : .NET 9.0.1 (9.0.124.61010), X64 RyuJIT AVX2
-DefaultJob : .NET 9.0.1 (9.0.124.61010), X64 RyuJIT AVX2
+  [Host]     : .NET 9.0.1 (9.0.124.61010), X64 RyuJIT AVX2
+  DefaultJob : .NET 9.0.1 (9.0.124.61010), X64 RyuJIT AVX2
 
 
 | Method          | Mean        | Error    | StdDev   | Op/s         | Gen0   | Allocated |
@@ -181,22 +171,23 @@ This benchmarks tests 2 expressions:
 BenchmarkDotNet v0.14.0, Windows 11 (10.0.26100.3037)
 AMD Ryzen 9 5900X, 1 CPU, 24 logical and 12 physical cores
 .NET SDK 9.0.200-preview.0.25057.12
-[Host]     : .NET 9.0.1 (9.0.124.61010), X64 RyuJIT AVX2
-DefaultJob : .NET 9.0.1 (9.0.124.61010), X64 RyuJIT AVX2
+  [Host]     : .NET 9.0.1 (9.0.124.61010), X64 RyuJIT AVX2
+  DefaultJob : .NET 9.0.1 (9.0.124.61010), X64 RyuJIT AVX2
 
-| Method                | Mean        | Error     | StdDev    | Op/s        | Gen0   | Allocated |
-|-----------------------|------------:|----------:|----------:|------------:|-------:|----------:|
-| Ramstack:Large        |  1,974.7 ns |  21.67 ns |  20.27 ns |   506,398.6 | 0.1678 |    2824 B |
-| Ramstack:Diag:Large   |  2,178.2 ns |   5.18 ns |   4.32 ns |   459,090.3 | 0.1717 |    2928 B |
-| Parlot:Large          |  3,379.0 ns |  18.35 ns |  17.16 ns |   295,942.5 | 0.1984 |    3344 B |
-| Parlot:Compiled:Large |  3,317.7 ns |  12.79 ns |  11.34 ns |   301,416.6 | 0.1984 |    3344 B |
-| Pidgin:Large          | 38,231.9 ns | 143.83 ns | 134.54 ns |    26,156.1 | 0.2441 |    4464 B |
-|                       |             |           |           |             |        |           |
-| Ramstack:Small        |    258.6 ns |   0.22 ns |   0.17 ns | 3,867,397.1 | 0.0215 |     360 B |
-| Ramstack:Diag:Small   |    295.4 ns |   1.87 ns |   1.56 ns | 3,384,956.9 | 0.0277 |     464 B |
-| Parlot:Small          |    418.3 ns |   0.98 ns |   0.81 ns | 2,390,622.1 | 0.0391 |     656 B |
-| Parlot:Compiled:Small |    387.7 ns |   1.41 ns |   1.25 ns | 2,579,378.9 | 0.0391 |     656 B |
-| Pidgin:Small          |  4,346.8 ns |   8.00 ns |   7.09 ns |   230,054.8 | 0.0381 |     736 B |
+
+| Method                | Mean        | Error    | StdDev   | Op/s        | Gen0   | Allocated |
+|---------------------- |------------:|---------:|---------:|------------:|-------:|----------:|
+| Ramstack:Large        |  1,636.8 ns | 13.17 ns | 11.68 ns |   610,962.9 |      - |         - |
+| Ramstack:Diag:Large   |  1,772.6 ns |  4.14 ns |  3.67 ns |   564,132.8 | 0.0057 |     104 B |
+| Parlot:Large          |  3,332.9 ns |  9.38 ns |  8.31 ns |   300,039.9 | 0.1984 |    3344 B |
+| Parlot:Compiled:Large |  3,408.1 ns | 14.63 ns | 13.68 ns |   293,415.4 | 0.1984 |    3344 B |
+| Pidgin:Large          | 38,503.3 ns | 90.20 ns | 79.96 ns |    25,971.8 | 0.2441 |    4464 B |
+|                       |             |          |          |             |        |           |
+| Ramstack:Small        |    220.5 ns |  0.71 ns |  0.67 ns | 4,534,869.6 |      - |         - |
+| Ramstack:Diag:Small   |    251.9 ns |  1.06 ns |  0.83 ns | 3,969,360.7 | 0.0062 |     104 B |
+| Parlot:Small          |    407.6 ns |  1.17 ns |  0.98 ns | 2,453,264.6 | 0.0391 |     656 B |
+| Parlot:Compiled:Small |    388.3 ns |  1.91 ns |  1.78 ns | 2,575,382.0 | 0.0391 |     656 B |
+| Pidgin:Small          |  4,285.5 ns | 23.64 ns | 22.11 ns |   233,342.9 | 0.0381 |     736 B |
 ```
 
 - `Ramstack` diagnostic messages disabled.
@@ -216,8 +207,8 @@ This benchmark evaluates JSON parsing performance, including object model constr
 BenchmarkDotNet v0.14.0, Windows 11 (10.0.26100.3037)
 AMD Ryzen 9 5900X, 1 CPU, 24 logical and 12 physical cores
 .NET SDK 9.0.200-preview.0.25057.12
-[Host]     : .NET 9.0.1 (9.0.124.61010), X64 RyuJIT AVX2
-DefaultJob : .NET 9.0.1 (9.0.124.61010), X64 RyuJIT AVX2
+  [Host]     : .NET 9.0.1 (9.0.124.61010), X64 RyuJIT AVX2
+  DefaultJob : .NET 9.0.1 (9.0.124.61010), X64 RyuJIT AVX2
 
 
 | Method           | Input  | Mean          | Error      | StdDev     | Op/s       | Gen0     | Gen1     | Gen2     | Allocated  |

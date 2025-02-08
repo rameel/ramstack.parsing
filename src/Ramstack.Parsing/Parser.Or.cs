@@ -6,7 +6,7 @@ partial class Parser
     /// Creates a parser that attempts to parse the input with the specified parser
     /// or its alternative in sequence, returning the result of the first one that succeeds.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by each parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by each parser.</typeparam>
     /// <param name="parser">The main parser.</param>
     /// <param name="alternative">The alternative parser.</param>
     /// <returns>

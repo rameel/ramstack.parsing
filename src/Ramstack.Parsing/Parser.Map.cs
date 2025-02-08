@@ -5,8 +5,8 @@ partial class Parser
     /// <summary>
     /// Creates a parser that applies the specified map function to the matched segment (ignoring the parsed value).
     /// </summary>
-    /// <typeparam name="T">The type of values produced by the initial parser.</typeparam>
-    /// <typeparam name="TResult">The type of the result produced by applying the map function.</typeparam>
+    /// <typeparam name="T">The type of value produced by the initial parser.</typeparam>
+    /// <typeparam name="TResult">The type of the value produced by applying the map function.</typeparam>
     /// <param name="parser">The <see cref="Parser{T}"/> used to match the input.</param>
     /// <param name="func">The function that maps the matched segment to a <typeparamref name="TResult"/>.</param>
     /// <returns>
@@ -18,8 +18,8 @@ partial class Parser
     /// <summary>
     /// Creates a parser that applies the specified map function to both the matched segment and the parsed value.
     /// </summary>
-    /// <typeparam name="T">The type of values produced by the initial parser.</typeparam>
-    /// <typeparam name="TResult">The type of the result produced by applying the map function.</typeparam>
+    /// <typeparam name="T">The type of value produced by the initial parser.</typeparam>
+    /// <typeparam name="TResult">The type of the value produced by applying the map function.</typeparam>
     /// <param name="parser">The <see cref="Parser{T}"/> used to match and parse the input.</param>
     /// <param name="func">The function that maps the matched segment and the parsed value to a <typeparamref name="TResult"/>.</param>
     /// <returns>
@@ -35,7 +35,7 @@ partial class Parser
     /// Represents a parser that applies a <paramref name="func"/> to the matched segment,
     /// ignoring the original parsed value.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by applying the map function.</typeparam>
+    /// <typeparam name="T">The type of the value produced by applying the map function.</typeparam>
     /// <param name="parser">A parser that matches the input but discards its value.</param>
     /// <param name="func">A function transforming the matched segment into <typeparamref name="T"/>.</param>
     private sealed class MapParser<T>(Parser<Unit> parser, MapFunc<T> func) : Parser<T>
@@ -69,8 +69,8 @@ partial class Parser
     /// <summary>
     /// Represents a parser that applies a <paramref name="func"/> to both the matched segment and the parsed value.
     /// </summary>
-    /// <typeparam name="T">The type of values produced by the initial parser.</typeparam>
-    /// <typeparam name="TResult">The type of the result produced by applying the map function.</typeparam>
+    /// <typeparam name="T">The type of value produced by the initial parser.</typeparam>
+    /// <typeparam name="TResult">The type of the value produced by applying the map function.</typeparam>
     /// <param name="parser">A parser that matches and parses the input to a value of type <typeparamref name="T"/>.</param>
     /// <param name="func">A function transforming the matched segment and the parsed value into <typeparamref name="TResult"/>.</param>
     private sealed class MapParser<T, TResult>(Parser<T> parser, MapFunc<T, TResult> func) : Parser<TResult>

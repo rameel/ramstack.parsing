@@ -6,7 +6,7 @@ partial class Parser
     /// Creates an optional parser that always succeeds,
     /// regardless of whether the specified parser succeeds or fails.
     /// </summary>
-    /// <typeparam name="T">The type of values produced by the initial parser.</typeparam>
+    /// <typeparam name="T">The type of value produced by the initial parser.</typeparam>
     /// <param name="parser">The parser to be treated as optional.</param>
     /// <returns>
     /// A parser representing an optional version of the specified parser.
@@ -17,7 +17,7 @@ partial class Parser
     /// <summary>
     /// Returns the input parser as-is when it is already an optional parser.
     /// </summary>
-    /// <typeparam name="T">The type of values produced by the initial parser.</typeparam>
+    /// <typeparam name="T">The type of value produced by the initial parser.</typeparam>
     /// <param name="parser">The optional parser that will be returned unchanged.</param>
     /// <returns>
     /// The same parser that was passed in as an argument.
@@ -30,7 +30,7 @@ partial class Parser
     /// <summary>
     /// Represents a parser that always succeeds, regardless of whether the specified parser succeeds or fails.
     /// </summary>
-    /// <typeparam name="T">The type of values produced by the initial parser.</typeparam>
+    /// <typeparam name="T">The type of value produced by the initial parser.</typeparam>
     /// <param name="parser">The parser to be treated as optional.</param>
     private sealed class OptionalParser<T>(Parser<T> parser) : Parser<OptionalValue<T>>
     {

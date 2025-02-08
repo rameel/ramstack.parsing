@@ -5,8 +5,8 @@ partial class Parser
     /// <summary>
     /// Creates a parser that repeatedly applies the main parser, interleaved with a separator specified by another parser.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by the main parser.</typeparam>
-    /// <typeparam name="TSeparator">The type of the result produced by the separator parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by the main parser.</typeparam>
+    /// <typeparam name="TSeparator">The type of the value produced by the separator parser.</typeparam>
     /// <param name="parser">The main parser.</param>
     /// <param name="separator">The parser that identifies the separators placed between the elements parsed by the main parser.</param>
     /// <param name="allowTrailing"><see langword="true" /> if trailing separator is allowed; otherwise, <see langword="false" />.</param>
@@ -23,7 +23,7 @@ partial class Parser
     /// <summary>
     /// Represents a parser that repeatedly applies the main parser, interleaved with a separator specified by another parser.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by the main parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by the main parser.</typeparam>
     /// <param name="parser">The main parser.</param>
     /// <param name="separator">The parser that identifies the separators placed between the elements parsed by the main parser.</param>
     /// <param name="allowTrailing"><see langword="true" /> if trailing separator is allowed; otherwise, <see langword="false" />.</param>

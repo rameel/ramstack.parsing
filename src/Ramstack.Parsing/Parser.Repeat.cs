@@ -10,7 +10,7 @@ partial class Parser
     /// <summary>
     /// Creates a parser that applies the specified parser zero or more times.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by the specified parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by the specified parser.</typeparam>
     /// <param name="parser">The <see cref="Parser{T}"/> to apply zero or more times.</param>
     /// <returns>
     /// A parser that applies the specified parser zero or more times.
@@ -31,7 +31,7 @@ partial class Parser
     /// <summary>
     /// Creates a parser that applies the specified parser at least once.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by the specified parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by the specified parser.</typeparam>
     /// <param name="parser">The <see cref="Parser{T}"/> to apply at least once.</param>
     /// <returns>
     /// A parser that applies the specified parser at least once.
@@ -52,7 +52,7 @@ partial class Parser
     /// <summary>
     /// Creates a parser that applies the specified parser zero or more times.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by the specified parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by the specified parser.</typeparam>
     /// <param name="parser">The <see cref="Parser{T}"/> to apply zero or more times.</param>
     /// <returns>
     /// A parser that applies the specified parser zero or more times.
@@ -73,7 +73,7 @@ partial class Parser
     /// <summary>
     /// Creates a parser that applies the specified parser at least the defined number of times.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by the specified parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by the specified parser.</typeparam>
     /// <param name="parser">The <see cref="Parser{T}"/> to apply at least the specified number of times.</param>
     /// <param name="count">The minimum number of repetitions.</param>
     /// <returns>
@@ -96,7 +96,7 @@ partial class Parser
     /// <summary>
     /// Creates a parser that applies the specified parser a defined number of times.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by the specified parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by the specified parser.</typeparam>
     /// <param name="parser">The <see cref="Parser{T}"/> to apply the specified number of times.</param>
     /// <param name="count">The number of repetitions.</param>
     /// <returns>
@@ -119,7 +119,7 @@ partial class Parser
     /// <summary>
     /// Creates a parser that applies the specified parser a defined number of times.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by the specified parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by the specified parser.</typeparam>
     /// <param name="parser">The <see cref="Parser{T}"/> to apply the specified number of times.</param>
     /// <param name="min">Minimum number of repetitions.</param>
     /// <param name="max">Maximum number of repetitions.</param>
@@ -293,7 +293,7 @@ partial class Parser
     /// <summary>
     /// Represents a parser that applies the specified parser a defined number of times.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by the specified parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by the specified parser.</typeparam>
     private sealed class RepeatParser<T> : Parser<ArrayList<T>>
     {
         private readonly Parser<T> _parser;

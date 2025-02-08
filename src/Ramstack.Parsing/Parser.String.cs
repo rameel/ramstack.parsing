@@ -110,7 +110,7 @@ partial class Parser
     /// Represents a parser that attempts to match the specified literal using ordinal string comparison.
     /// This parser is specialized for performance with ordinal comparison.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by the parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by the parser.</typeparam>
     private sealed class OrdinalStringParser<T> : Parser<T>
     {
         private readonly string _literal;
@@ -158,7 +158,7 @@ partial class Parser
     /// <summary>
     /// Represents a parser that attempts to match a specified literal using a specified string comparison type.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by the parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by the parser.</typeparam>
     private sealed class StringParser<T> : Parser<T>
     {
         private readonly string _literal;
@@ -207,7 +207,7 @@ partial class Parser
     /// <summary>
     /// Represents a parser that attempts to match one of the specified literals.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by the parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by the parser.</typeparam>
     /// <typeparam name="TCompareOptions">The compare options used for matching strings.</typeparam>
     private sealed class OrdinalStringDictionaryParser<T, TCompareOptions> : Parser<T>
     {
@@ -285,7 +285,7 @@ partial class Parser
     /// <summary>
     /// Represents a parser that attempts to match one of the specified literals based on specific cultural and comparison options.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by the parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by the parser.</typeparam>
     private sealed class StringDictionaryParser<T> : Parser<T>
     {
         private readonly CharMap _literals;

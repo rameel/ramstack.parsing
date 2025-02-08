@@ -3,7 +3,7 @@ namespace Ramstack.Parsing;
 /// <summary>
 /// Represents the base class of a parser, providing parsing logic and extension points for derived parsers.
 /// </summary>
-/// <typeparam name="T">The type of the result produced by the parser.</typeparam>
+/// <typeparam name="T">The type of the value produced by the parser.</typeparam>
 public abstract class Parser<T>
 {
     /// <summary>

@@ -48,12 +48,12 @@ private static Parser<double> CreateParser()
         ).Do((_, u, d) => u.HasValue ? -d : d);
 
     var product = unary.Fold(
-        Seq(S, OneOf("*/"), unary),
-        (v, _, op, d) => op == '*' ? v * d : v / d);
+        S.Then(OneOf("*/")),
+        (l, r, op) => op == '*' ? l * r : l / r);
 
     sum.Parser = product.Fold(
-        Seq(S, OneOf("+-"), product),
-        (v, _, op, d) => op == '+' ? v + d : v - d);
+        S.Then(OneOf("+-")),
+        (l, r, op) => op == '+' ? l + r : l - r);
 
     return sum.Before(Eof);
 }

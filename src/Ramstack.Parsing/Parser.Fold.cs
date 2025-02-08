@@ -3,76 +3,86 @@ namespace Ramstack.Parsing;
 partial class Parser
 {
     /// <summary>
-    /// Creates a left-associative parser that applies the <paramref name="reduce"/> function
-    /// to reduce values from the parsed items.
+    /// Creates a left-associative parser.
     /// </summary>
     /// <remarks>
     /// <code>
-    /// // Number ([+-] Number)*
-    /// var sum = number.Fold(
-    ///     Seq(OneOf("+-"), number),
-    ///     (r, op, d) => op == '+' ? r + n : r - n);
+    /// // Example: Number ([+-] Number)*
+    /// // 1 + 2 + 3 + 4 => (((1 + 2) + 3) + 4)
+    /// var sum = number.Fold(OneOf("+-"), (l, r, op) => op == '+' ? l + r : l - r);
     /// </code>
     /// </remarks>
-    /// <typeparam name="T">The type of value produces by the initial parser.</typeparam>
-    /// <typeparam name="TItem">The type of the values being accumulated.</typeparam>
-    /// <param name="parser">The initial parser.</param>
-    /// <param name="item">The parser for values to accumulate.</param>
+    /// <typeparam name="T">The type of the value produced by the main parser.</typeparam>
+    /// <typeparam name="TOperator">The type of the operator token produced by the parser.</typeparam>
+    /// <param name="parser">The main parser that matches a value.</param>
+    /// <param name="op">The parser that matches an operator token.</param>
     /// <param name="reduce">A reduction function.</param>
     /// <returns>
-    /// A parser that performs left-associative folding over parsed values.
+    /// A parser that performs left-associative folding.
     /// </returns>
-    public static Parser<T> Fold<T, TItem>(this Parser<T> parser, Parser<TItem> item, Func<T, TItem, T> reduce) =>
-        new FoldParser<T, TItem>(parser, item, reduce);
+    public static Parser<T> Fold<T, TOperator>(this Parser<T> parser, Parser<TOperator> op, Func<T, T, TOperator, T> reduce) =>
+        new FoldParser<T, TOperator>(parser, op, reduce);
 
     /// <summary>
-    /// Creates a right-associative parser that applies the <paramref name="reduce"/> function
-    /// to reduce values from the parsed items.
+    /// Creates a right-associative parser.
     /// </summary>
     /// <remarks>
     /// <code>
+    /// // 2 ^ 3 ^ 4 ^ 1 => (2 ^ (3 ^ (4 ^ 1)))
+    /// // a = b = c = d => (a = (b = (c = d)))
+    ///
     /// // Number ("^" Number)*
-    /// var power = number.FoldR(
-    ///     Seq(L('^'), number),
-    ///     (r, _, d) => Math.Pow(r, d));
+    /// var power = number.FoldR(L('^'), (l, r, op) => Math.Pow(l, r));
     /// </code>
     /// </remarks>
-    /// <typeparam name="T">The type of value produces by the initial parser.</typeparam>
-    /// <typeparam name="TItem">The type of the values being accumulated.</typeparam>
-    /// <param name="parser">The initial parser.</param>
-    /// <param name="item">The parser for values to accumulate.</param>
+    /// <typeparam name="T">The type of value produces by the main parser.</typeparam>
+    /// <typeparam name="TOperator">The type of the operator token produced by the parser.</typeparam>
+    /// <param name="parser">The main parser that matches a value.</param>
+    /// <param name="op">The operator parser that matches an operator token.</param>
     /// <param name="reduce">A reduction function.</param>
     /// <returns>
-    /// A parser that performs right-associative folding over parsed values.
+    /// A parser that performs right-associative folding.
     /// </returns>
-    public static Parser<T> FoldR<T, TItem>(this Parser<T> parser, Parser<TItem> item, Func<T, TItem, T> reduce) =>
-        new FoldRParser<T, TItem>(parser, item, reduce);
+    public static Parser<T> FoldR<T, TOperator>(this Parser<T> parser, Parser<TOperator> op, Func<T, T, TOperator, T> reduce) =>
+        new FoldRParser<T, TOperator>(parser, op, reduce);
 
     #region Inner type: FoldParser
 
     /// <summary>
-    /// Represents a left-associative parser that accumulates parsed items using a specified reduction function.
+    /// Represents a left-associative parser.
     /// </summary>
-    /// <typeparam name="T">The type of value produces by the initial parser.</typeparam>
-    /// <typeparam name="TItem">The type of the values being accumulated.</typeparam>
-    /// <param name="parser">The initial parser.</param>
-    /// <param name="item">The parser for values to accumulate.</param>
+    /// <typeparam name="T">The type of value produces by the main parser.</typeparam>
+    /// <typeparam name="TOperator">The type of the operator token produced by the parser.</typeparam>
+    /// <param name="parser">The main parser that matches a value.</param>
+    /// <param name="op">The operator parser that matches an operator token.</param>
     /// <param name="reduce">A reduction function.</param>
-    private sealed class FoldParser<T, TItem>(Parser<T> parser, Parser<TItem> item, Func<T, TItem, T> reduce) : Parser<T>
+    private sealed class FoldParser<T, TOperator>(Parser<T> parser, Parser<TOperator> op, Func<T, T, TOperator, T> reduce) : Parser<T>
     {
         /// <inheritdoc />
         public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value)
         {
             var bookmark = context.BookmarkPosition();
 
-            if (parser.TryParse(ref context, out var result))
+            if (parser.TryParse(ref context, out var v))
             {
-                while (item.TryParse(ref context, out var r))
-                    result = reduce(result, r);
+                var result = v;
+
+                while (true)
+                {
+                    var rollback = context.BookmarkPosition();
+
+                    if (op.TryParse(ref context, out var o) && parser.TryParse(ref context, out v))
+                    {
+                        result = reduce(result, v, o);
+                        continue;
+                    }
+
+                    context.RestorePosition(rollback);
+                    break;
+                }
 
                 context.SetMatched(bookmark);
                 value = result!;
-
                 return true;
             }
 
@@ -81,8 +91,11 @@ partial class Parser
         }
 
         /// <inheritdoc />
-        protected internal override Parser<Unit> ToVoidParser() =>
-            Seq(parser.Void(), item.Void().ZeroOrMore());
+        protected internal override Parser<Unit> ToVoidParser()
+        {
+            var p = parser.Void();
+            return Seq(p, Seq(op.Void(), p).ZeroOrMore());
+        }
     }
 
     #endregion
@@ -90,32 +103,46 @@ partial class Parser
     #region Inner type: FoldRParser
 
     /// <summary>
-    /// Represents a right-associative parser that accumulates parsed items using a specified reduction function.
+    /// Represents a right-associative parser.
     /// </summary>
-    /// <typeparam name="T">The type of value produces by the initial parser.</typeparam>
-    /// <typeparam name="TItem">The type of the values being accumulated.</typeparam>
-    /// <param name="parser">The initial parser.</param>
-    /// <param name="item">The parser for values to accumulate.</param>
+    /// <typeparam name="T">The type of value produces by the main parser.</typeparam>
+    /// <typeparam name="TOperator">The type of the operator token produced by the parser.</typeparam>
+    /// <param name="parser">The main parser that matches a value.</param>
+    /// <param name="op">The operator parser that matches an operator token.</param>
     /// <param name="reduce">A reduction function.</param>
-    private sealed class FoldRParser<T, TItem>(Parser<T> parser, Parser<TItem> item, Func<T, TItem, T> reduce) : Parser<T>
+    private sealed class FoldRParser<T, TOperator>(Parser<T> parser, Parser<TOperator> op, Func<T, T, TOperator, T> reduce) : Parser<T>
     {
         /// <inheritdoc />
         public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value)
         {
             var bookmark = context.BookmarkPosition();
 
-            if (parser.TryParse(ref context, out var result))
+            if (parser.TryParse(ref context, out var v))
             {
-                var values = new ArrayList<TItem>();
-                while (item.TryParse(ref context, out var v))
-                    values.Add(v);
+                var list = new ArrayBuilder<(TOperator op, T value)>();
+                list.Add((default!, v));
 
-                for (var i = values.Count - 1; i >= 0; i--)
-                    result = reduce(result, values[i]);
+                while (true)
+                {
+                    var rollback = context.BookmarkPosition();
+
+                    if (op.TryParse(ref context, out var o) && parser.TryParse(ref context, out v))
+                    {
+                        list.Add((o, v));
+                        continue;
+                    }
+
+                    context.RestorePosition(rollback);
+                    break;
+                }
 
                 context.SetMatched(bookmark);
-                value = result!;
 
+                var result = list[^1].value;
+                for (var i = list.Count - 1; i > 0; i--)
+                    result = reduce(list[i - 1].value, result, list[i].op);
+
+                value = result!;
                 return true;
             }
 
@@ -124,8 +151,11 @@ partial class Parser
         }
 
         /// <inheritdoc />
-        protected internal override Parser<Unit> ToVoidParser() =>
-            Seq(parser.Void(), item.Void().ZeroOrMore());
+        protected internal override Parser<Unit> ToVoidParser()
+        {
+            var p = parser.Void();
+            return Seq(p, Seq(op.Void(), p).ZeroOrMore());
+        }
     }
 
     #endregion

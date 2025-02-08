@@ -50,10 +50,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Parser.Fold.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Parser.Fold.Generated.cs</LastGenOutput>
-    </None>
     <None Update="Parser.Seq.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Parser.Seq.Generated.cs</LastGenOutput>
@@ -65,11 +61,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Parser.Fold.Generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Parser.Fold.tt</DependentUpon>
-    </Compile>
     <Compile Update="Parser.Seq.Generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -90,11 +81,6 @@
     <None Include="..\..\README.md" Link="Properties\README.md">
       <Pack>true</Pack>
       <PackagePath>\</PackagePath>
-    </None>
-    <None Include="Parser.Fold.Generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Parser.Fold.tt</DependentUpon>
     </None>
   </ItemGroup>
 

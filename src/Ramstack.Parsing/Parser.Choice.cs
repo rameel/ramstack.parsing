@@ -6,7 +6,7 @@ partial class Parser
     /// Creates a parser that attempts to parse using each of the specified parsers in sequence,
     /// returning the result of the first parser that succeeds.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by each parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by each parser.</typeparam>
     /// <param name="parsers">An array of parsers that are tried in sequence.</param>
     /// <returns>
     /// A <see cref="Parser{T}"/> that tries each parser in <paramref name="parsers"/> sequentially
@@ -86,7 +86,7 @@ partial class Parser
     /// Represents a parser that attempts to parse using each of the specified parsers in sequence,
     /// returning the result of the first parser that succeeds.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by each parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by each parser.</typeparam>
     /// <param name="parsers">An array of sub-parsers that are tried in sequence.</param>
     private sealed class ChoiceParser<T>(Parser<T>[] parsers) : Parser<T>
     {
@@ -150,7 +150,7 @@ partial class Parser
     /// free of clutter when parsing is successful.
     /// </para>
     /// </remarks>
-    /// <typeparam name="T">The type of the result produced by each parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by each parser.</typeparam>
     private sealed class DeferredDiagnosticChoiceParser<T> : Parser<T>
     {
         private readonly Parser<T>[] _parsers;

@@ -6,7 +6,7 @@ partial class Parser
     /// Creates an optional parser that always succeeds, returning the parsed value if successful,
     /// or a default value of the <typeparamref name="T"/> if the specified parser fails.
     /// </summary>
-    /// <typeparam name="T">The type of values produced by the initial parser.</typeparam>
+    /// <typeparam name="T">The type of value produced by the initial parser.</typeparam>
     /// <param name="parser">The parser to be treated as optional.
     /// If this parser fails to parse, the method will return the default value of the type.</param>
     /// <returns>
@@ -20,7 +20,7 @@ partial class Parser
     /// Creates an optional parser that always succeeds, returning the parsed value if successful,
     /// or a default value if the specified parser fails.
     /// </summary>
-    /// <typeparam name="T">The type of values produced by the initial parser.</typeparam>
+    /// <typeparam name="T">The type of value produced by the initial parser.</typeparam>
     /// <param name="parser">The parser to be treated as optional.
     /// If this parser fails to parse, the method will return the default value of the type.</param>
     /// <param name="defaultValue">The default value to return if the specified parser fails to parse.</param>
@@ -42,7 +42,7 @@ partial class Parser
     /// Represents a parser that always succeeds, returning the parsed value if successful,
     /// or a default value if the specified parser fails.
     /// </summary>
-    /// <typeparam name="T">The type of values produced by the initial parser.</typeparam>
+    /// <typeparam name="T">The type of value produced by the initial parser.</typeparam>
     /// <param name="parser">The parser to be treated as optional.
     /// If this parser fails to parse, the method will return the default value of the type.</param>
     /// <param name="defaultValue">The default value to return if the initial parser fails to parse.</param>

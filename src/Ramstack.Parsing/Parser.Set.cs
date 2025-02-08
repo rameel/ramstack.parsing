@@ -230,7 +230,7 @@ partial class Parser
     /// Represents a parser that attempts to parse a single character by checking
     /// whether it belongs to a specified Unicode category.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by the parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by the parser.</typeparam>
     /// <param name="categories">The Unicode categories against which a character is matched.</param>
     private sealed class UnicodeCategoryParser<T>(CharClassUnicodeCategory categories) : Parser<T>, ICharClassSupport where T : struct
     {
@@ -280,7 +280,7 @@ partial class Parser
     /// <summary>
     /// Represents a parser that attempts to parse a single character using a character class range searcher.
     /// </summary>
-    /// <typeparam name="T">The type of the result produced by the parser.</typeparam>
+    /// <typeparam name="T">The type of the value produced by the parser.</typeparam>
     /// <typeparam name="TSearcher">The type of the character class range searcher implementing <see cref="ICharClassRangeSearcher"/>.</typeparam>
     private sealed class RangeParser<T, TSearcher> : Parser<T>, ICharClassSupport where T : struct where TSearcher : struct, ICharClassRangeSearcher
     {

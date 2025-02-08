@@ -175,19 +175,19 @@ AMD Ryzen 9 5900X, 1 CPU, 24 logical and 12 physical cores
   DefaultJob : .NET 9.0.1 (9.0.124.61010), X64 RyuJIT AVX2
 
 
-| Method                | Mean        | Error    | StdDev   | Op/s        | Gen0   | Allocated |
-|---------------------- |------------:|---------:|---------:|------------:|-------:|----------:|
-| Ramstack:Large        |  1,636.8 ns | 13.17 ns | 11.68 ns |   610,962.9 |      - |         - |
-| Ramstack:Diag:Large   |  1,772.6 ns |  4.14 ns |  3.67 ns |   564,132.8 | 0.0057 |     104 B |
-| Parlot:Large          |  3,332.9 ns |  9.38 ns |  8.31 ns |   300,039.9 | 0.1984 |    3344 B |
-| Parlot:Compiled:Large |  3,408.1 ns | 14.63 ns | 13.68 ns |   293,415.4 | 0.1984 |    3344 B |
-| Pidgin:Large          | 38,503.3 ns | 90.20 ns | 79.96 ns |    25,971.8 | 0.2441 |    4464 B |
-|                       |             |          |          |             |        |           |
-| Ramstack:Small        |    220.5 ns |  0.71 ns |  0.67 ns | 4,534,869.6 |      - |         - |
-| Ramstack:Diag:Small   |    251.9 ns |  1.06 ns |  0.83 ns | 3,969,360.7 | 0.0062 |     104 B |
-| Parlot:Small          |    407.6 ns |  1.17 ns |  0.98 ns | 2,453,264.6 | 0.0391 |     656 B |
-| Parlot:Compiled:Small |    388.3 ns |  1.91 ns |  1.78 ns | 2,575,382.0 | 0.0391 |     656 B |
-| Pidgin:Small          |  4,285.5 ns | 23.64 ns | 22.11 ns |   233,342.9 | 0.0381 |     736 B |
+| Method                | Mean        | Error     | StdDev    | Op/s        | Gen0   | Allocated |
+|---------------------- |------------:|----------:|----------:|------------:|-------:|----------:|
+| Ramstack:Large        |  1,600.2 ns |   9.54 ns |   7.96 ns |   624,925.9 |      - |         - |
+| Ramstack:Diag:Large   |  1,699.6 ns |   3.53 ns |   3.13 ns |   588,379.8 | 0.0057 |     104 B |
+| Parlot:Large          |  3,520.1 ns |  11.08 ns |  10.37 ns |   284,081.7 | 0.1984 |    3344 B |
+| Parlot:Compiled:Large |  3,356.7 ns |   7.08 ns |   6.27 ns |   297,910.3 | 0.1984 |    3344 B |
+| Pidgin:Large          | 39,197.3 ns | 150.13 ns | 140.43 ns |    25,511.9 | 0.2441 |    4464 B |
+|                       |             |           |           |             |        |           |
+| Ramstack:Small        |    209.5 ns |   0.28 ns |   0.25 ns | 4,772,894.8 |      - |         - |
+| Ramstack:Diag:Small   |    260.6 ns |   0.57 ns |   0.50 ns | 3,838,032.3 | 0.0062 |     104 B |
+| Parlot:Small          |    410.7 ns |   1.46 ns |   1.36 ns | 2,434,653.7 | 0.0391 |     656 B |
+| Parlot:Compiled:Small |    385.1 ns |   1.22 ns |   0.95 ns | 2,596,891.9 | 0.0391 |     656 B |
+| Pidgin:Small          |  4,322.2 ns |  18.28 ns |  17.10 ns |   231,363.9 | 0.0381 |     736 B |
 ```
 
 - `Ramstack` diagnostic messages disabled.

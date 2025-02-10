@@ -20,6 +20,6 @@ partial class Parser
     /// <returns>
     /// A parser that can be recursively defined.
     /// </returns>
-    public static Parser<T> Recursive<T>(Func<DeferredParser<T>, Parser<T>> parser) =>
+    public static Parser<T> Recursive<T>(Func<Parser<T>, Parser<T>> parser) =>
         new DeferredParser<T>(parser);
 }

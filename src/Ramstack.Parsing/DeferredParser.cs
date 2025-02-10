@@ -21,8 +21,8 @@ public sealed class DeferredParser<T> : Parser<T>
     /// using the specified function to define the parser.
     /// </summary>
     /// <param name="parser">A function that accepts a reference to this deferred parser and returns the resulting parser.</param>
-    internal DeferredParser(Func<DeferredParser<T>, Parser<T>> parser) =>
-        Parser = parser(this);
+    internal DeferredParser(Func<Parser<T>, Parser<T>> parser) =>
+        Parser = parser(this) ?? throw new InvalidOperationException("The deferred parser has not been initialized.");
 
     /// <inheritdoc />
     public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value) =>

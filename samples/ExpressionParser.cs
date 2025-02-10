@@ -45,6 +45,6 @@ public static class ExpressionParser
             S.Then(OneOf("+-")),
             (l, r, o) => o == '+' ? l + r : l - r);
 
-        return sum.Before(Eof);
+        return sum.ThenIgnore(Eof);
     }
 }

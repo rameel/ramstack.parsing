@@ -66,7 +66,7 @@ public class SimpleCalcTests
         sum.Parser = Seq(product, Seq(S, OneOf("+-"), product).Many()).Do(Add);
 
         // Sum S EOF
-        var expression = sum.Before(Seq(S, Eof));
+        var expression = sum.ThenIgnore(Seq(S, Eof));
 
         static double Multiply(double v, ArrayList<(Unit, char, double)> results)
         {

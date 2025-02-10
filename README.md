@@ -55,7 +55,7 @@ private static Parser<double> CreateParser()
         S.Then(OneOf("+-")),
         (l, r, op) => op == '+' ? l + r : l - r);
 
-    return sum.Before(Eof);
+    return sum.ThenIgnore(Eof);
 }
 ```
 

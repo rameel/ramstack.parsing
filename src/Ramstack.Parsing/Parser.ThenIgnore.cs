@@ -14,8 +14,8 @@ partial class Parser
     /// A parser that sequentially applies the current parser and a specified second parser,
     /// returning the result of the first parser with ignoring the result of the second.
     /// </returns>
-    public static Parser<TResult> Before<TResult, T>(this Parser<TResult> parser, Parser<T> before) =>
-        new BeforeParser<TResult>(parser, before.Void());
+    public static Parser<TResult> ThenIgnore<TResult, T>(this Parser<TResult> parser, Parser<T> before) =>
+        new ThenIgnoreParser<TResult>(parser, before.Void());
 
     #region Inner type: BeforeParser
 
@@ -26,7 +26,7 @@ partial class Parser
     /// <typeparam name="T">The type of the value produced by the first parser.</typeparam>
     /// <param name="parser">The initial parser whose result is returned.</param>
     /// <param name="before">The subsequent parser, applied after the initial parser.</param>
-    private sealed class BeforeParser<T>(Parser<T> parser, Parser<Unit> before) : Parser<T>
+    private sealed class ThenIgnoreParser<T>(Parser<T> parser, Parser<Unit> before) : Parser<T>
     {
         /// <inheritdoc />
         public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value)
@@ -50,7 +50,7 @@ partial class Parser
 
         /// <inheritdoc />
         protected internal override Parser<Unit> ToVoidParser() =>
-            new BeforeParser<Unit>(parser.Void(), before);
+            new ThenIgnoreParser<Unit>(parser.Void(), before);
     }
 
     #endregion

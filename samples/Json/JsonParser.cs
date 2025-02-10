@@ -1,9 +1,9 @@
-using Ramstack.Parsing;
+﻿using Ramstack.Parsing;
 
 using static Ramstack.Parsing.Literal;
 using static Ramstack.Parsing.Parser;
 
-namespace Samples;
+namespace Samples.Json;
 
 public static class JsonParser
 {
@@ -11,17 +11,20 @@ public static class JsonParser
 
     private static Parser<object?> CreateJsonParser()
     {
-        var value = Deferred<object?>();
+        var value =
+            Deferred<object?>();
 
-        var text = DoubleQuotedString.Do(object? (s) => s);
-        var number = Number<double>().Do(object? (n) => n);
+        var @string =
+            DoubleQuotedString.Do(object? (s) => s);
+
+        var number =
+            Number<double>().Do(object? (n) => n);
 
         var primitive = OneOf(["true", "false", "null"]).Do(s =>
         {
             object? r = null;
             if (s.Length != 0 && s[0] != 'n')
                 r = s[0] == 't';
-
             return r;
         });
 
@@ -36,14 +39,22 @@ public static class JsonParser
             S, DoubleQuotedString, S, L(':'), value
             ).Do((_, name, _, _, v) => KeyValuePair.Create(name, v));
 
-        var map = member
+        var @object = member
             .Separated(Seq(S, L(',')))
             .Between(
                 L('{'),
                 Seq(S, L('}')))
             .Do(object? (members) => new Dictionary<string, object?>(members));
 
-        value.Parser = S.Then(Choice(text, number, primitive, array, map));
+        value.Parser =
+            S.Then(
+                Choice(
+                    @string,
+                    number,
+                    primitive,
+                    array,
+                    @object));
+
         return value;
     }
 }

@@ -10,8 +10,6 @@ The main differences from the original `Tiny-C` are:
 
 ## Tiny-C Grammar
 
-The grammar for `Tiny-C` is as follows:
-
 ```sh
 start:
   = statement S EOF
@@ -32,7 +30,7 @@ S
   ;
 
 EOF
-  = !.
+  = $
   ;
 
 var_expr

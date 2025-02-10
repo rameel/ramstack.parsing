@@ -1,6 +1,6 @@
-﻿# Tiny C
+﻿# Tiny-C
 
-This project implements a parser for the [TinyC](http://www.iro.umontreal.ca/~felipe/IFT2030-Automne2002/Complements/tinyc.c) language, a highly simplified version of `C` designed as an educational tool for learning about compilers.
+This project implements a parser for the [Tiny-C](http://www.iro.umontreal.ca/~felipe/IFT2030-Automne2002/Complements/tinyc.c) language, a highly simplified version of `C` designed as an educational tool for learning about compilers.
 
 All variables are predefined, of integer type, and initialized to zero.
 
@@ -17,7 +17,7 @@ start:
   = statement S EOF
   ;
 
-keywords
+keyword
   = ("while" / "do" / "if" / "else") ![\w]
   ;
 
@@ -25,11 +25,7 @@ number
   = [0-9]+;
 
 variable
-  = !keywords [a-zA-Z_][a-zA-Z0-9_]*;
-
-eq
-  = S "="
-  ;
+  = !keyword [a-zA-Z_][a-zA-Z0-9_]*;
 
 S
   = [ \t\n\r]*
@@ -52,7 +48,7 @@ expr
   ;
 
 assigment_expr
-  = var_expr EQ expr
+  = var_expr S "=" expr
   / ternary_expr
   ;
 

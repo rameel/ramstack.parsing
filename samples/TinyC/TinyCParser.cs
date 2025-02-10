@@ -13,7 +13,7 @@ public static class TinyCParser
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     private static Parser<Node> CreateParser()
     {
-        var keywords = Seq(
+        var keyword = Seq(
             OneOf("while", "do", "if", "else"),
             Not(Set("\\w")));
 
@@ -23,7 +23,7 @@ public static class TinyCParser
             .As("number");
 
         var variable = Seq(
-            Not(keywords),
+            Not(keyword),
             Set("a-z"),
             Set("a-zA-Z_0-9").ZeroOrMore()
             ).Map(Identifier).As("variable");

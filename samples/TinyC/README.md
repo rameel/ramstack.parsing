@@ -1,0 +1,149 @@
+﻿# Tiny C
+
+This project implements a parser for the [TinyC](http://www.iro.umontreal.ca/~felipe/IFT2030-Automne2002/Complements/tinyc.c) language, a highly simplified version of `C` designed as an educational tool for learning about compilers.
+
+All variables are predefined, of integer type, and initialized to zero.
+
+The main differences from the original `Tiny-C` are:
+- Variable names are not limited to single letters.
+- Additional operators are supported.
+
+## Tiny-C Grammar
+
+The grammar for `Tiny-C` is as follows:
+
+```sh
+start:
+  = statement S EOF
+  ;
+
+keywords
+  = ("while" / "do" / "if" / "else") ![\w]
+  ;
+
+number
+  = [0-9]+;
+
+variable
+  = !keywords [a-zA-Z_][a-zA-Z0-9_]*;
+
+eq
+  = S "="
+  ;
+
+S
+  = [ \t\n\r]*
+  ;
+
+EOF
+  = !.
+  ;
+
+var_expr
+  = S variable
+  ;
+
+number_expr
+  = S number
+  ;
+
+expr
+  = assigment_expr
+  ;
+
+assigment_expr
+  = var_expr EQ expr
+  / ternary_expr
+  ;
+
+ternary_expr
+  = or_expr (S "?" expr S ":" ternary_expr)?
+  ;
+
+or_expr
+  = and_expr (S "||" and_expr)*
+  ;
+
+and_expr
+  = inlcusive_or_expr (S "&&" inlcusive_or_expr)*
+  ;
+
+inlcusive_or_expr
+  = exlcusive_or_expr (S "|" exlcusive_or_expr)*
+  ;
+
+exlcusive_or_expr
+  = binary_and_expr (S "^" binary_and_expr)*
+  ;
+
+binary_and_expr
+  = eq_expr (S "&" eq_expr)*
+  ;
+
+eq_expr
+  = relational_expr (S ("==" / "!=") relational_expr)*
+  ;
+
+relational_expr
+  = shift_expr (S ("<" / "<=" / ">" / ">=") shift_expr)*
+  ;
+
+shift_expr
+  = sum_expr (S ("<<" / ">>") sum_expr)*
+  ;
+
+sum_expr
+  = mul_expr (S [+-] mul_expr)*
+  ;
+
+mul_expr
+  = unary_expr (S [*/%] unary_expr)*
+  ;
+
+unary_expr
+  = [-+~!]? primary_expr
+  ;
+
+primary_expr
+  = parenthesis
+  / var_expr
+  / number_expr
+  ;
+
+parenthesis
+  = S "(" expr S ")"
+  ;
+
+statement
+  = if_statement
+  / while_statement
+  / do_while_statement
+  / block_statement
+  / expr_statement
+  / empty_statement
+  ;
+
+if_statement
+  = S "if" S "(" expr S ")" statement (S "else" statement)?
+  ;
+
+while_statement
+  = S "while" S "(" expr S ")" statement
+  ;
+
+do_while_statement
+  = S "do" statement S "while" S "(" expr S ")" S ";"
+  ;
+
+block_statement
+  = S "{" statement* S "}"
+  ;
+
+expr_statement
+  = expr S ";"
+  ;
+
+empty_statement
+  = S ";"
+  ;
+```

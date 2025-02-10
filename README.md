@@ -29,7 +29,7 @@ private static Parser<double> CreateParser()
     // Primary     :  Parenthesis / Value
     // Parenthesis :  S '(' Sum S ')'
     // Value       :  S Number
-    // S           :  Whitespace*
+    // S           :  [ \r\n\t]*
 
     var sum = Deferred<double>();
     var value = S.Then(Literal.Number<double>());

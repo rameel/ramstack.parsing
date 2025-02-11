@@ -32,7 +32,7 @@ public abstract record Node
                     break;
 
                 case NumberNode(Value: var number):
-                    sb.Append(number.ToString());
+                    sb.Append(number);
                     break;
 
                 case IfNode c:
@@ -43,10 +43,10 @@ public abstract record Node
 
                     Print(c.IfTrue, sb);
 
-                    if (c.IfFalse is BlockNode { Statements: [IfNode @else] })
+                    if (c.IfFalse is BlockNode { Statements: [IfNode ifElse] })
                     {
                         sb.Append("else ");
-                        Print(@else, sb);
+                        Print(ifElse, sb);
                     }
                     else if (c.IfFalse is not BlockNode([]))
                     {
@@ -58,11 +58,17 @@ public abstract record Node
 
                 case TernaryNode c:
                     Print(c.Test, sb);
-                    sb.Append(" ? (");
+                    sb.IncrementIndent();
+                    sb
+                        .AppendLine()
+                        .Append("? ");
                     Print(c.IfTrue, sb);
-                    sb.Append(") : (");
+
+                    sb
+                        .AppendLine()
+                        .Append(": ");
                     Print(c.IfFalse, sb);
-                    sb.Append(')');
+                    sb.DecrementIndent();
                     break;
 
                 case WhileLoopNode w:
@@ -85,6 +91,13 @@ public abstract record Node
                     sb.Append(u.Operator);
                     sb.Append('(');
                     Print(u.Operand, sb);
+                    sb.Append(')');
+                    break;
+
+                case BinaryNode(Operator: "=", var variable, var expr):
+                    Print(variable, sb);
+                    sb.Append(" = (");
+                    Print(expr, sb);
                     sb.Append(')');
                     break;
 

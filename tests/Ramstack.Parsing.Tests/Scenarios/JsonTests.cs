@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-using Samples;
+using Samples.Json;
 
 namespace Ramstack.Parsing.Scenarios;
 

@@ -19,7 +19,7 @@ partial class LiteralTests
     [TestCase(@"\uDCBA", '\uDCBA')]
     public void UnicodeEscapeSequenceTest(string input, char symbol)
     {
-        var parser = UnicodeEscapeSequence.Before(Eof);
+        var parser = UnicodeEscapeSequence.ThenIgnore(Eof);
         Assert.That(parser.Parse(input).Success, Is.True);
         Assert.That(parser.Map(m => (m.Index, m.Length)).Parse(input).Value, Is.EqualTo((0, 6)));
         Assert.That(parser.Parse(input).Value, Is.EqualTo(symbol));
@@ -42,7 +42,7 @@ partial class LiteralTests
     [TestCase(@"\u000я")]
     public void UnicodeEscapeSequence_InvalidInput(string input)
     {
-        var parser = UnicodeEscapeSequence.Before(Eof);
+        var parser = UnicodeEscapeSequence.ThenIgnore(Eof);
         Assert.That(parser.Parse(input).Success, Is.False);
     }
 }

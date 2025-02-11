@@ -36,49 +36,67 @@ public class SimpleCalcTests
     [TestCase("()",    0, "(1:2) Expected [0-9] or '('")]
     public void SimpleCalcTest(string text, double number, string error = "")
     {
-        // Expr        :  Sum S EOF
-        // Sum         :  Product (S [+-] Product)*
-        // Product     :  Primary (S [*/] Primary)*
+        // Expr        :  S Sum EOF
+        // Sum         :  Product ([+-] S Product)*
+        // Product     :  Primary ([*/] S Primary)*
         // Primary     :  Parenthesis / Value
-        // Parenthesis :  S '(' Sum S ')'
-        // Value       :  S Number
+        // Parenthesis :  '(' S Sum ')' S
+        // Value       :  Number S
 
         var sum = Deferred<double>();
 
-        // S ['0'..'9']+ ('.' ['0'..'9']+)?
-        var digit = Set("0-9");
-        var value = S.Then(
+        var digit =
+            Set("0-9");
+
+        var value =
             Seq(
                 digit.OneOrMore(),
-                Seq(L('.'), digit.OneOrMore()).Optional())
-            ).Map(m => double.Parse(m, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture));
+                Seq(L('.'), digit.OneOrMore()).Optional()
+            ).ThenIgnore(S).Map(m =>
+                double.Parse(m, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture));
 
-        // S '(' Sum S ')'
-        var parenthesis = sum.Between(Seq(S, L('(')), Seq(S, L(')')));
+        var parenthesis =
+            sum.Between(
+                Seq(L('('), S),
+                Seq(L(')'), S));
 
-        // value / parenthesis
-        var primary = Choice(value, parenthesis);
+        var primary =
+            Choice(value, parenthesis);
 
-        // Primary (S [*/] Primary)*
-        var product = Seq(primary, Seq(S, OneOf("*/"), primary).Many()).Do(Multiply);
+        var product =
+            Seq(
+                primary,
+                Seq(
+                    OneOf("*/"),
+                    S,
+                    primary
+                ).Many()
+            ).Do(Multiply);
 
-        // Product (S [+-] Product)*
-        sum.Parser = Seq(product, Seq(S, OneOf("+-"), product).Many()).Do(Add);
+        sum.Parser =
+            Seq(
+                product,
+                Seq(
+                    OneOf("+-"),
+                    S,
+                    product
+                ).Many()
+            ).Do(Add);
 
-        // Sum S EOF
-        var expression = sum.Before(Seq(S, Eof));
+        var expression =
+            sum.Between(S, Eof);
 
-        static double Multiply(double v, ArrayList<(Unit, char, double)> results)
+        static double Multiply(double v, ArrayList<(char, Unit, double)> results)
         {
-            foreach (var (_, op, d) in results)
+            foreach (var (op, _, d) in results)
                 v = op == '*' ? v * d : v / d;
 
             return v;
         }
 
-        static double Add(double v, ArrayList<(Unit, char, double)> results)
+        static double Add(double v, ArrayList<(char, Unit, double)> results)
         {
-            foreach (var (_, op, d) in results)
+            foreach (var (op, _, d) in results)
                 v = op == '+' ? v + d : v - d;
 
             return v;

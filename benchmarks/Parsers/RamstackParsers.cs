@@ -7,8 +7,8 @@ public static class RamstackParsers
 {
     public static readonly Parser<string> EmailParser = CreateEmailParser();
     public static readonly Parser<Unit> EmailVoidParser = EmailParser.Void();
-    public static readonly Parser<double> ExpressionParser = Samples.ExpressionParser.Parser;
-    public static readonly Parser<object?> JsonParser = Samples.JsonParser.Parser;
+    public static readonly Parser<double> ExpressionParser = Samples.CalcExpr.ExpressionParser.Parser;
+    public static readonly Parser<object?> JsonParser = Samples.Json.JsonParser.Parser;
 
     private static Parser<string> CreateEmailParser()
     {

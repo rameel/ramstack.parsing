@@ -5,9 +5,9 @@ namespace Ramstack.Parsing;
 partial class ParsersTests
 {
     [Test]
-    public void BeforeTest()
+    public void ThenIgnoreTest()
     {
-        var parser = Any.Before(Any);
+        var parser = Any.ThenIgnore(Any);
 
         Assert.That(parser.Parse("12").Success, Is.True);
         Assert.That(parser.Map(m => (m.Index, m.Length)).Parse("12").Value, Is.EqualTo((0, 1)));

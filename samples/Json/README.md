@@ -10,27 +10,19 @@ start
   ;
 
 value
-  = S (
-    object
-    / array
-    / string
-    / number
-    / "true"
-    / "false"
-    / "null"
-    )
+  = (object / array / string / number / "true" / "false" / "null") S
   ;
 
 object
-  = S "{" (member (S "," S member)*)? S "}"
+  = "{" S (member ("," S member)*)? "}" S
   ;
 
 member
-  = string S ":" value
+  = string ":" S value
   ;
 
 array
-  = S "[" (value (S "," value)*)? S "]"
+  = "[" S (value ("," S value)*)? "]" S
   ;
 
 S

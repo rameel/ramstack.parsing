@@ -22,40 +22,40 @@ private static Parser<double> CreateParser()
 {
     // Grammar:
     // ----------------------------------------
-    // Start       :  Sum $
-    // Sum         :  Product (S [+-] Product)*
-    // Product     :  Unary (S [*/] Unary)*
-    // Unary       :  S '-'? Primary
+    // Start       :  S Sum $
+    // Sum         :  Product ([+-] S Product)*
+    // Product     :  Unary ([*/] S Unary)*
+    // Unary       :  '-'? S Primary
     // Primary     :  Parenthesis / Value
-    // Parenthesis :  S '(' Sum S ')'
-    // Value       :  S Number
+    // Parenthesis :  '(' S Sum ')' S
+    // Value       :  Number S
     // S           :  [ \r\n\t]*
 
     var sum = Deferred<double>();
-    var value = S.Then(Literal.Number<double>());
+    var value = Literal.Number<double>().ThenIgnore(S);
 
     var parenthesis = sum.Between(
-        Seq(S, L('(')),
-        Seq(S, L(')'))
+        Seq(L('('), S),
+        Seq(L(')'), S)
         );
 
     var primary = parenthesis.Or(value);
 
     var unary = Seq(
-        S,
         L('-').Optional(),
+        S,
         primary
-        ).Do((_, u, d) => u.HasValue ? -d : d);
+        ).Do((u, _, d) => u.HasValue ? -d : d);
 
     var product = unary.Fold(
-        S.Then(OneOf("*/")),
+        OneOf("*/").ThenIgnore(S),
         (l, r, op) => op == '*' ? l * r : l / r);
 
     sum.Parser = product.Fold(
-        S.Then(OneOf("+-")),
+        OneOf("+-").ThenIgnore(S),
         (l, r, op) => op == '+' ? l + r : l - r);
 
-    return sum.ThenIgnore(Eof);
+    return sum.Between(S, Eof);
 }
 ```
 

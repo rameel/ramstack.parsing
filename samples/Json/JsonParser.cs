@@ -29,32 +29,32 @@ public static class JsonParser
         });
 
         var array = value
-            .Separated(Seq(S, L(',')))
+            .Separated(Seq(L(','), S))
             .Between(
-                L('['),
-                Seq(S, L(']')))
+                Seq(L('['), S),
+                Seq(L(']'), S))
             .Do(object? (list) => list);
 
         var member = Seq(
-            S, DoubleQuotedString, S, L(':'), value
-            ).Do((_, name, _, _, v) => KeyValuePair.Create(name, v));
+            DoubleQuotedString, S, L(':'), S, value
+            ).Do((name, _, _, _, v) => KeyValuePair.Create(name, v));
 
         var @object = member
-            .Separated(Seq(S, L(',')))
+            .Separated(Seq(L(','), S))
             .Between(
-                L('{'),
-                Seq(S, L('}')))
+                Seq(L('{'), S),
+                Seq(L('}'), S))
             .Do(object? (members) => new Dictionary<string, object?>(members));
 
         value.Parser =
-            S.Then(
-                Choice(
-                    @string,
-                    number,
-                    primitive,
-                    array,
-                    @object));
+            Choice(
+                @string,
+                number,
+                primitive,
+                array,
+                @object
+                ).ThenIgnore(S);
 
-        return value;
+        return S.Then(value);
     }
 }

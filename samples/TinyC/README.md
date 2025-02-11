@@ -12,7 +12,7 @@ The main differences from the original `Tiny-C` are:
 
 ```sh
 start:
-  = statement S EOF
+  = S statement EOF
   ;
 
 keyword
@@ -34,11 +34,11 @@ EOF
   ;
 
 var_expr
-  = S variable
+  = variable S
   ;
 
 number_expr
-  = S number
+  = number S
   ;
 
 expr
@@ -46,56 +46,56 @@ expr
   ;
 
 assigment_expr
-  = var_expr S "=" expr
+  = var_expr "=" S expr
   / ternary_expr
   ;
 
 ternary_expr
-  = or_expr (S "?" expr S ":" ternary_expr)?
+  = or_expr ("?" S expr ":" S ternary_expr)?
   ;
 
 or_expr
-  = and_expr (S "||" and_expr)*
+  = and_expr ("||" S and_expr)*
   ;
 
 and_expr
-  = inlcusive_or_expr (S "&&" inlcusive_or_expr)*
+  = inclusive_or_expr ("&&" S inclusive_or_expr)*
   ;
 
-inlcusive_or_expr
-  = exlcusive_or_expr (S "|" exlcusive_or_expr)*
+inclusive_or_expr
+  = exclusive_or_expr ("|" S exclusive_or_expr)*
   ;
 
-exlcusive_or_expr
-  = binary_and_expr (S "^" binary_and_expr)*
+exclusive_or_expr
+  = binary_and_expr ("^" S binary_and_expr)*
   ;
 
 binary_and_expr
-  = eq_expr (S "&" eq_expr)*
+  = eq_expr ("&" S eq_expr)*
   ;
 
 eq_expr
-  = relational_expr (S ("==" / "!=") relational_expr)*
+  = relational_expr (("==" / "!=") S relational_expr)*
   ;
 
 relational_expr
-  = shift_expr (S ("<" / "<=" / ">" / ">=") shift_expr)*
+  = shift_expr (("<" / "<=" / ">" / ">=") S shift_expr)*
   ;
 
 shift_expr
-  = sum_expr (S ("<<" / ">>") sum_expr)*
+  = sum_expr (("<<" / ">>") S sum_expr)*
   ;
 
 sum_expr
-  = mul_expr (S [+-] mul_expr)*
+  = mul_expr ([+-] S mul_expr)*
   ;
 
 mul_expr
-  = unary_expr (S [*/%] unary_expr)*
+  = unary_expr ([*/%] S unary_expr)*
   ;
 
 unary_expr
-  = [-+~!]? primary_expr
+  = [-+~!]? S primary_expr
   ;
 
 primary_expr
@@ -105,7 +105,7 @@ primary_expr
   ;
 
 parenthesis
-  = S "(" expr S ")"
+  = "(" S expr ")" S
   ;
 
 statement
@@ -118,26 +118,26 @@ statement
   ;
 
 if_statement
-  = S "if" S "(" expr S ")" statement (S "else" statement)?
+  = "if" S "(" S expr ")" S statement ("else" S statement)?
   ;
 
 while_statement
-  = S "while" S "(" expr S ")" statement
+  = "while" S "(" S expr ")" S statement
   ;
 
 do_while_statement
-  = S "do" statement S "while" S "(" expr S ")" S ";"
+  = "do" S statement "while" S "(" S expr ")" S ";" S
   ;
 
 block_statement
-  = S "{" statement* S "}"
+  = "{" S statement* "}" S
   ;
 
 expr_statement
-  = expr S ";"
+  = expr ";" S
   ;
 
 empty_statement
-  = S ";"
+  = ";" S
   ;
 ```

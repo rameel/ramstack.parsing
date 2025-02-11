@@ -66,8 +66,8 @@ public static class TinyCParser
                 var_expr);
 
         var unary_expr = Seq(
-            S,
             OneOf("-+~!").Optional(),
+            S,
             primary_expr
             ).Do(CreateUnary);
 
@@ -126,9 +126,11 @@ public static class TinyCParser
                 Seq(var_expr, eq, expr).Do(CreateAssign),
                 ternary_expr);
 
-        expr.Parser = assignment_expr;
+        expr.Parser =
+            assignment_expr;
 
-        var statement = Deferred<Node>();
+        var statement =
+            Deferred<Node>();
 
         var else_clause =
             Seq(
@@ -190,7 +192,7 @@ public static class TinyCParser
         static Node Identifier(Match m) =>
             Node.Variable(m.ToString());
 
-        static Node CreateUnary(Unit _, OptionalValue<char> u, Node operand) =>
+        static Node CreateUnary(OptionalValue<char> u, Unit _, Node operand) =>
             u.HasValue ? Node.Unary(u.Value, operand) : operand;
 
         static Node CreateBinary(Node l, Node r, char o) =>

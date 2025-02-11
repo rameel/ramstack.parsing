@@ -83,7 +83,9 @@ public abstract record Node
 
                 case UnaryNode u:
                     sb.Append(u.Operator);
+                    sb.Append('(');
                     Print(u.Operand, sb);
+                    sb.Append(')');
                     break;
 
                 case BinaryNode b:

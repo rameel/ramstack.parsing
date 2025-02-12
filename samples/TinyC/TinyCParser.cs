@@ -13,51 +13,78 @@ public static class TinyCParser
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     private static Parser<Node> CreateParser()
     {
-        var keyword = Seq(
-            OneOf("while", "do", "if", "else"),
-            Not(Set("\\w")));
+        var keyword =
+            Seq(
+                OneOf("while", "do", "if", "else"),
+                Not(Set("\\w")));
 
-        var number = Set("0-9")
-            .OneOrMore()
-            .Map(Node (m) => Node.Number(int.Parse(m)))
-            .As("number");
+        var number =
+            Set("0-9")
+                .OneOrMore()
+                .Map(Node (m) => Node.Number(int.Parse(m)))
+                .As("number");
 
-        var variable = Seq(
-            Not(keyword),
-            Set("a-z"),
-            Set("a-zA-Z_0-9").ZeroOrMore()
-            ).Map(Identifier).As("variable");
+        var variable =
+            Seq(
+                Not(keyword),
+                Set("a-z"),
+                Set("a-zA-Z_0-9").ZeroOrMore()
+                ).Map(Identifier).As("variable");
+
+        var block_comment =
+            Seq(
+                L("/*"),
+                Choice(
+                    Any,
+                    Eof.Then(Error<char>("'*/'"))
+                ).Until(L("*/")),
+                L("*/")
+            ).Void();
+
+        var line_comment =
+            Seq(
+                L("//"),
+                Any.Until(Eol),
+                Eol
+            ).Void();
+
+        var ws =
+            Choice(
+                block_comment,
+                line_comment,
+                S
+            ).ZeroOrMore().Void();
 
         var semicolon =
-            Seq(L(';'), S).Void();
+            Seq(L(';'), ws).Void();
 
         var eq =
-            Seq(L('='), S).Void();
+            Seq(L('='), ws).Void();
 
         var if_keyword =
-            Seq(L("if"), S).Void();
+            Seq(L("if"), ws).Void();
 
         var else_keyword =
-            Seq(L("else"), S).Void();
+            Seq(L("else"), ws).Void();
 
         var while_keyword =
-            Seq(L("while"), S).Void();
+            Seq(L("while"), ws).Void();
 
         var do_keyword =
-            Seq(L("do"), S).Void();
+            Seq(L("do"), ws).Void();
 
         var expr = Deferred<Node>();
 
         var number_expr =
-            number.ThenIgnore(S);
+            number.ThenIgnore(ws);
 
         var var_expr =
-            variable.ThenIgnore(S);
+            variable.ThenIgnore(ws);
 
         var parenthesis =
             expr.Between(
-                Seq(L('('), S),
-                Seq(L(')'), S));
+                Seq(L('('), ws),
+                Seq(L(')'), ws));
 
         var primary_expr =
             Choice(
@@ -67,48 +94,48 @@ public static class TinyCParser
 
         var unary_expr = Seq(
             OneOf("-+~!").Optional(),
-            S,
+            ws,
             primary_expr
             ).Do(CreateUnary);
 
         var mul_expr = unary_expr.Fold(
-            OneOf("*/%").ThenIgnore(S),
+            OneOf("*/%").ThenIgnore(ws),
             CreateBinary);
 
         var sum_expr = mul_expr.Fold(
-            OneOf("+-").ThenIgnore(S),
+            OneOf("+-").ThenIgnore(ws),
             CreateBinary);
 
         var shift_expr = sum_expr.Fold(
-            OneOf("<<", ">>").ThenIgnore(S),
+            OneOf("<<", ">>").ThenIgnore(ws),
             (l, r, o) => Node.Binary(o, l, r));
 
         var relational_expr = shift_expr.Fold(
-            OneOf("<", "<=", ">", ">=").ThenIgnore(S),
+            OneOf("<", "<=", ">", ">=").ThenIgnore(ws),
             (l, r, o) => Node.Binary(o, l, r));
 
         var eq_expr = relational_expr.Fold(
-            OneOf("==", "!=").ThenIgnore(S),
+            OneOf("==", "!=").ThenIgnore(ws),
             (l, r, o) => Node.Binary(o, l, r));
 
         var binary_and_expr = eq_expr.Fold(
-            L('&').ThenIgnore(S),
+            L('&').ThenIgnore(ws),
             (l, r, _) => Node.Binary("&", l, r));
 
         var exclusive_or_expr = binary_and_expr.Fold(
-            L('^').ThenIgnore(S),
+            L('^').ThenIgnore(ws),
             (l, r, _) => Node.Binary("^", l, r));
 
         var inclusive_or_expr = exclusive_or_expr.Fold(
-            L('|').ThenIgnore(S),
+            L('|').ThenIgnore(ws),
             (l, r, _) => Node.Binary("|", l, r));
 
         var and_expr = inclusive_or_expr.Fold(
-            L("&&").ThenIgnore(S),
+            L("&&").ThenIgnore(ws),
             (l, r, _) => Node.Binary("&&", l, r));
 
         var or_expr = and_expr.Fold(
-            L("||").ThenIgnore(S),
+            L("||").ThenIgnore(ws),
             (l, r, _) => Node.Binary("||", l, r));
 
         var ternary_expr = Deferred<Node>();
@@ -116,8 +143,8 @@ public static class TinyCParser
             Seq(
                 or_expr,
                 Seq(
-                    L('?'), S, expr,
-                    L(':'), S, ternary_expr
+                    L('?'), ws, expr,
+                    L(':'), ws, ternary_expr
                     ).Optional())
                 .Do(CreateTernary);
 
@@ -150,12 +177,12 @@ public static class TinyCParser
             statement
                 .ZeroOrMore()
                 .Between(
-                    Seq(L('{'), S),
-                    Seq(L('}'), S))
+                    Seq(L('{'), ws),
+                    Seq(L('}'), ws))
                 .Do(CreateBlock);
 
         var empty_statement =
-            Seq(L(';'), S
+            Seq(L(';'), ws
             ).Map(_ => Node.Empty());
 
         var while_statement =
@@ -187,7 +214,7 @@ public static class TinyCParser
             );
 
         return statement
-            .Between(S, Eof);
+            .Between(ws, Eof);
 
         static Node Identifier(Match m) =>
             Node.Variable(m.ToString());

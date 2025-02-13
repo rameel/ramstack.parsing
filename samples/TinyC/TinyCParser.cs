@@ -31,7 +31,7 @@ public static class TinyCParser
                 Set("a-zA-Z_0-9").ZeroOrMore()
                 ).Map(Identifier).As("variable");
 
-        var block_comment =
+        var multiline_comment =
             Seq(
                 L("/*"),
                 Choice(
@@ -41,7 +41,7 @@ public static class TinyCParser
                 L("*/")
             ).Void();
 
-        var line_comment =
+        var single_comment =
             Seq(
                 L("//"),
                 Any.Until(Eol),
@@ -50,8 +50,8 @@ public static class TinyCParser
 
         var ws =
             Choice(
-                block_comment,
-                line_comment,
+                single_comment,
+                multiline_comment,
                 S
             ).ZeroOrMore().Void();
 

@@ -7,7 +7,7 @@ public ref struct ParseContext
 {
     private readonly ReadOnlySpan<char> _source;
     private (int Index, int Length) _match;
-    private ErrorSet _errors;
+    private ErrorSet _diagnostics;
     private int _position;
 
     /// <summary>
@@ -58,7 +58,7 @@ public ref struct ParseContext
     public ParseContext(ReadOnlySpan<char> source)
     {
         _source = source;
-        _errors = new ErrorSet();
+        _diagnostics = new ErrorSet();
     }
 
     /// <summary>
@@ -117,37 +117,37 @@ public ref struct ParseContext
     }
 
     /// <summary>
-    /// Adds an error message for an expected sequence at the current position.
-    /// This error is added only if diagnostics are enabled.
+    /// Reports a missing expected sequence or rule at the current position.
+    /// The expected sequence or rule is added only if diagnostics are enabled.
     /// </summary>
-    /// <param name="error">The error message to add.</param>
-    public void AddError(string? error)
+    /// <param name="expected">The expected sequence or rule.</param>
+    public void ReportExpected(string? expected)
     {
-        if (DiagnosticState == DiagnosticState.Normal && error is not null)
-            _errors.AddError(_position, error);
+        if (DiagnosticState == DiagnosticState.Normal && expected is not null)
+            _diagnostics.ReportExpected(_position, expected);
     }
 
     /// <summary>
-    /// Adds an error message for an expected sequence at the specified position.
-    /// This error is added only if diagnostics are enabled.
+    /// Reports a missing expected sequence or rule at the specified position.
+    /// The expected sequence or rule is added only if diagnostics are enabled.
     /// </summary>
-    /// <param name="error">The error message to add.</param>
     /// <param name="index">The position in the source text where the error occurred.</param>
-    internal void AddError(string? error, int index)
+    /// <param name="expected">The expected sequence or rule.</param>
+    internal void ReportExpected(int index, string? expected)
     {
-        if (DiagnosticState == DiagnosticState.Normal && error is not null)
-            _errors.AddError(index, error);
+        if (DiagnosticState == DiagnosticState.Normal && expected is not null)
+            _diagnostics.ReportExpected(index, expected);
     }
 
     /// <summary>
-    /// Adds multiple error messages for expected sequences at the current position.
-    /// These errors are added only if diagnostics are enabled.
+    /// Reports multiple missing expected sequences or rules at the current position.
+    /// The expected sequences or rules are added only if diagnostics are enabled.
     /// </summary>
-    /// <param name="errors">An array of error messages to add.</param>
-    public void AddErrors(string[] errors)
+    /// <param name="expected">An array of expected sequences or rules.</param>
+    public void ReportExpected(string[] expected)
     {
         if (DiagnosticState == DiagnosticState.Normal)
-            _errors.AddErrors(_position, errors);
+            _diagnostics.ReportExpected(_position, expected);
     }
 
     /// <summary>
@@ -185,8 +185,8 @@ public ref struct ParseContext
     /// <para>
     /// Consider, for example, a grammar for parsing a float value:
     /// <code>
-    /// // ('+' / '-')? [0-9]+   (.[0-9]+)?
-    /// // sign         integer  fraction
+    /// // ('+' / '-')? [0-9]+  (.[0-9]+)?
+    /// // [   sign   ] [int ]  [fraction]
     ///
     /// var parser = Seq(
     ///     Set("+-").Optional(),       // sign
@@ -195,7 +195,7 @@ public ref struct ParseContext
     ///         L('.'),
     ///         Set("0-9").OneOrMore()
     ///     ).Optional()                // fraction
-    /// ).Name("float");
+    /// ).As("float");
     /// </code>
     ///
     /// We can visualize this parser, where <c>float</c> is the top-level
@@ -263,7 +263,7 @@ public ref struct ParseContext
 
     /// <inheritdoc />
     public readonly override string ToString() =>
-        GenerateErrorMessage(_source, _errors.Index, _errors.ToString());
+        GenerateErrorMessage(_source, _diagnostics.Index, _diagnostics.ToString());
 
     /// <summary>
     /// Generates a formatted error message that includes line and column information.

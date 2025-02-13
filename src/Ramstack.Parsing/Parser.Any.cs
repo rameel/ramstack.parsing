@@ -34,7 +34,7 @@ partial class Parser
                 return true;
             }
 
-            context.AddError(Name);
+            context.ReportExpected(Name);
 
             value = default;
             return false;

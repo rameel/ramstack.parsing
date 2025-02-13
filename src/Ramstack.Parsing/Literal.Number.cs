@@ -296,7 +296,7 @@ partial class Literal
             }
 
             context.RestorePosition(bookmark);
-            context.AddError(Name);
+            context.ReportExpected(Name);
             value = default;
             return false;
         }

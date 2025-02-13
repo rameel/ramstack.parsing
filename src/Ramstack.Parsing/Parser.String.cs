@@ -137,7 +137,7 @@ partial class Parser
             }
 
             value = default;
-            context.AddError(Name);
+            context.ReportExpected(Name);
 
             return false;
         }
@@ -187,7 +187,7 @@ partial class Parser
             }
 
             value = default;
-            context.AddError(Name);
+            context.ReportExpected(Name);
             return false;
         }
 
@@ -258,10 +258,10 @@ partial class Parser
             switch (Name)
             {
                 case not null:
-                    context.AddError(Name);
+                    context.ReportExpected(Name);
                     break;
                 default:
-                    context.AddErrors(_expected);
+                    context.ReportExpected(_expected);
                     break;
             }
 
@@ -337,10 +337,10 @@ partial class Parser
             switch (Name)
             {
                 case not null:
-                    context.AddError(Name);
+                    context.ReportExpected(Name);
                     break;
                 default:
-                    context.AddErrors(_expected);
+                    context.ReportExpected(_expected);
                     break;
             }
 

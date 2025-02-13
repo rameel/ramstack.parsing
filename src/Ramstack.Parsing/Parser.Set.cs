@@ -256,7 +256,7 @@ partial class Parser
             }
 
             value = default;
-            context.AddError(Name);
+            context.ReportExpected(Name);
             return false;
         }
 
@@ -324,7 +324,7 @@ partial class Parser
             }
 
             value = default;
-            context.AddError(Name);
+            context.ReportExpected(Name);
             return false;
         }
 
@@ -633,6 +633,10 @@ partial class Parser
                             return true;
                     }
                 }
+            }
+            else
+            {
+                throw new NotSupportedException();
             }
 
             return false;

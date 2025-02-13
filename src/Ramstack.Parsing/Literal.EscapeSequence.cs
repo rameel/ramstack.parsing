@@ -182,7 +182,7 @@ partial class Literal
             }
 
             value = default;
-            context.AddError(Name);
+            context.ReportExpected(Name);
             return false;
         }
 

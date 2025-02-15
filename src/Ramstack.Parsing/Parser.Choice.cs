@@ -199,11 +199,11 @@ partial class Parser
             switch (Name)
             {
                 case not null:
-                    context.AddError(Name);
+                    context.ReportExpected(Name);
                     break;
 
                 default:
-                    context.AddErrors(_expected);
+                    context.ReportExpected(_expected);
                     break;
             }
 

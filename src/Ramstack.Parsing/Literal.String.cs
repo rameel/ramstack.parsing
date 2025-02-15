@@ -42,7 +42,7 @@ partial class Literal
             var count = TryParseImpl(context.Remaining, out value);
             if (count == 0)
             {
-                context.AddError(Name);
+                context.ReportExpected(Name);
             }
             else
             {

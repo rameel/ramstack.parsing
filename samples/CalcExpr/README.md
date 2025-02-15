@@ -6,7 +6,7 @@ This project implements a simple mathematical expression parser.
 
 ```sh
 start
-  =  sum_expr EOF
+  = S sum_expr EOF
   ;
 
 sum_expr
@@ -37,7 +37,7 @@ S
   = [ \t\r\n]*
   ;
 
-EOF:
+EOF
   = $
   ;
 ```

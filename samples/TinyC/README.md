@@ -1,4 +1,4 @@
-﻿# Tiny-C
+# Tiny-C
 
 This project implements a parser for the [Tiny-C](http://www.iro.umontreal.ca/~felipe/IFT2030-Automne2002/Complements/tinyc.c) language, a highly simplified version of `C` designed as an educational tool for learning about compilers.
 
@@ -11,7 +11,7 @@ The main differences from the original `Tiny-C` are:
 ## Tiny-C Grammar
 
 ```sh
-start:
+start
   = S statement EOF
   ;
 
@@ -20,10 +20,12 @@ keyword
   ;
 
 number
-  = [0-9]+;
+  = [0-9]+
+  ;
 
 variable
-  = !keyword [a-zA-Z_][a-zA-Z0-9_]*;
+  = !keyword [a-zA-Z_][a-zA-Z0-9_]*
+  ;
 
 S
   = [ \t\n\r]*
@@ -43,34 +45,34 @@ number_expr
 
 expr
   = assigment_expr
+  / ternary_expr
   ;
 
 assigment_expr
   = var_expr "=" S expr
-  / ternary_expr
   ;
 
 ternary_expr
-  = or_expr ("?" S expr ":" S ternary_expr)?
+  = logical_or_expr ("?" S expr ":" S ternary_expr)?
   ;
 
-or_expr
-  = and_expr ("||" S and_expr)*
+logical_or_expr
+  = logical_and_expr ("||" S logical_and_expr)*
   ;
 
-and_expr
-  = inclusive_or_expr ("&&" S inclusive_or_expr)*
+logical_and_expr
+  = bitwise_or_expr ("&&" S bitwise_or_expr)*
   ;
 
-inclusive_or_expr
-  = exclusive_or_expr ("|" S exclusive_or_expr)*
+bitwise_or_expr
+  = bitwise_xor_expr ("|" S bitwise_xor_expr)*
   ;
 
-exclusive_or_expr
-  = binary_and_expr ("^" S binary_and_expr)*
+bitwise_xor_expr
+  = bitwise_and_expr ("^" S bitwise_and_expr)*
   ;
 
-binary_and_expr
+bitwise_and_expr
   = eq_expr ("&" S eq_expr)*
   ;
 

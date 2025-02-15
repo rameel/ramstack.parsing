@@ -1,7 +1,7 @@
 namespace Ramstack.Parsing;
 
 /// <summary>
-/// Represents a set of parsing errors and the positions at which they occurred in the source text.
+/// Represents a collection of parsing errors in the source text.
 /// </summary>
 internal struct ErrorSet
 {
@@ -9,7 +9,7 @@ internal struct ErrorSet
     private int _index;
 
     /// <summary>
-    /// Gets the position in the source where the parsing failed or an unmatched sequence was encountered.
+    /// Gets the position in the source text where a parsing error occurred.
     /// </summary>
     [SuppressMessage("ReSharper", "ConvertToAutoPropertyWithPrivateSetter")]
     public readonly int Index => _index;
@@ -21,12 +21,12 @@ internal struct ErrorSet
         _expectations = new ArrayBuilder<string>();
 
     /// <summary>
-    /// Adds an error message describing an expected sequence at the specified source position.
+    /// Reports a missing expected sequence or rule at the specified position.
     /// </summary>
-    /// <param name="index">The position in the source where the error occurred.</param>
-    /// <param name="error">A string describing the expected sequence.</param>
+    /// <param name="index">The position where the error occurred.</param>
+    /// <param name="expected">The expected sequence or rule.</param>
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public void AddError(int index, string error)
+    public void ReportExpected(int index, string expected)
     {
         if (index >= _index)
         {
@@ -36,16 +36,16 @@ internal struct ErrorSet
                 _expectations.Clear();
             }
 
-            _expectations.Add(error);
+            _expectations.Add(expected);
         }
     }
 
     /// <summary>
-    /// Adds multiple error messages describing expected sequences at the specified source position.
+    /// Reports multiple missing expected sequences or rules at the specified position.
     /// </summary>
     /// <param name="index">The position in the source where the errors occurred.</param>
-    /// <param name="errors">An array of strings describing the expected sequences.</param>
-    public void AddErrors(int index, string[] errors)
+    /// <param name="expected">An array of expected sequences or rules.</param>
+    public void ReportExpected(int index, string[] expected)
     {
         if (index >= _index)
         {
@@ -55,15 +55,15 @@ internal struct ErrorSet
                 _expectations.Clear();
             }
 
-            _expectations.AddRange(errors);
+            _expectations.AddRange(expected);
         }
     }
 
     /// <summary>
-    /// Returns a formatted string representing the list of expected sequences that were not matched.
+    /// Returns a formatted string describing the expected sequences that were not found.
     /// </summary>
     /// <returns>
-    /// A string describing the expected sequences, formatted appropriately.
+    /// A formatted string listing the expected sequences.
     /// </returns>
     public readonly override string ToString()
     {

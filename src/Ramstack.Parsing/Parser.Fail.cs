@@ -13,7 +13,7 @@ partial class Parser
     public static Parser<T> Fail<T>(string message)
     {
         Argument.ThrowIfNullOrEmpty(message);
-        return new FailParser<T> { Name = message };
+        return new FailParser<T>(message);
     }
 
     /// <summary>
@@ -31,15 +31,16 @@ partial class Parser
     /// with the specified error message when invoked.
     /// </summary>
     /// <typeparam name="T">The type of value produced by the parser.</typeparam>
-    private sealed class FailParser<T> : Parser<T>
+    /// <param name="message">The error message to be thrown.</param>
+    private sealed class FailParser<T>(string message) : Parser<T>
     {
         /// <inheritdoc />
         public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value) =>
-            throw new FatalErrorException(Name!);
+            throw new FatalErrorException(message);
 
         /// <inheritdoc />
         protected internal override Parser<Unit> ToVoidParser() =>
-            new FailParser<Unit> { Name = Name };
+            new FailParser<Unit>(message);
     }
 
     #endregion

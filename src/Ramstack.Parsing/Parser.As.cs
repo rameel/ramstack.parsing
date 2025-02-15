@@ -38,7 +38,7 @@ partial class Parser
             }
 
             context.RestoreDiagnosticState(state);
-            context.AddError(Name);
+            context.ReportExpected(Name);
             return false;
         }
 

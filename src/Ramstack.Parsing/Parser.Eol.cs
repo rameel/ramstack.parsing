@@ -40,7 +40,7 @@ partial class Parser
                         break;
 
                     default:
-                        context.AddError(Name);
+                        context.ReportExpected(Name);
                         return false;
                 }
             }

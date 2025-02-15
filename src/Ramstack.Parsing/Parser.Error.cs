@@ -3,20 +3,20 @@ namespace Ramstack.Parsing;
 partial class Parser
 {
     /// <summary>
-    /// Creates a parser that always fails with the specified error message.
+    /// Creates a parser that always fails with a report of a missing expected sequence or rule.
     /// </summary>
     /// <typeparam name="T">The type of the value produced by the parser.</typeparam>
-    /// <param name="message">The error message that this parser will produce upon failure.</param>
+    /// <param name="expected">The expected sequence or rule.</param>
     /// <returns>
-    /// A parser that always fails with the specified error message.
+    /// A parser that always fails with a report of a missing expected sequence or rule.
     /// </returns>
-    public static Parser<T> Error<T>(string message) =>
-        new ErrorParser<T> { Name = message };
+    public static Parser<T> Error<T>(string expected) =>
+        new ErrorParser<T> { Name = expected };
 
     #region Inner type: ErrorParser
 
     /// <summary>
-    /// Represents a parser that always fails with the specified error message.
+    /// Represents a parser that always fails with a report of a missing expected sequence or rule.
     /// </summary>
     /// <typeparam name="T">The type of the value produced by the parser.</typeparam>
     private sealed class ErrorParser<T> : Parser<T>
@@ -25,7 +25,7 @@ partial class Parser
         public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value)
         {
             value = default;
-            context.AddError(Name);
+            context.ReportExpected(Name);
             return false;
         }
 

@@ -463,7 +463,7 @@ partial class Parser
             if (count >= _min)
             {
                 if (count < _max)
-                    context.AddError(Name, context.Position + count);
+                    context.ReportExpected(context.Position + count, Name);
 
                 count = Math.Min(count, _max);
                 context.Advance(count);
@@ -472,7 +472,7 @@ partial class Parser
             }
             else
             {
-                context.AddError(Name, context.Position + count);
+                context.ReportExpected(context.Position + count, Name);
             }
 
             return count >= _min;
@@ -547,14 +547,14 @@ partial class Parser
             if (count >= _min)
             {
                 if (count < _max)
-                    context.AddError(Name, context.Position + count);
+                    context.ReportExpected(context.Position + count, Name);
 
                 count = Math.Min(count, _max);
                 context.Advance(count);
             }
             else
             {
-                context.AddError(Name, context.Position + count);
+                context.ReportExpected(context.Position + count, Name);
             }
 
             return count >= _min;

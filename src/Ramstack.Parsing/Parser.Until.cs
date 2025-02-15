@@ -58,24 +58,28 @@ partial class Parser
                     return true;
                 }
 
+                var position = context.Position;
+
                 if (!parser.TryParse(ref context, out var result))
                     break;
 
-                // Prevent infinite loop with zero-width match
-                if (context.MatchedSegment.Length == 0)
+                list.Add(result);
+
+                //
+                // Prevent infinite loop
+                //
+                if (context.Position == position)
                 {
                     //
                     // Parsing failed in this case because:
-                    // 1. The main parser matched zero length, so the position remains unchanged.
+                    // 1. The main parser matched, but the position remained unchanged.
                     // 2. The terminator didn't match before, and it won't match now.
                     // 3. Rechecking would yield the same result, making it redundant.
-                    // 4. Without a terminator, parsing is considered unsuccessful, and it will never be matched now.
-                    // 5. With a zero-width match, it results in an infinite loop.
+                    // 4. Without a terminator, parsing is considered unsuccessful, and it will never match now.
+                    // 5. If a parser matches but the position remains unchanged, it results in an infinite loop.
                     //
                     break;
                 }
-
-                list.Add(result);
             }
 
             value = null;
@@ -115,19 +119,23 @@ partial class Parser
                     return true;
                 }
 
+                var position = context.Position;
+
                 if (!parser.TryParse(ref context, out value))
                     break;
 
-                // Prevent infinite loop with zero-width match
-                if (context.MatchedSegment.Length == 0)
+                //
+                // Prevent infinite loop
+                //
+                if (context.Position == position)
                 {
                     //
                     // Parsing failed in this case because:
-                    // 1. The main parser matched zero length, so the position remains unchanged.
+                    // 1. The main parser matched, but the position remained unchanged.
                     // 2. The terminator didn't match before, and it won't match now.
                     // 3. Rechecking would yield the same result, making it redundant.
-                    // 4. Without a terminator, parsing is considered unsuccessful, and it will never be matched now.
-                    // 5. With a zero-width match, it results in an infinite loop.
+                    // 4. Without a terminator, parsing is considered unsuccessful, and it will never match now.
+                    // 5. If a parser matches but the position remains unchanged, it results in an infinite loop.
                     //
                     break;
                 }

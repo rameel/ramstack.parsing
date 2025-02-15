@@ -9,15 +9,15 @@ partial class Parser
     /// <typeparam name="TResult">The type of the value produced by the first parser.</typeparam>
     /// <typeparam name="T">The type of the value produced by the second parser, which is ignored.</typeparam>
     /// <param name="parser">The initial parser whose result is returned.</param>
-    /// <param name="before">The subsequent parser.</param>
+    /// <param name="ignore">The subsequent parser, applied after the initial parser.</param>
     /// <returns>
     /// A parser that sequentially applies the current parser and a specified second parser,
     /// returning the result of the first parser with ignoring the result of the second.
     /// </returns>
-    public static Parser<TResult> ThenIgnore<TResult, T>(this Parser<TResult> parser, Parser<T> before) =>
-        new ThenIgnoreParser<TResult>(parser, before.Void());
+    public static Parser<TResult> ThenIgnore<TResult, T>(this Parser<TResult> parser, Parser<T> ignore) =>
+        new ThenIgnoreParser<TResult>(parser, ignore.Void());
 
-    #region Inner type: BeforeParser
+    #region Inner type: ThenIgnoreParser
 
     /// <summary>
     /// Represents a parser that sequentially applies an initial parser and a specified second parser,
@@ -25,8 +25,8 @@ partial class Parser
     /// </summary>
     /// <typeparam name="T">The type of the value produced by the first parser.</typeparam>
     /// <param name="parser">The initial parser whose result is returned.</param>
-    /// <param name="before">The subsequent parser, applied after the initial parser.</param>
-    private sealed class ThenIgnoreParser<T>(Parser<T> parser, Parser<Unit> before) : Parser<T>
+    /// <param name="ignore">The subsequent parser, applied after the initial parser.</param>
+    private sealed class ThenIgnoreParser<T>(Parser<T> parser, Parser<Unit> ignore) : Parser<T>
     {
         /// <inheritdoc />
         public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value)
@@ -37,7 +37,7 @@ partial class Parser
             {
                 var (index, length) = context.MatchedSegment;
 
-                if (before.TryParse(ref context, out _))
+                if (ignore.TryParse(ref context, out _))
                 {
                     context.SetMatched(index, length);
                     return true;
@@ -50,7 +50,7 @@ partial class Parser
 
         /// <inheritdoc />
         protected internal override Parser<Unit> ToVoidParser() =>
-            new ThenIgnoreParser<Unit>(parser.Void(), before);
+            new ThenIgnoreParser<Unit>(parser.Void(), ignore);
     }
 
     #endregion

@@ -7,15 +7,15 @@ public abstract record Node
     public static Node Empty() => new BlockNode([]);
     public static Node Number(int value) => new NumberNode(value);
     public static Node Variable(string name) => new VariableNode(name);
-    public static Node If(Node test, Node ifTrue, Node ifFalse) => new IfNode(test, Wrap(ifTrue), Wrap(ifFalse));
+    public static Node If(Node test, Node ifTrue, Node ifFalse) => new IfNode(test, Block(ifTrue), Block(ifFalse));
     public static Node Ternary(Node test, Node ifTrue, Node ifFalse) => new TernaryNode(test, ifTrue, ifFalse);
-    public static Node WhileLoop(Node test, Node body) => new WhileLoopNode(test, Wrap(body));
-    public static Node DoWhileLoop(Node test, Node body) => new DoWhileLoopNode(test, Wrap(body));
+    public static Node WhileLoop(Node test, Node body) => new WhileLoopNode(test, Block(body));
+    public static Node DoWhileLoop(Node test, Node body) => new DoWhileLoopNode(test, Block(body));
     public static Node Unary(char op, Node operand) => new UnaryNode(op, operand);
     public static Node Binary(string op, Node left, Node right) => new BinaryNode(op, left, right);
     public static Node Assign(Node variable, Node value) => Binary("=", variable, value);
     public static Node Block(IReadOnlyList<Node> statements) => new BlockNode(statements);
-    private static Node Wrap(Node statement) => statement is BlockNode ? statement : new BlockNode([statement]);
+    public static Node Block(Node statement) => statement is BlockNode ? statement : new BlockNode([statement]);
 
     public sealed override string ToString()
     {

@@ -73,7 +73,8 @@ public static class TinyCParser
         var do_keyword =
             Seq(L("do"), ws).Void();
 
-        var expr = Deferred<Node>();
+        var expr =
+            Deferred<Node>();
 
         var number_expr =
             number.ThenIgnore(ws);
@@ -92,69 +93,78 @@ public static class TinyCParser
                 number_expr,
                 var_expr);
 
-        var unary_expr = Seq(
-            OneOf("-+~!").Optional(),
-            ws,
-            primary_expr
+        var unary_expr =
+            Seq(
+                OneOf("-+~!").Optional(),
+                ws,
+                primary_expr
             ).Do(CreateUnary);
 
         var mul_expr = unary_expr.Fold(
             OneOf("*/%").ThenIgnore(ws),
             CreateBinary);
 
-        var sum_expr = mul_expr.Fold(
-            OneOf("+-").ThenIgnore(ws),
-            CreateBinary);
+        var sum_expr =
+            mul_expr.Fold(
+                OneOf("+-").ThenIgnore(ws),
+                CreateBinary);
 
-        var shift_expr = sum_expr.Fold(
-            OneOf("<<", ">>").ThenIgnore(ws),
-            (l, r, o) => Node.Binary(o, l, r));
+        var shift_expr =
+            sum_expr.Fold(
+                OneOf("<<", ">>").ThenIgnore(ws),
+                (l, r, o) => Node.Binary(o, l, r));
 
-        var relational_expr = shift_expr.Fold(
-            OneOf("<", "<=", ">", ">=").ThenIgnore(ws),
-            (l, r, o) => Node.Binary(o, l, r));
+        var relational_expr =
+            shift_expr.Fold(
+                OneOf("<", "<=", ">", ">=").ThenIgnore(ws),
+                (l, r, o) => Node.Binary(o, l, r));
 
-        var eq_expr = relational_expr.Fold(
-            OneOf("==", "!=").ThenIgnore(ws),
-            (l, r, o) => Node.Binary(o, l, r));
+        var eq_expr =
+            relational_expr.Fold(
+                OneOf("==", "!=").ThenIgnore(ws),
+                (l, r, o) => Node.Binary(o, l, r));
 
-        var binary_and_expr = eq_expr.Fold(
-            L('&').ThenIgnore(ws),
-            (l, r, _) => Node.Binary("&", l, r));
+        var bitwise_and_expr =
+            eq_expr.Fold(
+                L('&').ThenIgnore(ws),
+                (l, r, _) => Node.Binary("&", l, r));
 
-        var exclusive_or_expr = binary_and_expr.Fold(
-            L('^').ThenIgnore(ws),
-            (l, r, _) => Node.Binary("^", l, r));
+        var bitwise_xor_expr =
+            bitwise_and_expr.Fold(
+                L('^').ThenIgnore(ws),
+                (l, r, _) => Node.Binary("^", l, r));
 
-        var inclusive_or_expr = exclusive_or_expr.Fold(
-            L('|').ThenIgnore(ws),
-            (l, r, _) => Node.Binary("|", l, r));
+        var bitwise_or_expr =
+            bitwise_xor_expr.Fold(
+                L('|').ThenIgnore(ws),
+                (l, r, _) => Node.Binary("|", l, r));
 
-        var and_expr = inclusive_or_expr.Fold(
-            L("&&").ThenIgnore(ws),
-            (l, r, _) => Node.Binary("&&", l, r));
+        var logical_and_expr =
+            bitwise_or_expr.Fold(
+                L("&&").ThenIgnore(ws),
+                (l, r, _) => Node.Binary("&&", l, r));
 
-        var or_expr = and_expr.Fold(
-            L("||").ThenIgnore(ws),
-            (l, r, _) => Node.Binary("||", l, r));
+        var logical_or_expr =
+            logical_and_expr.Fold(
+                L("||").ThenIgnore(ws),
+                (l, r, _) => Node.Binary("||", l, r));
 
         var ternary_expr = Deferred<Node>();
         ternary_expr.Parser =
             Seq(
-                or_expr,
+                logical_or_expr,
                 Seq(
                     L('?'), ws, expr,
-                    L(':'), ws, ternary_expr
-                    ).Optional())
-                .Do(CreateTernary);
+                    L(':'), ws, ternary_expr).Optional()
+            ).Do(CreateTernary);
 
         var assignment_expr =
-            Choice(
-                Seq(var_expr, eq, expr).Do(CreateAssign),
-                ternary_expr);
+            Seq(var_expr, eq, expr).Do(CreateAssign);
 
         expr.Parser =
-            assignment_expr;
+            Choice(
+                assignment_expr,
+                ternary_expr);
 
         var statement =
             Deferred<Node>();
@@ -163,7 +173,7 @@ public static class TinyCParser
             Seq(
                 else_keyword,
                 statement
-                ).Do((_, s) => s).DefaultOnFail(Node.Empty());
+            ).Do((_, s) => s).DefaultOnFail(Node.Empty());
 
         var if_statement =
             Seq(
@@ -171,7 +181,7 @@ public static class TinyCParser
                 parenthesis,
                 statement,
                 else_clause
-                ).Do(CreateIf);
+            ).Do(CreateIf);
 
         var block_statement =
             statement
@@ -190,7 +200,7 @@ public static class TinyCParser
                 while_keyword,
                 parenthesis,
                 statement
-                ).Do(CreateWhile);
+            ).Do(CreateWhile);
 
         var do_while_statement =
             Seq(
@@ -199,19 +209,19 @@ public static class TinyCParser
                 while_keyword,
                 parenthesis,
                 semicolon
-                ).Do(CreateDoWhile);
+            ).Do(CreateDoWhile);
 
         var expr_statement =
             expr.ThenIgnore(semicolon);
 
-        statement.Parser = Choice(
-            if_statement,
-            while_statement,
-            do_while_statement,
-            block_statement,
-            expr_statement,
-            empty_statement
-            );
+        statement.Parser =
+            Choice(
+                if_statement,
+                while_statement,
+                do_while_statement,
+                block_statement,
+                expr_statement,
+                empty_statement);
 
         return statement
             .Between(ws, Eof);

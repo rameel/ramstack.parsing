@@ -318,14 +318,27 @@ partial class Parser
 
             do
             {
+                var last = context.Position;
+
                 if (!parser.TryParse(ref context, out var result))
                     break;
 
-                // Prevent pointless loop with zero-width parser
-                if (context.MatchedSegment.Length == 0 && list.Count >= _min)
-                    break;
-
                 list.Add(result);
+
+                //
+                // Prevent infinite loop
+                //
+                if (list.Count >= _min)
+                {
+                    //
+                    // Parsing failed in this case because:
+                    // 1. The parser matched, but the position remained unchanged.
+                    // 2. Rechecking would yield the same result, making it redundant.
+                    // 3. If a parser matches but the position remains unchanged, it results in an infinite loop.
+                    //
+                    if (context.Position == last)
+                        break;
+                }
             }
             while (list.Count < _max);
 
@@ -380,11 +393,14 @@ partial class Parser
 
             do
             {
+                var last = context.Position;
                 if (!parser.TryParse(ref context, out value))
                     break;
 
-                // Prevent pointless loop with zero-width parser
-                if (context.MatchedSegment.Length != 0)
+                //
+                // Prevent infinite loop
+                //
+                if (context.Position != last)
                     continue;
 
                 count = _min;

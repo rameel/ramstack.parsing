@@ -51,4 +51,30 @@ partial class ParsersTests
 
         Assert.That(parser.Parse("aaaa").Success, Is.False);
     }
+
+    [Test]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public void Repeat_InfiniteLoopPrevention_ZeroLength()
+    {
+        var digit = Character.Digit;
+        var digit_list = digit.Separated(L(','));
+        var index_list = digit_list.Between(L('['), L(']')).Many();
+
+        Assert.That(index_list.Parse("[]").Length, Is.EqualTo(2));
+        Assert.That(index_list.Parse("[][]").Length, Is.EqualTo(4));
+        Assert.That(index_list.Parse("[][][]").Length, Is.EqualTo(6));
+
+        Assert.That(index_list.Parse("[1,2][1,2][2,6]").Length, Is.EqualTo(15));
+        Assert.That(index_list.Parse("[][][1,2][][][1,2][][][2,6][][]").Length, Is.EqualTo(31));
+    }
+
+    [Test]
+    public void Repeat_InfiniteLoopPrevention_ZeroConsuming()
+    {
+        var parser = And(Character.Digit).AtLeast(2);
+
+        Assert.That(parser.Parse("1234567890").Success, Is.True);
+        Assert.That(parser.Parse("1234567890").Length, Is.Zero);
+        Assert.That(parser.Text().Parse("1234567890").Value, Is.Empty);
+    }
 }

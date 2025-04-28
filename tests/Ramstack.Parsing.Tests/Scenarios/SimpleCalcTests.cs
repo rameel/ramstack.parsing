@@ -86,7 +86,7 @@ public class SimpleCalcTests
         var expression =
             sum.Between(S, Eof);
 
-        static double Multiply(double v, ArrayList<(char, Unit, double)> results)
+        static double Multiply(double v, List<(char, Unit, double)> results)
         {
             foreach (var (op, _, d) in results)
                 v = op == '*' ? v * d : v / d;
@@ -94,7 +94,7 @@ public class SimpleCalcTests
             return v;
         }
 
-        static double Add(double v, ArrayList<(char, Unit, double)> results)
+        static double Add(double v, List<(char, Unit, double)> results)
         {
             foreach (var (op, _, d) in results)
                 v = op == '+' ? v + d : v - d;

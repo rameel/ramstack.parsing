@@ -15,7 +15,7 @@ partial class Parser
     /// <returns>
     /// A parser that applies the specified parser zero or more times.
     /// </returns>
-    public static Parser<ArrayList<T>> ZeroOrMore<T>(this Parser<T> parser) =>
+    public static Parser<List<T>> ZeroOrMore<T>(this Parser<T> parser) =>
         Repeat(parser, 0, int.MaxValue);
 
     /// <summary>
@@ -36,7 +36,7 @@ partial class Parser
     /// <returns>
     /// A parser that applies the specified parser at least once.
     /// </returns>
-    public static Parser<ArrayList<T>> OneOrMore<T>(this Parser<T> parser) =>
+    public static Parser<List<T>> OneOrMore<T>(this Parser<T> parser) =>
         Repeat(parser, 1, int.MaxValue);
 
     /// <summary>
@@ -57,7 +57,7 @@ partial class Parser
     /// <returns>
     /// A parser that applies the specified parser zero or more times.
     /// </returns>
-    public static Parser<ArrayList<T>> Many<T>(this Parser<T> parser) =>
+    public static Parser<List<T>> Many<T>(this Parser<T> parser) =>
         Repeat(parser, 0, int.MaxValue);
 
     /// <summary>
@@ -79,7 +79,7 @@ partial class Parser
     /// <returns>
     /// A parser that applies the specified parser at least a defined number of times.
     /// </returns>
-    public static Parser<ArrayList<T>> AtLeast<T>(this Parser<T> parser, int count) =>
+    public static Parser<List<T>> AtLeast<T>(this Parser<T> parser, int count) =>
         Repeat(parser, count, int.MaxValue);
 
     /// <summary>
@@ -102,7 +102,7 @@ partial class Parser
     /// <returns>
     /// A parser that applies the specified parser a defined number of times.
     /// </returns>
-    public static Parser<ArrayList<T>> Repeat<T>(this Parser<T> parser, int count) =>
+    public static Parser<List<T>> Repeat<T>(this Parser<T> parser, int count) =>
         Repeat(parser, count, count);
 
     /// <summary>
@@ -126,14 +126,14 @@ partial class Parser
     /// <returns>
     /// A parser that applies the specified parser a defined number of times.
     /// </returns>
-    public static Parser<ArrayList<T>> Repeat<T>(this Parser<T> parser, int min, int max)
+    public static Parser<List<T>> Repeat<T>(this Parser<T> parser, int min, int max)
     {
         Argument.ThrowIfNegative(min);
         Argument.ThrowIfNegativeOrZero(max);
         Argument.ThrowIfGreaterThan(min, max);
 
         return parser is ICharClassSupport s
-            ? (Parser<ArrayList<T>>)(object)CreateRepeatParser(s.GetCharClass(), min, max)
+            ? (Parser<List<T>>)(object)CreateRepeatParser(s.GetCharClass(), min, max)
             : new RepeatParser<T>(parser, min, max);
     }
 
@@ -157,7 +157,7 @@ partial class Parser
             : new VoidRepeatParser(parser, min, max);
     }
 
-    private static Parser<ArrayList<char>> CreateRepeatParser(CharClass @class, int min, int max)
+    private static Parser<List<char>> CreateRepeatParser(CharClass @class, int min, int max)
     {
         if (@class.Ranges.Length == 0)
             @class = @class.EnrichRanges();
@@ -207,7 +207,7 @@ partial class Parser
                 new BitVectorSearcher<Block512Bit>(ranges),
                 @class.UnicodeCategories, min, max) { Name = errors };
 
-        var list = new ArrayList<(int comparisons, int consumption, Parser<ArrayList<char>> parser)>();
+        var list = new List<(int comparisons, int consumption, Parser<List<char>> parser)>();
 
         if (true)
         {
@@ -294,7 +294,7 @@ partial class Parser
     /// Represents a parser that applies the specified parser a defined number of times.
     /// </summary>
     /// <typeparam name="T">The type of the value produced by the specified parser.</typeparam>
-    private sealed class RepeatParser<T> : Parser<ArrayList<T>>
+    private sealed class RepeatParser<T> : Parser<List<T>>
     {
         private readonly Parser<T> _parser;
         private readonly int _min;
@@ -310,9 +310,9 @@ partial class Parser
             (_parser, _min, _max) = (parser, min, max);
 
         /// <inheritdoc />
-        public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out ArrayList<T>? value)
+        public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out List<T>? value)
         {
-            var list = new ArrayList<T>();
+            var list = new List<T>();
             var bookmark = context.BookmarkPosition();
             var parser = _parser;
 
@@ -423,7 +423,7 @@ partial class Parser
 
     #region Inner type: RepeatCharClassParser
 
-    private sealed class RepeatCharClassParser<TSearcher> : Parser<ArrayList<char>> where TSearcher : struct, ICharClassRangeSearcher
+    private sealed class RepeatCharClassParser<TSearcher> : Parser<List<char>> where TSearcher : struct, ICharClassRangeSearcher
     {
         private TSearcher _searcher;
         private readonly CharClassUnicodeCategory _categories;
@@ -441,7 +441,7 @@ partial class Parser
         }
 
         /// <inheritdoc />
-        public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out ArrayList<char>? value)
+        public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out List<char>? value)
         {
             value = null;
 
@@ -484,7 +484,7 @@ partial class Parser
                 count = Math.Min(count, _max);
                 context.Advance(count);
 
-                value = new ArrayList<char>(context.MatchedSegment);
+                value = ListFactory<char>.CreateList(context.MatchedSegment);
             }
             else
             {
@@ -495,7 +495,7 @@ partial class Parser
         }
 
         /// <inheritdoc />
-        protected internal override Parser<ArrayList<char>> ToNamedParser(string? name) =>
+        protected internal override Parser<List<char>> ToNamedParser(string? name) =>
             new RepeatCharClassParser<TSearcher>(_searcher, _categories, _min, _max) { Name = name };
 
         /// <inheritdoc />

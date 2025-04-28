@@ -14,7 +14,7 @@ partial class Parser
     /// A parser that applies <paramref name="parser"/> zero or more times, stopping when
     /// <paramref name="terminator"/> succeeds, and returns an array of the results produced by <paramref name="parser"/>.
     /// </returns>
-    public static Parser<ArrayList<T>> Until<T, TTerminator>(this Parser<T> parser, Parser<TTerminator> terminator) =>
+    public static Parser<List<T>> Until<T, TTerminator>(this Parser<T> parser, Parser<TTerminator> terminator) =>
         new UntilParser<T>(parser, terminator.Void());
 
     /// <summary>
@@ -28,7 +28,7 @@ partial class Parser
     /// A parser that applies <paramref name="parser"/> zero or more times, stopping when
     /// <paramref name="terminator"/> succeeds, and returns an array of the results produced by <paramref name="parser"/>.
     /// </returns>
-    public static Parser<ArrayList<T>> Until<T>(this Parser<T> parser, Parser<Unit> terminator) =>
+    public static Parser<List<T>> Until<T>(this Parser<T> parser, Parser<Unit> terminator) =>
         new UntilParser<T>(parser, terminator);
 
     #region Inner type: UntilParser
@@ -39,14 +39,14 @@ partial class Parser
     /// </summary>
     /// <param name="parser">The main parser to apply repeatedly.</param>
     /// <param name="terminator">The parser that determines when to stop.</param>
-    private sealed class UntilParser<T>(Parser<T> parser, Parser<Unit> terminator) : Parser<ArrayList<T>>
+    private sealed class UntilParser<T>(Parser<T> parser, Parser<Unit> terminator) : Parser<List<T>>
     {
         private readonly Parser<Unit> _isTerminator = And(terminator);
 
         /// <inheritdoc />
-        public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out ArrayList<T>? value)
+        public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out List<T>? value)
         {
-            var list = new ArrayList<T>();
+            var list = new List<T>();
             var bookmark = context.BookmarkPosition();
 
             while (true)

@@ -16,7 +16,7 @@ partial class Parser
     {
         Argument.ThrowIfNullOrEmpty(parsers);
 
-        var list = new ArrayList<Parser<T>>();
+        var list = new List<Parser<T>>();
 
         while (true)
         {

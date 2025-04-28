@@ -144,7 +144,7 @@ partial class Parser
                 new BitVectorSearcher<Block512Bit>(ranges),
                 categories) { Name = name };
 
-        var list = new ArrayList<(int comparisons, int consumption, Parser<char> parser)>();
+        var list = new List<(int comparisons, int consumption, Parser<char> parser)>();
 
         if (true)
         {

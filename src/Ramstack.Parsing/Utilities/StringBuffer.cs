@@ -5,6 +5,20 @@ namespace Ramstack.Parsing.Utilities;
 /// <summary>
 /// Represents a mutable buffer for building strings.
 /// </summary>
+/// <remarks>
+/// This structure is optimized for performance and relies on proper initialization.
+///
+/// Always initialize instances using one of the available constructors with the <c>new</c> keyword,
+/// including the parameterless constructor: <c>new StringBuffer()</c>.
+///
+/// Do not use <c>default(StringBuffer)</c> or similar patterns, as this results
+/// in an uninitialized instance with an invalid internal state,
+/// causing a <see cref="NullReferenceException"/> when methods are called.
+///
+/// This design choice was made to avoid unnecessary overhead and maintain control over
+/// internal state initialization in modern C# versions where parameterless constructors
+/// in structs are supported.
+/// </remarks>
 internal struct StringBuffer : IDisposable
 {
     private char[] _chars;

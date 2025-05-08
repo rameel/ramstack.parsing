@@ -52,26 +52,6 @@ internal struct StringBuffer : IDisposable
     }
 
     /// <summary>
-    /// Attempts to append a single character to the string buffer.
-    /// </summary>
-    /// <param name="c">The character to append.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TryAppend(char c)
-    {
-        var chars = _chars;
-        var count = _count;
-
-        if ((uint)count < (uint)chars.Length)
-        {
-            chars[count] = c;
-            _count = count + 1;
-            return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
     /// Appends a span of characters to the string buffer.
     /// </summary>
     /// <param name="text">The span of characters to append.</param>
@@ -107,24 +87,6 @@ internal struct StringBuffer : IDisposable
 
             _count = count + text.Length;
         }
-    }
-
-    /// <summary>
-    /// Returns a <see cref="Span{T}"/> representing the written data of the current instance.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="Span{T}"/> that represents the data within the current instance.
-    /// </returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly Span<char> AsSpan()
-    {
-        var chars = _chars;
-        var count = _count;
-        _ = chars.Length;
-
-        return MemoryMarshal.CreateSpan(
-            ref MemoryMarshal.GetArrayDataReference(chars),
-            count);
     }
 
     /// <inheritdoc />

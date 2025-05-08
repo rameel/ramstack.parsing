@@ -374,8 +374,20 @@ partial class Parser
 
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int IndexOfAnyExcept(ReadOnlySpan<char> s) =>
-            IndexOfAnyExcept(ref MemoryMarshal.GetReference(s), s.Length, _start, _count);
+        public int IndexOfAnyExcept(ReadOnlySpan<char> s)
+        {
+            static int IndexOfAnyExceptCore(ref char s, int length, uint start, uint count)
+            {
+                var span = MemoryMarshal.CreateReadOnlySpan(ref s, length);
+                for (var i = 0; i < span.Length; i++)
+                    if (span[i] - start >= count)
+                        return i;
+
+                return -1;
+            }
+
+            return IndexOfAnyExceptCore(ref MemoryMarshal.GetReference(s), s.Length, _start, _count);
+        }
 
         /// <inheritdoc />
         public CharClass GetCharClass(CharClassUnicodeCategory categories)
@@ -386,22 +398,6 @@ partial class Parser
             return new CharClass(
                 [CharClassRange.Create((char)lo, (char)hi)],
                 categories);
-        }
-
-        private static int IndexOfAnyExcept(ref char s, int length, uint start, uint count)
-        {
-            ref var p = ref s;
-
-            for (; length > 0; length--)
-            {
-                if (p - start >= count)
-                    // ReSharper disable once RedundantCast
-                    return (int)((nint)Unsafe.ByteOffset(ref s, ref p) >>> 1);
-
-                p = ref Unsafe.Add(ref p, 1);
-            }
-
-            return -1;
         }
     }
 
@@ -423,37 +419,30 @@ partial class Parser
 
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int IndexOfAnyExcept(ReadOnlySpan<char> s) =>
-            IndexOfAnyExcept(ref MemoryMarshal.GetReference(s), s.Length, chars);
+        public int IndexOfAnyExcept(ReadOnlySpan<char> s)
+        {
+            static int IndexOfAnyExceptCore(ref char s, int length, string chars)
+            {
+                _ = chars.Length;
+                var span = MemoryMarshal.CreateReadOnlySpan(ref s, length);
+
+                #if NET7_0_OR_GREATER
+                return span.IndexOfAnyExcept(chars);
+                #else
+                for (var i = 0; i < span.Length; i++)
+                    if (!chars.Contains(span[i]))
+                        return i;
+
+                return -1;
+                #endif
+            }
+
+            return IndexOfAnyExceptCore(ref MemoryMarshal.GetReference(s), s.Length, chars);
+        }
 
         /// <inheritdoc />
         public CharClass GetCharClass(CharClassUnicodeCategory categories) =>
             new CharClass(CharClassRange.Create(chars), categories);
-
-        private static int IndexOfAnyExcept(ref char s, int length, string chars)
-        {
-            _ = chars.Length;
-
-            #if NET7_0_OR_GREATER
-
-            return MemoryMarshal.CreateReadOnlySpan(ref s, length).IndexOfAnyExcept(chars);
-
-            #else
-
-            ref var p = ref s;
-
-            for (; length > 0; length--)
-            {
-                if (!chars.Contains(p))
-                    return (int)((nint)Unsafe.ByteOffset(ref s, ref p) >>> 1);
-
-                p = ref Unsafe.Add(ref p, 1);
-            }
-
-            return -1;
-
-            #endif
-        }
     }
 
     #endregion
@@ -461,7 +450,7 @@ partial class Parser
     #region Inner type: BitVectorSearcher
 
     /// <summary>
-    /// Represents a searcher that uses a bit vector to efficiently determine
+    /// Represents a searcher that uses bit vector to efficiently determine
     /// whether a character belongs to a specified set of ranges.
     /// </summary>
     /// <typeparam name="TStorage">The underlying storage type for the bit vector, which must be an unmanaged type.</typeparam>
@@ -495,28 +484,26 @@ partial class Parser
 
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int IndexOfAnyExcept(ReadOnlySpan<char> s) =>
-            IndexOfAnyExcept(ref MemoryMarshal.GetReference(s), s.Length, in _vector, _offset);
+        public int IndexOfAnyExcept(ReadOnlySpan<char> s)
+        {
+            static int IndexOfAnyExceptCore(ref char s, int length, in BitVector<TStorage> vector, int offset)
+            {
+                var span = MemoryMarshal.CreateReadOnlySpan(ref s, length);
+
+                for (var i = 0; i < span.Length; i++)
+                    if (!vector.IsBitSet(span[i] - offset))
+                        return i;
+
+                return -1;
+
+            }
+
+            return IndexOfAnyExceptCore(ref MemoryMarshal.GetReference(s), s.Length, in _vector, _offset);
+        }
 
         /// <inheritdoc />
         public CharClass GetCharClass(CharClassUnicodeCategory categories) =>
             new CharClass(_vector.ToCharClassRanges(_offset), categories);
-
-        private static int IndexOfAnyExcept(ref char s, int length, in BitVector<TStorage> vector, int offset)
-        {
-            ref var p = ref s;
-
-            for (; length > 0; length--)
-            {
-                if (!vector.IsBitSet(p - offset))
-                    // ReSharper disable once RedundantCast
-                    return (int)((nint)Unsafe.ByteOffset(ref s, ref p) >>> 1);
-
-                p = ref Unsafe.Add(ref p, 1);
-            }
-
-            return -1;
-        }
     }
 
     #endregion
@@ -524,7 +511,7 @@ partial class Parser
     #region Inner type: SimdRangeSearcher
 
     /// <summary>
-    /// Represents a searcher that utilizes SIMD operations to efficiently determine
+    /// Represents a searcher that uses SIMD operations to efficiently determine
     /// whether a character falls within a specified set of ranges.
     /// </summary>
     /// <typeparam name="TWidth">The SIMD vector width, which must be an unmanaged type.</typeparam>
@@ -558,8 +545,20 @@ partial class Parser
 
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int IndexOfAnyExcept(ReadOnlySpan<char> s) =>
-            IndexOfAnyExcept(ref MemoryMarshal.GetReference(s), s.Length, _ranges);
+        public int IndexOfAnyExcept(ReadOnlySpan<char> s)
+        {
+            static int IndexOfAnyExceptCore(ref char s, int length, ushort[] ranges)
+            {
+                var span = MemoryMarshal.CreateReadOnlySpan(ref s, length);
+                for (var i = 0; i < span.Length; i++)
+                    if (!ContainsCore(span[i], ranges))
+                        return i;
+
+                return -1;
+            }
+
+            return IndexOfAnyExceptCore(ref MemoryMarshal.GetReference(s), s.Length, _ranges);
+        }
 
         /// <inheritdoc />
         public CharClass GetCharClass(CharClassUnicodeCategory categories)
@@ -641,22 +640,6 @@ partial class Parser
 
             return false;
         }
-
-        private static int IndexOfAnyExcept(ref char s, int length, ushort[] ranges)
-        {
-            ref var p = ref s;
-
-            for (; length > 0; length--)
-            {
-                if (!ContainsCore(p, ranges))
-                    // ReSharper disable once RedundantCast
-                    return (int)((nint)Unsafe.ByteOffset(ref s, ref p) >>> 1);
-
-                p = ref Unsafe.Add(ref p, 1);
-            }
-
-            return -1;
-        }
     }
 
     #endregion
@@ -696,8 +679,20 @@ partial class Parser
 
         /// <inheritdoc />
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int IndexOfAnyExcept(ReadOnlySpan<char> s) =>
-            IndexOfAnyExcept(ref MemoryMarshal.GetReference(s), s.Length, _ranges);
+        public int IndexOfAnyExcept(ReadOnlySpan<char> s)
+        {
+            static int IndexOfAnyExceptCore(ref char s, int length, (uint lo, uint hi)[] ranges)
+            {
+                var span = MemoryMarshal.CreateReadOnlySpan(ref s, length);
+                for (var i = 0; i < span.Length; i++)
+                    if (!ContainsCore(span[i], ranges))
+                        return i;
+
+                return -1;
+            }
+
+            return IndexOfAnyExceptCore(ref MemoryMarshal.GetReference(s), s.Length, _ranges);
+        }
 
         /// <inheritdoc />
         public CharClass GetCharClass(CharClassUnicodeCategory categories)
@@ -744,22 +739,6 @@ partial class Parser
             }
 
             return false;
-        }
-
-        private static int IndexOfAnyExcept(ref char s, int length, (uint lo, uint hi)[] ranges)
-        {
-            ref var p = ref s;
-
-            for (; length > 0; length--)
-            {
-                if (!ContainsCore(p, ranges))
-                    // ReSharper disable once RedundantCast
-                    return (int)((nint)Unsafe.ByteOffset(ref s, ref p) >>> 1);
-
-                p = ref Unsafe.Add(ref p, 1);
-            }
-
-            return -1;
         }
     }
 

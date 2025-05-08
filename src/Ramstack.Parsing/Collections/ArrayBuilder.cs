@@ -3,6 +3,20 @@ namespace Ramstack.Parsing.Collections;
 /// <summary>
 /// Represents an array builder for elements of type <typeparamref name="T"/>.
 /// </summary>
+/// <remarks>
+/// This structure is optimized for performance and relies on proper initialization.
+///
+/// Always initialize instances using one of the available constructors with the <c>new</c> keyword,
+/// including the parameterless constructor: <c>new ArrayBuilder&lt;T>()</c>.
+///
+/// Do not use <c>default(ArrayBuilder&lt;T>)</c> or similar patterns, as this results
+/// in an uninitialized instance with an invalid internal state,
+/// causing a <see cref="NullReferenceException"/> when methods are called.
+///
+/// This design choice was made to avoid unnecessary overhead and maintain control over
+/// internal state initialization in modern C# versions where parameterless constructors
+/// in structs are supported.
+/// </remarks>
 /// <typeparam name="T">The type of elements stored in the array builder.</typeparam>
 [DebuggerDisplay("Count = {Count}")]
 [DebuggerTypeProxy(typeof(ArrayBuilderDebugView<>))]
@@ -33,12 +47,10 @@ internal struct ArrayBuilder<T>
         get
         {
             var array = _array;
-            if ((uint)index >= (uint)_count)
+            if ((uint)index >= (uint)_count || (uint)index >= (uint)array.Length)
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
-            return ref Unsafe.Add(
-                ref MemoryMarshal.GetArrayDataReference(array),
-                (nint)(uint)index);
+            return ref array[index];
         }
     }
 

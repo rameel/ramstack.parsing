@@ -32,6 +32,8 @@ public ref struct ParseContext
             var source = _source;
             var length = source.Length - _position;
 
+            Debug.Assert(_source[_position..].Length == length);
+
             ref var reference = ref Unsafe.Add(
                 ref MemoryMarshal.GetReference(source),
                 (nint)(uint)_position);

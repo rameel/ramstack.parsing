@@ -128,15 +128,14 @@ partial class Literal
                 }
                 else
                 {
-                    if (index + 5 >= s.Length)
+                    var p = s.Slice(index);
+                    if (p.Length < 6)
                         goto FAIL;
 
-                    ref var r = ref Unsafe.AsRef(in s[index]);
-
-                    var v1 = (nint)Unsafe.Add(ref r, 2);
-                    var v2 = (nint)Unsafe.Add(ref r, 3);
-                    var v3 = (nint)Unsafe.Add(ref r, 4);
-                    var v4 = (nint)Unsafe.Add(ref r, 5);
+                    var v1 = (nint)p[2];
+                    var v2 = (nint)p[3];
+                    var v3 = (nint)p[4];
+                    var v4 = (nint)p[5];
 
                     if ((uint)(v1 | v2 | v3 | v4) > 127)
                         goto FAIL;

@@ -107,16 +107,24 @@ internal struct StringBuffer : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override string ToString()
     {
-        return ToStringImpl(_chars, _count);
+        var chars = _chars;
+        var count = _count;
+        _chars = [];
+        _count = 0;
+
+        return ToStringImpl(chars, count);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         static string ToStringImpl(char[] buffer, int length)
         {
-            var result = new string(buffer.AsSpan(0, length));
-            if (buffer.Length != 0)
+            if (buffer.Length != 0 && (uint)length <= (uint)buffer.Length)
+            {
+                var result = new string(buffer.AsSpan(0, length));
                 ArrayPool<char>.Shared.Return(buffer);
+                return result;
+            }
 
-            return result;
+            return "";
         }
     }
 

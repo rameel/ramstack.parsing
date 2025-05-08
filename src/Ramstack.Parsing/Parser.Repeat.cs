@@ -451,7 +451,8 @@ partial class Parser
             while (s.Length != 0)
             {
                 var index = _searcher.IndexOfAnyExcept(s);
-                if (index >= 0)
+
+                if ((uint)index < (uint)s.Length)
                 {
                     count += index;
 
@@ -461,13 +462,21 @@ partial class Parser
                     index++;
                     count++;
 
-                    Debug.Assert((uint)index <= (uint)s.Length);
+                    // At this point, "index" is guaranteed to be within [0..s.Length].
+                    // While the Slice method performs its own bounds check and would throw if out of range,
+                    // our explicit check helps the JIT recognize that the call to Slice is safe.
+                    // This allows the JIT to eliminate the internal bounds check
+                    // and avoid generating unnecessary exception-handling code inside Slice.
+                    //
+                    // In other words, the check would happen anyway, but by placing it here explicitly,
+                    // we eliminate the need for exception code inside Slice itself.
+                    //
+                    // Even though logically (uint)index < (uint)s.Length implies (uint)index <= (uint)s.Length,
+                    // the JIT cannot currently prove this identity and therefore cannot optimize away
+                    // the redundant check in Slice.
 
-                    s = MemoryMarshal.CreateReadOnlySpan(
-                        ref Unsafe.Add(ref MemoryMarshal.GetReference(s), (nint)(uint)index),
-                        s.Length - index);
-
-                    // s = s.Slice(index);
+                    if ((uint)index <= (uint)s.Length)
+                        s = s.Slice(index);
                 }
                 else
                 {
@@ -535,7 +544,7 @@ partial class Parser
             while (s.Length != 0)
             {
                 var index = _searcher.IndexOfAnyExcept(s);
-                if (index >= 0)
+                if ((uint)index < (uint)s.Length)
                 {
                     count += index;
 
@@ -545,13 +554,21 @@ partial class Parser
                     index++;
                     count++;
 
-                    Debug.Assert((uint)index <= (uint)s.Length);
+                    // At this point, "index" is guaranteed to be within [0..s.Length].
+                    // While the Slice method performs its own bounds check and would throw if out of range,
+                    // our explicit check helps the JIT recognize that the call to Slice is safe.
+                    // This allows the JIT to eliminate the internal bounds check
+                    // and avoid generating unnecessary exception-handling code inside Slice.
+                    //
+                    // In other words, the check would happen anyway, but by placing it here explicitly,
+                    // we eliminate the need for exception code inside Slice itself.
+                    //
+                    // Even though logically (uint)index < (uint)s.Length implies (uint)index <= (uint)s.Length,
+                    // the JIT cannot currently prove this identity and therefore cannot optimize away
+                    // the redundant check in Slice.
 
-                    s = MemoryMarshal.CreateReadOnlySpan(
-                        ref Unsafe.Add(ref MemoryMarshal.GetReference(s), (nint)(uint)index),
-                        s.Length - index);
-
-                    // s = s.Slice(index);
+                    if ((uint)index <= (uint)s.Length)
+                        s = s.Slice(index);
                 }
                 else
                 {

@@ -33,12 +33,10 @@ internal struct ArrayBuilder<T>
         get
         {
             var array = _array;
-            if ((uint)index >= (uint)_count)
+            if ((uint)index >= (uint)_count || (uint)index >= (uint)array.Length)
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
-            return ref Unsafe.Add(
-                ref MemoryMarshal.GetArrayDataReference(array),
-                (nint)(uint)index);
+            return ref array[index];
         }
     }
 

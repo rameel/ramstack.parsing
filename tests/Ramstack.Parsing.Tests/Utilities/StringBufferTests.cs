@@ -1,4 +1,6 @@
-﻿namespace Ramstack.Parsing.Utilities;
+﻿#if TEST_INTERNALS
+
+namespace Ramstack.Parsing.Utilities;
 
 [TestFixture]
 public class StringBufferTests
@@ -89,3 +91,5 @@ public class StringBufferTests
         });
     }
 }
+
+#endif

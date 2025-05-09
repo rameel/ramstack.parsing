@@ -471,7 +471,7 @@ partial class Parser
                     // In other words, the check would happen anyway, but by placing it here explicitly,
                     // we eliminate the need for exception code inside Slice itself.
                     //
-                    // Even though logically (uint)index < (uint)s.Length implies (uint)index <= (uint)s.Length,
+                    // Even though logically (uint)index < (uint)s.Length implies (uint)index + 1 <= (uint)s.Length,
                     // the JIT cannot currently prove this identity and therefore cannot optimize away
                     // the redundant check in Slice.
 
@@ -563,7 +563,7 @@ partial class Parser
                     // In other words, the check would happen anyway, but by placing it here explicitly,
                     // we eliminate the need for exception code inside Slice itself.
                     //
-                    // Even though logically (uint)index < (uint)s.Length implies (uint)index <= (uint)s.Length,
+                    // Even though logically (uint)index < (uint)s.Length implies (uint)index + 1 <= (uint)s.Length,
                     // the JIT cannot currently prove this identity and therefore cannot optimize away
                     // the redundant check in Slice.
 

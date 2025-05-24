@@ -278,8 +278,7 @@ public ref struct ParseContext
     /// </returns>
     internal static string GenerateErrorMessage(ReadOnlySpan<char> source, int position, string message)
     {
-        var line = TextHelper.GetLine(source, position);
-        var column = TextHelper.GetColumn(source, position);
+        var (line, column) = TextHelper.GetLineColumn(source, position);
         return $"({line}:{column}) {message}";
     }
 }

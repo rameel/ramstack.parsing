@@ -6,58 +6,39 @@ namespace Ramstack.Parsing.Utilities;
 internal static class TextHelper
 {
     /// <summary>
-    /// Returns the line number for the specified index in the given source string.
+    /// Calculates the line and column numbers for the specified index in the specified character span.
     /// </summary>
-    /// <param name="source">The source string.</param>
-    /// <param name="index">The index in the source string for which to determine the line number.</param>
+    /// <param name="source">The character span representing the text content.</param>
+    /// <param name="index">The index within the span for which to determine the line and column numbers.</param>
     /// <returns>
-    /// The line number corresponding to the specified index.
+    /// A tuple containing the line and column numbers corresponding to the specified index.
     /// </returns>
-    public static int GetLine(ReadOnlySpan<char> source, int index)
+    public static (int Line, int Column) GetLineColumn(ReadOnlySpan<char> source, int index)
     {
         var line = 1;
-
-        if (index >= source.Length)
-            index = source.Length - 1;
-
-        while (true)
-        {
-            if ((uint)index >= (uint)source.Length)
-                break;
-
-            if (source[index] == '\n')
-                line++;
-
-            index--;
-        }
-
-        return line;
-    }
-
-    /// <summary>
-    /// Returns the column number for the specified index in the given source string.
-    /// </summary>
-    /// <param name="source">The source string.</param>
-    /// <param name="index">The index in the source string for which to determine the column number.</param>
-    /// <returns>
-    /// The column number corresponding to the specified index.
-    /// </returns>
-    public static int GetColumn(ReadOnlySpan<char> source, int index)
-    {
         var column = 1;
-        index--;
 
-        if (index >= source.Length)
-            index = source.Length - 1;
+        if ((uint)index < (uint)source.Length)
+            source = source[..index];
 
-        while ((uint)index < (uint)source.Length
-            && source[index] != '\n'
-            && source[index] != '\r')
+        for (var i = 0; i < source.Length; i++)
         {
             column++;
-            index--;
+
+            if (source[i] == '\n')
+            {
+                line++;
+                column = 1;
+            }
+            else if (source[i] == '\r' && i + 1 < source.Length && source[i + 1] == '\n')
+            {
+                i++;
+
+                line++;
+                column = 1;
+            }
         }
 
-        return column;
+        return (line, column);
     }
 }

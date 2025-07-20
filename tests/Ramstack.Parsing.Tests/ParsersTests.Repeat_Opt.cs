@@ -211,7 +211,10 @@ partial class ParsersTests
         var parser = Set(set.ToString()).Many();
         var p = parser.Text();
 
-        Assert.That(parser.GetType().ToString(), Is.EqualTo("Ramstack.Parsing.Parser+RepeatCharClassParser`1[Ramstack.Parsing.Parser+ContainsSearcher]"));
+        Assert.That(parser.GetType().ToString(),
+            Avx2.IsSupported
+                ? Is.EqualTo("Ramstack.Parsing.Parser+RepeatCharClassParser`1[Ramstack.Parsing.Parser+ContainsSearcher]")
+                : Is.EqualTo("Ramstack.Parsing.Parser+RepeatCharClassParser`1[Ramstack.Parsing.Parser+BinaryRangeSearcher]"));
 
         var s = chars.ToString();
         var r = string.Join("", s.Reverse());

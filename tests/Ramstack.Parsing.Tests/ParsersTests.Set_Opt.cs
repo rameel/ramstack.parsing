@@ -122,7 +122,10 @@ partial class ParsersTests
 
         var parser = Set(sb.ToString());
 
-        Assert.That(parser.GetType().ToString(), Is.EqualTo("Ramstack.Parsing.Parser+RangeParser`2[System.Char,Ramstack.Parsing.Parser+ContainsSearcher]"));
+        Assert.That(parser.GetType().ToString(),
+            Avx2.IsSupported
+                ? Is.EqualTo("Ramstack.Parsing.Parser+RangeParser`2[System.Char,Ramstack.Parsing.Parser+ContainsSearcher]")
+                : Is.EqualTo("Ramstack.Parsing.Parser+RangeParser`2[System.Char,Ramstack.Parsing.Parser+BinaryRangeSearcher]"));
         IncludeTest(parser, c => c < 128*5 && c % 5 == 0);
     }
 

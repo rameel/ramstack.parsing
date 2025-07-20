@@ -10,9 +10,11 @@ public class JsonTests
     [Test]
     public void JsonParseTest()
     {
+        #if NET7_0_OR_GREATER
         var s1 = JsonSerializer.Serialize(JsonParser.Parser.Parse(Json).Value);
         var s2 = JsonSerializer.Serialize(JsonSerializer.Deserialize<object>(Json));
         Assert.That(s1, Is.EqualTo(s2));
+        #endif
     }
 
     private const string Json =

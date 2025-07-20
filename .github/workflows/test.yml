@@ -6,8 +6,12 @@ on:
 
 jobs:
   build-and-test:
-    name: "Test projects"
-    runs-on: ubuntu-latest
+    name: build-and-test-${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm]
+
     steps:
     - name: Install .NET
       uses: actions/setup-dotnet@v4
@@ -21,8 +25,34 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Test Projects (Debug)
-      run: dotnet test -c Debug
+    - name: Build (Debug)
+      run: dotnet build -c Debug
 
-    - name: Test Projects (Release)
-      run: dotnet test -c Release
+    - name: Build (Release)
+      run: dotnet build -c Release
+
+    - name: Test (Debug)
+      run: dotnet test -c Debug --no-build
+
+    - name: Test (Release)
+      run: dotnet test -c Release --no-build
+
+    - name: Test (Debug, AVX2=0)
+      env:
+        DOTNET_EnableAVX2: "0"
+      run: dotnet test -c Debug --no-build
+
+    - name: Test (Release, AVX2=0)
+      env:
+        DOTNET_EnableAVX2: "0"
+      run: dotnet test -c Release --no-build
+
+    - name: Test (Debug, HWIntrinsic=0)
+      env:
+        DOTNET_EnableHWIntrinsic: "0"
+      run: dotnet test -c Debug --no-build
+
+    - name: Test (Release, HWIntrinsic=0)
+      env:
+        DOTNET_EnableHWIntrinsic: "0"
+      run: dotnet test -c Release --no-build

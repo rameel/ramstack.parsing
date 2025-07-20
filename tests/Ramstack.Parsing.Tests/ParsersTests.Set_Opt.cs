@@ -206,12 +206,12 @@ partial class ParsersTests
 
             if (parser.TryParse(s, out var v))
             {
-                Assert.That(included((char)c), Is.True, $"Char: \\u{c:x4}");
-                Assert.That(v, Is.EqualTo((char)c), $"Char: \\u{c:x4}");
+                Assert.That(included((char)c), Is.True, $"Code: 0x{c:x4}");
+                Assert.That(v, Is.EqualTo((char)c), $"Code: 0x{c:x4}");
             }
             else
             {
-                Assert.That(included((char)c), Is.False, $"Char: \\u{c:x4}");
+                Assert.That(included((char)c), Is.False, $"Code: 0x{c:x4}");
             }
         }
     }

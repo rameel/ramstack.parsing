@@ -198,7 +198,7 @@ partial class ParsersTests
         IncludeTest(parser, c => c < 10240 && c % 2 == 0);
     }
 
-    private static void IncludeTest(Parser<char> parser, Func<char, bool> isIncluded)
+    private static void IncludeTest(Parser<char> parser, Func<char, bool> included)
     {
         for (var c = 0; c <= 65535; c++)
         {
@@ -206,12 +206,12 @@ partial class ParsersTests
 
             if (parser.TryParse(s, out var v))
             {
-                Assert.That(isIncluded((char)c), Is.True);
-                Assert.That(v, Is.EqualTo((char)c));
+                Assert.That(included((char)c), Is.True, $"Char: \\u{c:x4}");
+                Assert.That(v, Is.EqualTo((char)c), $"Char: \\u{c:x4}");
             }
             else
             {
-                Assert.That(isIncluded((char)c), Is.False);
+                Assert.That(included((char)c), Is.False, $"Char: \\u{c:x4}");
             }
         }
     }

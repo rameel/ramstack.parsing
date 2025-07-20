@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   publish:
+    if: github.repository == 'rameel/ramstack.parsing'
     name: Publish packages
     runs-on: ubuntu-latest
 

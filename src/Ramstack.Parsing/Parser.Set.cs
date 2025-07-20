@@ -624,9 +624,13 @@ partial class Parser
                     }
                     else
                     {
-                        var v = AdvSimd.CompareLessThanOrEqual(
-                            AdvSimd.Subtract(c, x),
-                            y);
+                        // var v = AdvSimd.CompareEqual(
+                        //     AdvSimd.Min(AdvSimd.Max(c, x), y),
+                        //     c);
+
+                        var v = AdvSimd.And(
+                            AdvSimd.CompareGreaterThanOrEqual(c, x),
+                            AdvSimd.CompareLessThanOrEqual(c, y));
 
                         if (!v.Equals(Vector128<ushort>.Zero))
                             return true;

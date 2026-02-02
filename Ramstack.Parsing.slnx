@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/.root/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/Ramstack.Parsing.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/Samples.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Ramstack.Parsing/Ramstack.Parsing.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Ramstack.Parsing.Tests/Ramstack.Parsing.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -29,8 +29,8 @@ public abstract class Parser<T>
     /// Attempts to parse the specified source text. Diagnostic messages are suppressed during this operation.
     /// </summary>
     /// <param name="source">The source text to parse.</param>
-    /// <param name="value">When this method returns, contains the parsed result if the parsing was successful;
-    /// otherwise, <see langword="null"/>.</param>
+    /// <param name="value">When this method returns, contains the parsed value if parsing succeeded;
+    /// otherwise, the default value of <typeparamref name="T"/>.</param>
     /// <returns>
     /// <see langword="true"/> if the parser succeeded; otherwise, <see langword="false"/>.
     /// </returns>
@@ -107,8 +107,8 @@ public abstract class Parser<T>
     /// Attempts to parse the source text using the provided <see cref="ParseContext"/>.
     /// </summary>
     /// <param name="context">The parse context containing the source text and position.</param>
-    /// <param name="value">When this method returns, contains the parsed result if the parsing was successful;
-    /// otherwise, <see langword="null"/>.</param>
+    /// <param name="value">When this method returns, contains the parsed value if parsing succeeded;
+    /// otherwise, the default value of <typeparamref name="T"/>.</param>
     /// <returns>
     /// <see langword="true"/> if the parser succeeded; otherwise, <see langword="false"/>.
     /// </returns>
@@ -128,7 +128,7 @@ public abstract class Parser<T>
     /// Creates a parser that matches the input without capturing or storing the parsed result.
     /// </summary>
     /// <returns>
-    /// A lightweight <see cref="Parser{T}"/> instance that performs parsing without result allocation.
+    /// A parser that discards the parsed value.
     /// </returns>
     protected internal virtual Parser<Unit> ToVoidParser() =>
         this as Parser<Unit> ?? new Parser.VoidParser<T>(this) { Name = Name };

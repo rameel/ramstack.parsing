@@ -82,10 +82,10 @@ public class CharClassParserTests
     [TestCase("\\p{Q}",  "Invalid pattern '\\p{Q}'. Unknown property 'Q'.")]
     [TestCase("\\p{Lu",  "Invalid pattern '\\p{Lu'.")]
     [TestCase("\\T",     "Invalid pattern '\\T'. Unrecognized escape sequence.")]
-    [TestCase("\\ur234", "Invalid pattern '\\ur234'. Unrecognized unicode sequence.")]
-    [TestCase("\\u1r34", "Invalid pattern '\\u1r34'. Unrecognized unicode sequence.")]
-    [TestCase("\\u12r4", "Invalid pattern '\\u12r4'. Unrecognized unicode sequence.")]
-    [TestCase("\\u123r", "Invalid pattern '\\u123r'. Unrecognized unicode sequence.")]
+    [TestCase("\\ur234", "Invalid pattern '\\ur234'. Invalid Unicode escape sequence.")]
+    [TestCase("\\u1r34", "Invalid pattern '\\u1r34'. Invalid Unicode escape sequence.")]
+    [TestCase("\\u12r4", "Invalid pattern '\\u12r4'. Invalid Unicode escape sequence.")]
+    [TestCase("\\u123r", "Invalid pattern '\\u123r'. Invalid Unicode escape sequence.")]
     public void ParseTest_Invalid(string set, string message)
     {
         Assert.That(

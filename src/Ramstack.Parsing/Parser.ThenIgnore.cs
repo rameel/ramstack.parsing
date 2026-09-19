@@ -4,7 +4,7 @@ partial class Parser
 {
     /// <summary>
     /// Creates a parser that sequentially applies the current parser and a specified second parser,
-    /// returning the result of the first parser with ignoring the result of the second.
+    /// returning the result of the first parser while discarding the result of the second.
     /// </summary>
     /// <typeparam name="TResult">The type of the value produced by the first parser.</typeparam>
     /// <typeparam name="T">The type of the value produced by the second parser, which is ignored.</typeparam>
@@ -12,7 +12,7 @@ partial class Parser
     /// <param name="ignore">The subsequent parser, applied after the initial parser.</param>
     /// <returns>
     /// A parser that sequentially applies the current parser and a specified second parser,
-    /// returning the result of the first parser with ignoring the result of the second.
+    /// returning the result of the first parser while discarding the result of the second.
     /// </returns>
     public static Parser<TResult> ThenIgnore<TResult, T>(this Parser<TResult> parser, Parser<T> ignore) =>
         new ThenIgnoreParser<TResult>(parser, ignore.Void());
@@ -21,7 +21,7 @@ partial class Parser
 
     /// <summary>
     /// Represents a parser that sequentially applies an initial parser and a specified second parser,
-    /// returning the result of the first parser with ignoring the result of the second.
+    /// returning the result of the first parser while discarding the result of the second.
     /// </summary>
     /// <typeparam name="T">The type of the value produced by the first parser.</typeparam>
     /// <param name="parser">The initial parser whose result is returned.</param>

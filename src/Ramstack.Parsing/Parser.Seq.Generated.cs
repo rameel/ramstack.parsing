@@ -14,7 +14,7 @@ namespace Ramstack.Parsing;
 partial class Parser
 {
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -25,7 +25,7 @@ partial class Parser
         new SeqParser<T1, T2>(parser1, parser2);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -36,7 +36,7 @@ partial class Parser
         new VoidSeq2Parser(parser1, parser2);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -48,7 +48,7 @@ partial class Parser
         new SeqParser<T1, T2, T3>(parser1, parser2, parser3);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -60,7 +60,7 @@ partial class Parser
         new VoidSeq3Parser(parser1, parser2, parser3);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -73,7 +73,7 @@ partial class Parser
         new SeqParser<T1, T2, T3, T4>(parser1, parser2, parser3, parser4);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -86,7 +86,7 @@ partial class Parser
         new VoidSeq4Parser(parser1, parser2, parser3, parser4);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -100,7 +100,7 @@ partial class Parser
         new SeqParser<T1, T2, T3, T4, T5>(parser1, parser2, parser3, parser4, parser5);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -114,7 +114,7 @@ partial class Parser
         new VoidSeq5Parser(parser1, parser2, parser3, parser4, parser5);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -129,7 +129,7 @@ partial class Parser
         new SeqParser<T1, T2, T3, T4, T5, T6>(parser1, parser2, parser3, parser4, parser5, parser6);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -144,7 +144,7 @@ partial class Parser
         new VoidSeq6Parser(parser1, parser2, parser3, parser4, parser5, parser6);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -160,7 +160,7 @@ partial class Parser
         new SeqParser<T1, T2, T3, T4, T5, T6, T7>(parser1, parser2, parser3, parser4, parser5, parser6, parser7);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -176,7 +176,7 @@ partial class Parser
         new VoidSeq7Parser(parser1, parser2, parser3, parser4, parser5, parser6, parser7);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -193,7 +193,7 @@ partial class Parser
         new SeqParser<T1, T2, T3, T4, T5, T6, T7, T8>(parser1, parser2, parser3, parser4, parser5, parser6, parser7, parser8);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -210,7 +210,7 @@ partial class Parser
         new VoidSeq8Parser(parser1, parser2, parser3, parser4, parser5, parser6, parser7, parser8);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -228,7 +228,7 @@ partial class Parser
         new SeqParser<T1, T2, T3, T4, T5, T6, T7, T8, T9>(parser1, parser2, parser3, parser4, parser5, parser6, parser7, parser8, parser9);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -246,7 +246,7 @@ partial class Parser
         new VoidSeq9Parser(parser1, parser2, parser3, parser4, parser5, parser6, parser7, parser8, parser9);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -265,7 +265,7 @@ partial class Parser
         new SeqParser<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(parser1, parser2, parser3, parser4, parser5, parser6, parser7, parser8, parser9, parser10);
 
     /// <summary>
-    /// Creates a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Creates a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     /// <param name="parser1">The parser instance.</param>
     /// <param name="parser2">The parser instance.</param>
@@ -286,7 +286,7 @@ partial class Parser
     #region Inner type: SeqParser<T1, T2>
 
     /// <summary>
-    /// Represents a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class SeqParser<T1, T2> : Parser<(T1, T2)>
     {
@@ -330,7 +330,7 @@ partial class Parser
     #region Inner type: VoidSeq2Parser
 
     /// <summary>
-    /// Represents a specialized parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a specialized parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class VoidSeq2Parser : Parser<Unit>
     {
@@ -369,7 +369,7 @@ partial class Parser
     #region Inner type: SeqParser<T1, T2, T3>
 
     /// <summary>
-    /// Represents a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class SeqParser<T1, T2, T3> : Parser<(T1, T2, T3)>
     {
@@ -416,7 +416,7 @@ partial class Parser
     #region Inner type: VoidSeq3Parser
 
     /// <summary>
-    /// Represents a specialized parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a specialized parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class VoidSeq3Parser : Parser<Unit>
     {
@@ -458,7 +458,7 @@ partial class Parser
     #region Inner type: SeqParser<T1, T2, T3, T4>
 
     /// <summary>
-    /// Represents a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class SeqParser<T1, T2, T3, T4> : Parser<(T1, T2, T3, T4)>
     {
@@ -508,7 +508,7 @@ partial class Parser
     #region Inner type: VoidSeq4Parser
 
     /// <summary>
-    /// Represents a specialized parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a specialized parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class VoidSeq4Parser : Parser<Unit>
     {
@@ -553,7 +553,7 @@ partial class Parser
     #region Inner type: SeqParser<T1, T2, T3, T4, T5>
 
     /// <summary>
-    /// Represents a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class SeqParser<T1, T2, T3, T4, T5> : Parser<(T1, T2, T3, T4, T5)>
     {
@@ -606,7 +606,7 @@ partial class Parser
     #region Inner type: VoidSeq5Parser
 
     /// <summary>
-    /// Represents a specialized parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a specialized parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class VoidSeq5Parser : Parser<Unit>
     {
@@ -654,7 +654,7 @@ partial class Parser
     #region Inner type: SeqParser<T1, T2, T3, T4, T5, T6>
 
     /// <summary>
-    /// Represents a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class SeqParser<T1, T2, T3, T4, T5, T6> : Parser<(T1, T2, T3, T4, T5, T6)>
     {
@@ -710,7 +710,7 @@ partial class Parser
     #region Inner type: VoidSeq6Parser
 
     /// <summary>
-    /// Represents a specialized parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a specialized parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class VoidSeq6Parser : Parser<Unit>
     {
@@ -761,7 +761,7 @@ partial class Parser
     #region Inner type: SeqParser<T1, T2, T3, T4, T5, T6, T7>
 
     /// <summary>
-    /// Represents a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class SeqParser<T1, T2, T3, T4, T5, T6, T7> : Parser<(T1, T2, T3, T4, T5, T6, T7)>
     {
@@ -820,7 +820,7 @@ partial class Parser
     #region Inner type: VoidSeq7Parser
 
     /// <summary>
-    /// Represents a specialized parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a specialized parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class VoidSeq7Parser : Parser<Unit>
     {
@@ -874,7 +874,7 @@ partial class Parser
     #region Inner type: SeqParser<T1, T2, T3, T4, T5, T6, T7, T8>
 
     /// <summary>
-    /// Represents a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class SeqParser<T1, T2, T3, T4, T5, T6, T7, T8> : Parser<(T1, T2, T3, T4, T5, T6, T7, T8)>
     {
@@ -936,7 +936,7 @@ partial class Parser
     #region Inner type: VoidSeq8Parser
 
     /// <summary>
-    /// Represents a specialized parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a specialized parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class VoidSeq8Parser : Parser<Unit>
     {
@@ -993,7 +993,7 @@ partial class Parser
     #region Inner type: SeqParser<T1, T2, T3, T4, T5, T6, T7, T8, T9>
 
     /// <summary>
-    /// Represents a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class SeqParser<T1, T2, T3, T4, T5, T6, T7, T8, T9> : Parser<(T1, T2, T3, T4, T5, T6, T7, T8, T9)>
     {
@@ -1058,7 +1058,7 @@ partial class Parser
     #region Inner type: VoidSeq9Parser
 
     /// <summary>
-    /// Represents a specialized parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a specialized parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class VoidSeq9Parser : Parser<Unit>
     {
@@ -1118,7 +1118,7 @@ partial class Parser
     #region Inner type: SeqParser<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
 
     /// <summary>
-    /// Represents a parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class SeqParser<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> : Parser<(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)>
     {
@@ -1186,7 +1186,7 @@ partial class Parser
     #region Inner type: VoidSeq10Parser
 
     /// <summary>
-    /// Represents a specialized parser that applies the specified parsers sequentially that succeeds only when all parsers succeed.
+    /// Represents a specialized parser that runs the specified parsers in sequence and succeeds only if they all succeed.
     /// </summary>
     private sealed class VoidSeq10Parser : Parser<Unit>
     {

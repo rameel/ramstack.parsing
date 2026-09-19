@@ -47,10 +47,7 @@ internal static class CharClassParser
             if (end < 0)
                 Error_InvalidPattern(pattern);
 
-            // I skipped adding support for named Unicode blocks (like \p{Hiragana})
-            // since it seems many parser users don't need it. If I'm wrong about that,
-            // it can be fixed quickly - just a couple lines of code. For now though,
-            // range definitions can be used instead.
+            // Named Unicode blocks are not supported. Use explicit character ranges instead.
             // Unicode Block Names: https://www.unicode.org/Public/16.0.0/ucd/Blocks.txt
 
             var key = pattern[(p + 3)..end];
@@ -211,7 +208,7 @@ internal static class CharClassParser
 
     [DoesNotReturn]
     private static void Error_InvalidUnicodeSequence(string pattern) =>
-        throw new ArgumentException($"Invalid pattern '{pattern}'. Unrecognized unicode sequence.");
+        throw new ArgumentException($"Invalid pattern '{pattern}'. Invalid Unicode escape sequence.");
 
     [DoesNotReturn]
     private static void Error_UnknownProperty(string pattern, string name) =>

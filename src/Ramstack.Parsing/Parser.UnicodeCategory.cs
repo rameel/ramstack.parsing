@@ -3,21 +3,21 @@ namespace Ramstack.Parsing;
 partial class Parser
 {
     /// <summary>
-    /// Creates a parser that matches the specified Unicode category of the character.
+    /// Creates a parser that matches a character in the specified Unicode category.
     /// </summary>
     /// <param name="category">The <see cref="UnicodeCategory"/> of the character to match.</param>
     /// <returns>
-    /// A parser that parses the specified Unicode category of the character.
+    /// A parser that matches a character in the specified Unicode category.
     /// </returns>
     public static Parser<char> L(UnicodeCategory category) =>
         L((GeneralUnicodeCategory)(1 << (int)category));
 
     /// <summary>
-    /// Creates a parser that matches the specified Unicode categories of the character.
+    /// Creates a parser that matches a character in any of the specified Unicode categories.
     /// </summary>
-    /// <param name="categories">The <see cref="GeneralUnicodeCategory"/> of the character to match.</param>
+    /// <param name="categories">The Unicode categories to match.</param>
     /// <returns>
-    /// A parser that parses the specified Unicode categories of the character.
+    /// A parser that matches a character in any of the specified Unicode categories.
     /// </returns>
     public static Parser<char> L(GeneralUnicodeCategory categories)
     {

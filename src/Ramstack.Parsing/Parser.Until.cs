@@ -12,7 +12,8 @@ partial class Parser
     /// <param name="terminator">The parser that determines when to stop.</param>
     /// <returns>
     /// A parser that applies <paramref name="parser"/> zero or more times, stopping when
-    /// <paramref name="terminator"/> succeeds, and returns an array of the results produced by <paramref name="parser"/>.
+    /// <paramref name="terminator"/> succeeds, and returns a list of the results produced by <paramref name="parser"/>.
+    /// The terminator is not consumed.
     /// </returns>
     public static Parser<List<T>> Until<T, TTerminator>(this Parser<T> parser, Parser<TTerminator> terminator) =>
         new UntilParser<T>(parser, terminator.Void());
@@ -26,7 +27,8 @@ partial class Parser
     /// <param name="terminator">The parser that determines when to stop.</param>
     /// <returns>
     /// A parser that applies <paramref name="parser"/> zero or more times, stopping when
-    /// <paramref name="terminator"/> succeeds, and returns an array of the results produced by <paramref name="parser"/>.
+    /// <paramref name="terminator"/> succeeds, and returns a list of the results produced by <paramref name="parser"/>.
+    /// The terminator is not consumed.
     /// </returns>
     public static Parser<List<T>> Until<T>(this Parser<T> parser, Parser<Unit> terminator) =>
         new UntilParser<T>(parser, terminator);
@@ -70,14 +72,8 @@ partial class Parser
                 //
                 if (context.Position == position)
                 {
-                    //
-                    // Parsing failed in this case because:
-                    // 1. The main parser matched, but the position remained unchanged.
-                    // 2. The terminator didn't match before, and it won't match now.
-                    // 3. Rechecking would yield the same result, making it redundant.
-                    // 4. Without a terminator, parsing is considered unsuccessful, and it will never match now.
-                    // 5. If a parser matches but the position remains unchanged, it results in an infinite loop.
-                    //
+                    // The parser succeeded without consuming input.
+                    // Stop to avoid an infinite loop.
                     break;
                 }
             }
@@ -129,14 +125,8 @@ partial class Parser
                 //
                 if (context.Position == position)
                 {
-                    //
-                    // Parsing failed in this case because:
-                    // 1. The main parser matched, but the position remained unchanged.
-                    // 2. The terminator didn't match before, and it won't match now.
-                    // 3. Rechecking would yield the same result, making it redundant.
-                    // 4. Without a terminator, parsing is considered unsuccessful, and it will never match now.
-                    // 5. If a parser matches but the position remains unchanged, it results in an infinite loop.
-                    //
+                    // The parser succeeded without consuming input.
+                    // Stop to avoid an infinite loop.
                     break;
                 }
             }

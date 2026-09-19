@@ -4,14 +4,14 @@ partial class Parser
 {
     /// <summary>
     /// Creates an optional parser that always succeeds, returning the parsed value if successful,
-    /// or a default value of the <typeparamref name="T"/> if the specified parser fails.
+    /// or the default value of <typeparamref name="T"/> if the specified parser fails.
     /// </summary>
     /// <typeparam name="T">The type of value produced by the initial parser.</typeparam>
     /// <param name="parser">The parser to be treated as optional.
-    /// If this parser fails to parse, the method will return the default value of the type.</param>
+    /// If parsing fails, the resulting parser returns the default value of <typeparamref name="T"/>.</param>
     /// <returns>
     /// A parser that always succeeds, either by producing a value from the original parser
-    /// or by returning the default value of the <typeparamref name="T"/>.
+    /// or by returning the default value of <typeparamref name="T"/>.
     /// </returns>
     public static Parser<T?> DefaultOnFail<T>(this Parser<T> parser) =>
         parser.DefaultOnFail(default!)!;
@@ -22,7 +22,7 @@ partial class Parser
     /// </summary>
     /// <typeparam name="T">The type of value produced by the initial parser.</typeparam>
     /// <param name="parser">The parser to be treated as optional.
-    /// If this parser fails to parse, the method will return the default value of the type.</param>
+    /// If parsing fails, the resulting parser returns <paramref name="defaultValue"/>.</param>
     /// <param name="defaultValue">The default value to return if the specified parser fails to parse.</param>
     /// <returns>
     /// A parser that always succeeds, either by producing a value from the initial parser
@@ -44,7 +44,7 @@ partial class Parser
     /// </summary>
     /// <typeparam name="T">The type of value produced by the initial parser.</typeparam>
     /// <param name="parser">The parser to be treated as optional.
-    /// If this parser fails to parse, the method will return the default value of the type.</param>
+    /// If parsing fails, the resulting parser returns <paramref name="defaultValue"/>.</param>
     /// <param name="defaultValue">The default value to return if the initial parser fails to parse.</param>
     private sealed class DefaultOnFailParser<T>(Parser<T> parser, T defaultValue) : Parser<T>
     {

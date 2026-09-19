@@ -36,7 +36,7 @@ public enum GeneralUnicodeCategory
     TitlecaseLetter = 1 << UnicodeCategory.TitlecaseLetter,
 
     /// <summary>
-    /// Modifier letter character, which is free-standing spacing character
+    /// Modifier letter character, which is a free-standing spacing character
     /// that indicates modifications of a preceding letter.
     /// Signified by the Unicode designation "Lm" (letter, modifier).
     /// </summary>
@@ -70,20 +70,20 @@ public enum GeneralUnicodeCategory
     EnclosingMark = 1 << UnicodeCategory.EnclosingMark,
 
     /// <summary>
-    /// Decimal digit character, that is, a character in the range 0 through 9.
+    /// A decimal digit with a value from 0 to 9, including digits from non-Latin scripts.
     /// Signified by the Unicode designation "Nd" (number, decimal digit).
     /// </summary>
     DecimalDigitNumber = 1 << UnicodeCategory.DecimalDigitNumber,
 
     /// <summary>
     /// Number represented by a letter, instead of a decimal digit,
-    /// for example, the Roman numeral for five, which is "V".
+    /// for example, the Roman numeral five, "Ⅴ" (U+2164).
     /// The indicator is signified by the Unicode designation "Nl" (number, letter).
     /// </summary>
     LetterNumber = 1 << UnicodeCategory.LetterNumber,
 
     /// <summary>
-    /// Number that is neither a decimal digit nor a letter number, for example, the fraction 1/2.
+    /// Number that is neither a decimal digit nor a letter number, for example, the fraction "½" (U+00BD).
     /// The indicator is signified by the Unicode designation "No" (number, other).
     /// </summary>
     OtherNumber = 1 << UnicodeCategory.OtherNumber,
@@ -178,7 +178,7 @@ public enum GeneralUnicodeCategory
     OtherPunctuation = 1 << UnicodeCategory.OtherPunctuation,
 
     /// <summary>
-    /// Mathematical symbol character, such as "+" or "= ".
+    /// Mathematical symbol character, such as "+" or "=".
     /// Signified by the Unicode designation "Sm" (symbol, math).
     /// </summary>
     MathSymbol = 1 << UnicodeCategory.MathSymbol,
@@ -190,9 +190,7 @@ public enum GeneralUnicodeCategory
     CurrencySymbol = 1 << UnicodeCategory.CurrencySymbol,
 
     /// <summary>
-    /// Modifier symbol character, which indicates modifications of surrounding characters.
-    /// For example, the fraction slash indicates that the number to the left is the numerator
-    /// and the number to the right is the denominator.
+    /// Modifier symbol character, such as the circumflex accent "^" (U+005E).
     /// The indicator is signified by the Unicode designation "Sk" (symbol, modifier).
     /// </summary>
     ModifierSymbol = 1 << UnicodeCategory.ModifierSymbol,
@@ -204,7 +202,7 @@ public enum GeneralUnicodeCategory
     OtherSymbol = 1 << UnicodeCategory.OtherSymbol,
 
     /// <summary>
-    /// Character that is not assigned to any Unicode category.
+    /// A code point that has not been assigned to a character.
     /// Signified by the Unicode designation "Cn" (other, not assigned).
     /// </summary>
     OtherNotAssigned = 1 << UnicodeCategory.OtherNotAssigned,
@@ -263,7 +261,7 @@ public enum GeneralUnicodeCategory
 
     /// <summary>
     /// Represents any symbol category, including math, currency, modifier, and other symbols.
-    /// Signified by the Unicode designation "S" ("Sm", "Sc", "Sk", "So", ).
+    /// Signified by the Unicode designation "S" ("Sm", "Sc", "Sk", "So").
     /// </summary>
     Symbol =
         MathSymbol
@@ -272,7 +270,7 @@ public enum GeneralUnicodeCategory
         | OtherSymbol,
 
     /// <summary>
-    /// Represents any control category, including control, format, surrogate, private use, and other not assigned characters.
+    /// Includes control, format, surrogate, private-use, and unassigned code points.
     /// Signified by the Unicode designation "C" ("Cc", "Cf", "Cs", "Co", "Cn").
     /// </summary>
     Other =

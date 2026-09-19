@@ -22,8 +22,8 @@ partial class Parser
     /// returning the result of the main parser.
     /// </summary>
     /// <typeparam name="T">The type of the value produced by the main parser.</typeparam>
-    /// <typeparam name="TBefore">The type of the parser applied before the main parser (ignored in the final result).</typeparam>
-    /// <typeparam name="TAfter">The type of the parser applied after the main parser (ignored in the final result).</typeparam>
+    /// <typeparam name="TBefore">The type of value produced by the parser applied before the main parser (ignored in the final result).</typeparam>
+    /// <typeparam name="TAfter">The type of value produced by the parser applied after the main parser (ignored in the final result).</typeparam>
     /// <param name="parser">The main parser whose result will be returned.</param>
     /// <param name="before">The parser to apply before the main parser.</param>
     /// <param name="after">The parser to apply after the main parser.</param>

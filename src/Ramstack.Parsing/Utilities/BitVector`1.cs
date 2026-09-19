@@ -51,12 +51,12 @@ internal readonly unsafe struct BitVector<T> where T : unmanaged
     }
 
     /// <summary>
-    /// Returns an array of the <see cref="CharClassRange"/> object representing the internal bitset,
+    /// Returns an array of <see cref="CharClassRange"/> objects representing the internal bitset,
     /// applying the specified offset to each character value.
     /// </summary>
     /// <param name="offset">The offset to apply to the character values. Must be non-negative.</param>
     /// <returns>
-    /// An array of the <see cref="CharClassRange"/> object representing the characters indicated by the set bits
+    /// An array of <see cref="CharClassRange"/> objects representing the characters indicated by the set bits
     /// in the internal representation.
     /// </returns>
     public CharClassRange[] ToCharClassRanges(int offset)

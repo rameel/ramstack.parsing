@@ -2,11 +2,11 @@
 [![NuGet](https://img.shields.io/nuget/v/Ramstack.Parsing.svg)](https://nuget.org/packages/Ramstack.Parsing)
 [![MIT](https://img.shields.io/github/license/rameel/ramstack.parsing)](https://github.com/rameel/ramstack.parsing/blob/main/LICENSE)
 
-A blazing-fast, lightweight, and intuitive parser combinator library for .NET.
+A fast, lightweight parser combinator library for .NET.
 
 ## Getting Started
 
-To install the `Ramstack.Parsing` [NuGet package](https://www.nuget.org/packages/Ramstack.Parsing) to your project, run the following command:
+To add the `Ramstack.Parsing` [NuGet package](https://www.nuget.org/packages/Ramstack.Parsing) to your project, run:
 ```shell
 dotnet add package Ramstack.Parsing
 ```
@@ -59,7 +59,7 @@ private static Parser<double> CreateParser()
 }
 ```
 
-As you can see, the parser is highly readable and easy to define. Using it is just as simple:
+Use the parser as follows:
 
 ```csharp
 var result = Calc.Parse(expression);
@@ -73,8 +73,8 @@ else
     Console.WriteLine(result.ErrorMessage);
 
     //
-    // result.ToString() prints the parsed value or an error message
-    // depending on the parsing status
+    // result.ToString() returns the parsed value as a string,
+    // or an error message if parsing fails.
     //
     // Console.WriteLine(result);
     //

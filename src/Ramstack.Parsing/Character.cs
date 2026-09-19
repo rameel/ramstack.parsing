@@ -13,12 +13,12 @@ public static class Character
     public static Parser<char> Letter => L(GeneralUnicodeCategory.Letter).As("letter");
 
     /// <summary>
-    /// Gets a parser that matches a single upper letter character.
+    /// Gets a parser that matches a single uppercase letter.
     /// </summary>
     public static Parser<char> Uppercase => L(GeneralUnicodeCategory.UppercaseLetter).As("uppercase letter");
 
     /// <summary>
-    /// Gets a parser that matches a single lower letter character.
+    /// Gets a parser that matches a single lowercase letter.
     /// </summary>
     public static Parser<char> Lowercase => L(GeneralUnicodeCategory.LowercaseLetter).As("lowercase letter");
 

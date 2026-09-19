@@ -41,7 +41,7 @@ partial class Literal
         {
             return kind is NumberKind.Auto or NumberKind.Float
                 ? new NumberLiteral<T, FloatLiteralKind>(name ?? "floating-point number", NumberStyles.Float)
-                : throw new ArgumentException($"The number kind {kind} are not supported on floating-point types.", nameof(kind));
+                : throw new ArgumentException($"Number kind {kind} is not supported for floating-point types.", nameof(kind));
         }
 
         if (typeof(T) == typeof(sbyte)
@@ -72,11 +72,11 @@ partial class Literal
             #endif
 
             throw new ArgumentException(
-                $"The number kind {kind} are not supported on integer numeric types.",
+                $"Number kind {kind} is not supported for integer types.",
                 nameof(kind));
         }
 
-        throw new InvalidOperationException($"The specified type {typeof(T)} are not supported.");
+        throw new InvalidOperationException($"Type {typeof(T)} is not supported.");
     }
 
     private static int TryParseNumber<TKind>(ref char span, int length, int p)

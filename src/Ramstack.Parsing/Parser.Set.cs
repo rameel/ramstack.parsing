@@ -33,7 +33,7 @@ partial class Parser
 
     /// <summary>
     /// Creates a parser that matches any single character within the specified range set.
-    /// For example, use <c>Set("a-z0-9")</c> to parse any alphanumeric character.
+    /// For example, use <c>Set("a-z0-9")</c> to match a lowercase ASCII letter or an ASCII digit.
     /// </summary>
     /// <remarks>
     /// The <c>Set</c> method supports a wide range of character classes and escape sequences, including:
@@ -97,7 +97,7 @@ partial class Parser
     ///     <item><description>Anchors (e.g., <c>^</c>, <c>$</c>, <c>\A</c>, <c>\Z</c>, <c>\z</c>, <c>\G</c>, <c>\b</c>, <c>\B</c>).</description></item>
     /// </list>
     /// </remarks>
-    /// <param name="set">A string representing a character classes, e.g., <c>"A-Za-z\p{Nd}"</c>.</param>
+    /// <param name="set">A character class without surrounding square brackets, e.g., <c>@"A-Za-z\p{Nd}"</c>.</param>
     /// <returns>
     /// A parser that matches any single character within the specified range sets.
     /// </returns>

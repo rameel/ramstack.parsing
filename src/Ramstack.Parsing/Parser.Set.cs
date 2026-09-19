@@ -158,7 +158,7 @@ partial class Parser
             list.Add(
                 (
                     comparisons: width != 0 ? (count + width - 1 & -width) >>> BitOperations.Log2((uint)width) : count,
-                    consumption: width != 0 ? (count + width - 1) & -width : count,
+                    consumption: width != 0 ? (count + width - 1 & -width) : count,
                     parser: new RangeParser<char, ContainsSearcher>(
                         new ContainsSearcher(@class.GetSymbols(simdAligned: true)),
                         categories) { Name = name }

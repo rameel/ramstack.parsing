@@ -5,6 +5,10 @@ partial class Parser
     /// <summary>
     /// Creates a parser that repeatedly applies the main parser, interleaved with a separator specified by another parser.
     /// </summary>
+    /// <remarks>
+    /// If an item and its following separator both succeed without consuming input, repetition stops
+    /// once the minimum number of items has been matched. The successfully parsed item is included in the result.
+    /// </remarks>
     /// <typeparam name="T">The type of the value produced by the main parser.</typeparam>
     /// <typeparam name="TSeparator">The type of the value produced by the separator parser.</typeparam>
     /// <param name="parser">The main parser.</param>
@@ -40,6 +44,8 @@ partial class Parser
 
             do
             {
+                var position = context.Position;
+
                 if (!parser.TryParse(ref context, out var result))
                     break;
 
@@ -47,6 +53,10 @@ partial class Parser
 
                 separatorBookmark = context.BookmarkPosition();
                 if (!separator.TryParse(ref context, out _))
+                    break;
+
+                // Stop empty matches once the minimum count has been reached.
+                if (list.Count >= min && context.Position == position)
                     break;
             }
             while (list.Count < max);
@@ -113,6 +123,8 @@ partial class Parser
 
             do
             {
+                var position = context.Position;
+
                 if (!_parser.TryParse(ref context, out value))
                     break;
 
@@ -120,6 +132,10 @@ partial class Parser
 
                 separatorBookmark = context.BookmarkPosition();
                 if (!_separator.TryParse(ref context, out value))
+                    break;
+
+                // Stop empty matches once the minimum count has been reached.
+                if (count >= _min && context.Position == position)
                     break;
             }
             while (count < _max);

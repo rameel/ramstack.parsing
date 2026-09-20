@@ -11,6 +11,8 @@ partial class Parser
     /// // 1 + 2 + 3 + 4 => (((1 + 2) + 3) + 4)
     /// var sum = number.Fold(OneOf("+-"), (l, r, op) => op == '+' ? l + r : l - r);
     /// </code>
+    /// If an operator-operand pair consumes no input, it is discarded and parsing stops
+    /// without calling the reduction function for that pair.
     /// </remarks>
     /// <typeparam name="T">The type of the value produced by the main parser.</typeparam>
     /// <typeparam name="TOperator">The type of the operator token produced by the parser.</typeparam>
@@ -34,6 +36,8 @@ partial class Parser
     /// // Number ("^" Number)*
     /// var power = number.FoldR(L('^'), (l, r, op) => Math.Pow(l, r));
     /// </code>
+    /// If an operator-operand pair consumes no input, it is discarded and parsing stops
+    /// without calling the reduction function for that pair.
     /// </remarks>
     /// <typeparam name="T">The type of value produced by the main parser.</typeparam>
     /// <typeparam name="TOperator">The type of the operator token produced by the parser.</typeparam>
@@ -71,7 +75,9 @@ partial class Parser
                 {
                     var rollback = context.BookmarkPosition();
 
-                    if (op.TryParse(ref context, out var o) && parser.TryParse(ref context, out v))
+                    if (op.TryParse(ref context, out var o)
+                        && parser.TryParse(ref context, out v)
+                        && context.Position != rollback.Position)
                     {
                         result = reduce(result, v, o);
                         continue;
@@ -126,7 +132,9 @@ partial class Parser
                 {
                     var rollback = context.BookmarkPosition();
 
-                    if (op.TryParse(ref context, out var o) && parser.TryParse(ref context, out v))
+                    if (op.TryParse(ref context, out var o)
+                        && parser.TryParse(ref context, out v)
+                        && context.Position != rollback.Position)
                     {
                         list.Add((o, v));
                         continue;

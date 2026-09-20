@@ -14,13 +14,19 @@ partial class Parser
     /// <param name="parser">The main parser.</param>
     /// <param name="separator">The parser that identifies the separators placed between the elements parsed by the main parser.</param>
     /// <param name="allowTrailing"><see langword="true" /> if a trailing separator is allowed; otherwise, <see langword="false" />.</param>
-    /// <param name="min">The minimum number of repetitions.</param>
-    /// <param name="max">The maximum number of repetitions.</param>
+    /// <param name="min">The minimum number of repetitions. Must be non-negative and no greater than <paramref name="max"/>.</param>
+    /// <param name="max">The maximum number of repetitions. Must be greater than zero.</param>
     /// <returns>
     /// A parser that repeatedly applies the main parser, interleaved with the specified separator.
     /// </returns>
-    public static Parser<List<T>> Separated<T, TSeparator>(this Parser<T> parser, Parser<TSeparator> separator, bool allowTrailing = false, int min = 0, int max = int.MaxValue) =>
-        new SeparatedParser<T>(parser, separator.Void(), allowTrailing, min, max);
+    public static Parser<List<T>> Separated<T, TSeparator>(this Parser<T> parser, Parser<TSeparator> separator, bool allowTrailing = false, int min = 0, int max = int.MaxValue)
+    {
+        Argument.ThrowIfNegative(min);
+        Argument.ThrowIfNegativeOrZero(max);
+        Argument.ThrowIfGreaterThan(min, max);
+
+        return new SeparatedParser<T>(parser, separator.Void(), allowTrailing, min, max);
+    }
 
     #region Inner type: SeparatedParser
 

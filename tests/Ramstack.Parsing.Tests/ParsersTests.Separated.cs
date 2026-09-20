@@ -119,6 +119,8 @@ partial class ParsersTests
 
         Assert.That(success, Is.True);
         Assert.That(value, Is.EqualTo(Enumerable.Repeat(7, expectedCount)));
+        Assert.That(item.Attempts, Is.EqualTo(expectedCount));
+
         Assert.That(context.Position, Is.EqualTo(1));
         Assert.That(context.MatchedSegment.Index, Is.EqualTo(1));
         Assert.That(context.MatchedSegment.Length, Is.Zero);
@@ -142,6 +144,7 @@ partial class ParsersTests
 
         Assert.That(success, Is.True);
         Assert.That(item.Attempts, Is.EqualTo(expectedCount));
+
         Assert.That(context.Position, Is.EqualTo(1));
         Assert.That(context.MatchedSegment.Index, Is.EqualTo(1));
         Assert.That(context.MatchedSegment.Length, Is.Zero);
@@ -164,6 +167,7 @@ partial class ParsersTests
         Assert.That(success, Is.True);
         Assert.That(value, Is.EqualTo(new[] { 12, 7 }));
         Assert.That(item.Attempts, Is.EqualTo(2));
+
         Assert.That(context.Position, Is.EqualTo(3));
         Assert.That(context.MatchedSegment.Index, Is.EqualTo(1));
         Assert.That(context.MatchedSegment.Length, Is.EqualTo(2));
@@ -185,6 +189,7 @@ partial class ParsersTests
 
         Assert.That(success, Is.True);
         Assert.That(item.Attempts, Is.EqualTo(2));
+
         Assert.That(context.Position, Is.EqualTo(3));
         Assert.That(context.MatchedSegment.Index, Is.EqualTo(1));
         Assert.That(context.MatchedSegment.Length, Is.EqualTo(2));
@@ -309,13 +314,23 @@ partial class ParsersTests
         Assert.That(context.ToString(), Is.EqualTo("(1:4) Expected 'a'"));
     }
 
-    [TestCase(-1, 1, "min")]
-    [TestCase(0, -1, "max")]
-    [TestCase(0, 0, "max")]
-    [TestCase(2, 1, "min")]
-    public void Separated_InvalidBounds_ThrowsArgumentOutOfRangeException(int min, int max, string parameter)
+    [Test]
+    public void Separated_InvalidBounds_ThrowsArgumentOutOfRangeException()
     {
-        var exception = Assert.Throws<ArgumentOutOfRangeException>(() => L('a').Separated(L(','), min: min, max: max));
-        Assert.That(exception!.ParamName, Is.EqualTo(parameter));
+        Assert.That(
+            () => L('a').Separated(L(','), min: -1, max: 1),
+            Throws.TypeOf<ArgumentOutOfRangeException>().With.Property(nameof(ArgumentException.ParamName)).EqualTo("min"));
+
+        Assert.That(
+            () => L('a').Separated(L(','), min: 0, max: -1),
+            Throws.TypeOf<ArgumentOutOfRangeException>().With.Property(nameof(ArgumentException.ParamName)).EqualTo("max"));
+
+        Assert.That(
+            () => L('a').Separated(L(','), min: 0, max: 0),
+            Throws.TypeOf<ArgumentOutOfRangeException>().With.Property(nameof(ArgumentException.ParamName)).EqualTo("max"));
+
+        Assert.That(
+            () => L('a').Separated(L(','), min: 2, max: 1),
+            Throws.TypeOf<ArgumentOutOfRangeException>().With.Property(nameof(ArgumentException.ParamName)).EqualTo("min"));
     }
 }

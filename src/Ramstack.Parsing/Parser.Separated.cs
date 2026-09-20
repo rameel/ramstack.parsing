@@ -9,10 +9,10 @@ partial class Parser
     /// <typeparam name="TSeparator">The type of the value produced by the separator parser.</typeparam>
     /// <param name="parser">The main parser.</param>
     /// <param name="separator">The parser that identifies the separators placed between the elements parsed by the main parser.</param>
-    /// <param name="allowTrailing"><see langword="true" /> if trailing separator is allowed; otherwise, <see langword="false" />.</param>
+    /// <param name="allowTrailing"><see langword="true" /> if a trailing separator is allowed; otherwise, <see langword="false" />.</param>
     /// <param name="min">The minimum number of repetitions.</param>
     /// <param name="max">The maximum number of repetitions.</param>
-    /// /// <returns>
+    /// <returns>
     /// A parser that repeatedly applies the main parser, interleaved with the specified separator.
     /// </returns>
     public static Parser<List<T>> Separated<T, TSeparator>(this Parser<T> parser, Parser<TSeparator> separator, bool allowTrailing = false, int min = 0, int max = int.MaxValue) =>
@@ -26,7 +26,7 @@ partial class Parser
     /// <typeparam name="T">The type of the value produced by the main parser.</typeparam>
     /// <param name="parser">The main parser.</param>
     /// <param name="separator">The parser that identifies the separators placed between the elements parsed by the main parser.</param>
-    /// <param name="allowTrailing"><see langword="true" /> if trailing separator is allowed; otherwise, <see langword="false" />.</param>
+    /// <param name="allowTrailing"><see langword="true" /> if a trailing separator is allowed; otherwise, <see langword="false" />.</param>
     /// <param name="min">The minimum number of repetitions.</param>
     /// <param name="max">The maximum number of repetitions.</param>
     private sealed class SeparatedParser<T>(Parser<T> parser, Parser<Unit> separator, bool allowTrailing, int min, int max) : Parser<List<T>>
@@ -76,8 +76,8 @@ partial class Parser
     #region Inner type: VoidSeparatorParser
 
     /// <summary>
-    /// Represents a specialized parser used as an optimization that discards the parsed result,
-    /// that repeatedly applies the main parser, interleaved with a separator specified by another parser.
+    /// Represents a parser that repeatedly applies the main parser with separators between matches
+    /// and discards the parsed values.
     /// </summary>
     private sealed class VoidSeparatedParser : Parser<Unit>
     {
@@ -92,7 +92,7 @@ partial class Parser
         /// </summary>
         /// <param name="parser">The main parser.</param>
         /// <param name="separator">The parser that identifies the separators placed between the elements parsed by the main parser.</param>
-        /// <param name="allowTrailing"><see langword="true" /> if trailing separator is allowed; otherwise, <see langword="false" />.</param>
+        /// <param name="allowTrailing"><see langword="true" /> if a trailing separator is allowed; otherwise, <see langword="false" />.</param>
         /// <param name="min">The minimum number of repetitions.</param>
         /// <param name="max">The maximum number of repetitions.</param>
         public VoidSeparatedParser(Parser<Unit> parser, Parser<Unit> separator, bool allowTrailing, int min, int max)

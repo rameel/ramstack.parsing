@@ -35,7 +35,7 @@ partial class Parser
     /// var power = number.FoldR(L('^'), (l, r, op) => Math.Pow(l, r));
     /// </code>
     /// </remarks>
-    /// <typeparam name="T">The type of value produces by the main parser.</typeparam>
+    /// <typeparam name="T">The type of value produced by the main parser.</typeparam>
     /// <typeparam name="TOperator">The type of the operator token produced by the parser.</typeparam>
     /// <param name="parser">The main parser that matches a value.</param>
     /// <param name="op">The operator parser that matches an operator token.</param>
@@ -51,7 +51,7 @@ partial class Parser
     /// <summary>
     /// Represents a left-associative parser.
     /// </summary>
-    /// <typeparam name="T">The type of value produces by the main parser.</typeparam>
+    /// <typeparam name="T">The type of value produced by the main parser.</typeparam>
     /// <typeparam name="TOperator">The type of the operator token produced by the parser.</typeparam>
     /// <param name="parser">The main parser that matches a value.</param>
     /// <param name="op">The operator parser that matches an operator token.</param>
@@ -105,7 +105,7 @@ partial class Parser
     /// <summary>
     /// Represents a right-associative parser.
     /// </summary>
-    /// <typeparam name="T">The type of value produces by the main parser.</typeparam>
+    /// <typeparam name="T">The type of value produced by the main parser.</typeparam>
     /// <typeparam name="TOperator">The type of the operator token produced by the parser.</typeparam>
     /// <param name="parser">The main parser that matches a value.</param>
     /// <param name="op">The operator parser that matches an operator token.</param>

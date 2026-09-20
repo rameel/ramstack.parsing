@@ -117,14 +117,14 @@ partial class Parser
         Repeat(parser, count, count);
 
     /// <summary>
-    /// Creates a parser that applies the specified parser a defined number of times.
+    /// Creates a parser that applies the specified parser between <paramref name="min"/> and <paramref name="max"/> times, inclusive.
     /// </summary>
     /// <typeparam name="T">The type of the value produced by the specified parser.</typeparam>
-    /// <param name="parser">The <see cref="Parser{T}"/> to apply the specified number of times.</param>
-    /// <param name="min">Minimum number of repetitions.</param>
-    /// <param name="max">Maximum number of repetitions.</param>
+    /// <param name="parser">The parser to apply repeatedly.</param>
+    /// <param name="min">The minimum number of repetitions.</param>
+    /// <param name="max">The maximum number of repetitions.</param>
     /// <returns>
-    /// A parser that applies the specified parser a defined number of times.
+    /// A parser that applies the specified parser between <paramref name="min"/> and <paramref name="max"/> times, inclusive.
     /// </returns>
     public static Parser<List<T>> Repeat<T>(this Parser<T> parser, int min, int max)
     {
@@ -138,13 +138,13 @@ partial class Parser
     }
 
     /// <summary>
-    /// Creates a parser that applies the specified parser a defined number of times.
+    /// Creates a parser that applies the specified parser between <paramref name="min"/> and <paramref name="max"/> times, inclusive.
     /// </summary>
-    /// <param name="parser">The <see cref="Parser{T}"/> to apply the specified number of times.</param>
-    /// <param name="min">Minimum number of repetitions.</param>
-    /// <param name="max">Maximum number of repetitions.</param>
+    /// <param name="parser">The parser to apply repeatedly.</param>
+    /// <param name="min">The minimum number of repetitions.</param>
+    /// <param name="max">The maximum number of repetitions.</param>
     /// <returns>
-    /// A parser that applies the specified parser a defined number of times.
+    /// A parser that applies the specified parser between <paramref name="min"/> and <paramref name="max"/> times, inclusive.
     /// </returns>
     public static Parser<Unit> Repeat(this Parser<Unit> parser, int min, int max)
     {

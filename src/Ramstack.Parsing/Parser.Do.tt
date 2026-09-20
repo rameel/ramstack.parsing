@@ -39,7 +39,7 @@ partial class Parser
     /// Represents a parser that applies a transformation function to the value produced by the specified parser.
     /// </summary>
     /// <param name="parser">The parser whose output will be transformed.</param>
-    /// <param name="func">The function  used to transform the parser's output.</param>
+    /// <param name="func">The function used to transform the parser's output.</param>
     private sealed class DoParser<<#=GenerateGenericParameters(arity)#>, TResult>(Parser<(<#=GenerateGenericParameters(arity)#>)> parser, Func<<#=GenerateGenericParameters(arity)#>, TResult> func) : Parser<TResult>
     {
         /// <inheritdoc />

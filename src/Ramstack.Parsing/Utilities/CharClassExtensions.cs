@@ -302,7 +302,7 @@ internal static class CharClassExtensions
     /// <summary>
     /// Formats the specified character as a printable string.
     /// </summary>
-    /// <param name="sb">The string buffer to append the formatted string.</param>
+    /// <param name="sb">The buffer to append the formatted string to.</param>
     /// <param name="c">The character to format.</param>
     /// <param name="controls">The control characters that should be escaped.</param>
     private static void Format(ref StringBuffer sb, char c, string controls = "")
@@ -342,7 +342,7 @@ internal static class CharClassExtensions
     /// <summary>
     /// Formats the specified Unicode categories as a printable string.
     /// </summary>
-    /// <param name="sb">The string buffer to append the formatted string.</param>
+    /// <param name="sb">The buffer to append the formatted string to.</param>
     /// <param name="category">The Unicode categories to format.</param>
     private static void Format(ref StringBuffer sb, GeneralUnicodeCategory category)
     {

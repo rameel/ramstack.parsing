@@ -118,7 +118,7 @@ partial class Parser
     /// Represents a parser that applies a transformation function to the value produced by the specified parser.
     /// </summary>
     /// <param name="parser">The parser whose output will be transformed.</param>
-    /// <param name="func">The function  used to transform the parser's output.</param>
+    /// <param name="func">The function used to transform the parser's output.</param>
     private sealed class DoParser<T1, T2, TResult>(Parser<(T1, T2)> parser, Func<T1, T2, TResult> func) : Parser<TResult>
     {
         /// <inheritdoc />
@@ -151,7 +151,7 @@ partial class Parser
     /// Represents a parser that applies a transformation function to the value produced by the specified parser.
     /// </summary>
     /// <param name="parser">The parser whose output will be transformed.</param>
-    /// <param name="func">The function  used to transform the parser's output.</param>
+    /// <param name="func">The function used to transform the parser's output.</param>
     private sealed class DoParser<T1, T2, T3, TResult>(Parser<(T1, T2, T3)> parser, Func<T1, T2, T3, TResult> func) : Parser<TResult>
     {
         /// <inheritdoc />
@@ -184,7 +184,7 @@ partial class Parser
     /// Represents a parser that applies a transformation function to the value produced by the specified parser.
     /// </summary>
     /// <param name="parser">The parser whose output will be transformed.</param>
-    /// <param name="func">The function  used to transform the parser's output.</param>
+    /// <param name="func">The function used to transform the parser's output.</param>
     private sealed class DoParser<T1, T2, T3, T4, TResult>(Parser<(T1, T2, T3, T4)> parser, Func<T1, T2, T3, T4, TResult> func) : Parser<TResult>
     {
         /// <inheritdoc />
@@ -217,7 +217,7 @@ partial class Parser
     /// Represents a parser that applies a transformation function to the value produced by the specified parser.
     /// </summary>
     /// <param name="parser">The parser whose output will be transformed.</param>
-    /// <param name="func">The function  used to transform the parser's output.</param>
+    /// <param name="func">The function used to transform the parser's output.</param>
     private sealed class DoParser<T1, T2, T3, T4, T5, TResult>(Parser<(T1, T2, T3, T4, T5)> parser, Func<T1, T2, T3, T4, T5, TResult> func) : Parser<TResult>
     {
         /// <inheritdoc />
@@ -250,7 +250,7 @@ partial class Parser
     /// Represents a parser that applies a transformation function to the value produced by the specified parser.
     /// </summary>
     /// <param name="parser">The parser whose output will be transformed.</param>
-    /// <param name="func">The function  used to transform the parser's output.</param>
+    /// <param name="func">The function used to transform the parser's output.</param>
     private sealed class DoParser<T1, T2, T3, T4, T5, T6, TResult>(Parser<(T1, T2, T3, T4, T5, T6)> parser, Func<T1, T2, T3, T4, T5, T6, TResult> func) : Parser<TResult>
     {
         /// <inheritdoc />
@@ -283,7 +283,7 @@ partial class Parser
     /// Represents a parser that applies a transformation function to the value produced by the specified parser.
     /// </summary>
     /// <param name="parser">The parser whose output will be transformed.</param>
-    /// <param name="func">The function  used to transform the parser's output.</param>
+    /// <param name="func">The function used to transform the parser's output.</param>
     private sealed class DoParser<T1, T2, T3, T4, T5, T6, T7, TResult>(Parser<(T1, T2, T3, T4, T5, T6, T7)> parser, Func<T1, T2, T3, T4, T5, T6, T7, TResult> func) : Parser<TResult>
     {
         /// <inheritdoc />
@@ -316,7 +316,7 @@ partial class Parser
     /// Represents a parser that applies a transformation function to the value produced by the specified parser.
     /// </summary>
     /// <param name="parser">The parser whose output will be transformed.</param>
-    /// <param name="func">The function  used to transform the parser's output.</param>
+    /// <param name="func">The function used to transform the parser's output.</param>
     private sealed class DoParser<T1, T2, T3, T4, T5, T6, T7, T8, TResult>(Parser<(T1, T2, T3, T4, T5, T6, T7, T8)> parser, Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult> func) : Parser<TResult>
     {
         /// <inheritdoc />
@@ -349,7 +349,7 @@ partial class Parser
     /// Represents a parser that applies a transformation function to the value produced by the specified parser.
     /// </summary>
     /// <param name="parser">The parser whose output will be transformed.</param>
-    /// <param name="func">The function  used to transform the parser's output.</param>
+    /// <param name="func">The function used to transform the parser's output.</param>
     private sealed class DoParser<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult>(Parser<(T1, T2, T3, T4, T5, T6, T7, T8, T9)> parser, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult> func) : Parser<TResult>
     {
         /// <inheritdoc />
@@ -382,7 +382,7 @@ partial class Parser
     /// Represents a parser that applies a transformation function to the value produced by the specified parser.
     /// </summary>
     /// <param name="parser">The parser whose output will be transformed.</param>
-    /// <param name="func">The function  used to transform the parser's output.</param>
+    /// <param name="func">The function used to transform the parser's output.</param>
     private sealed class DoParser<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>(Parser<(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)> parser, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult> func) : Parser<TResult>
     {
         /// <inheritdoc />

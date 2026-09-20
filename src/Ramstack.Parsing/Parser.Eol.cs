@@ -3,14 +3,14 @@ namespace Ramstack.Parsing;
 partial class Parser
 {
     /// <summary>
-    /// Gets a parser that matches the end of line.
+    /// Gets a parser that matches and consumes a line break, or succeeds at the end of input.
     /// </summary>
     public static Parser<Unit> Eol { get; } = new EolParser();
 
     #region Inner type: EolParser
 
     /// <summary>
-    /// Represents a parser that matches the end of line.
+    /// Represents a parser that matches and consumes a line break, or succeeds at the end of input.
     /// </summary>
     private sealed class EolParser() : Parser<Unit>("end of line")
     {

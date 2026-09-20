@@ -217,7 +217,7 @@ public ref struct ParseContext
     /// "Expected digit" or "Expected '.'". However, all these messages are eventually
     /// discarded in favor of a single top-level error from the <c>float</c> parser.<br/><br/>
     ///
-    /// By suppressing sub-parsers diagnostics and only producing a concise top-level message
+    /// By suppressing diagnostics from sub-parsers and only producing a concise top-level message
     /// like "(1:5) Expected float" we avoid unnecessary memory allocations and generally
     /// do less work, which ultimately improves performance.
     /// </para>
@@ -226,7 +226,7 @@ public ref struct ParseContext
     /// <code>
     /// var previousState = context.SuppressDiagnosticsIfNamed(Name);
     /// // ... parsing logic ...
-    /// context.RestoreDiagnostics(previousState);
+    /// context.RestoreDiagnosticState(previousState);
     /// </code>
     /// </example>
     public DiagnosticState SuppressDiagnosticsIfNamed(string? name)

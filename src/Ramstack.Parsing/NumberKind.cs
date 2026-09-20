@@ -6,7 +6,7 @@ namespace Ramstack.Parsing;
 public enum NumberKind
 {
     /// <summary>
-    /// Automatically determines the numeric type that can be parsed.
+    /// Selects the numeric format based on the target type.
     /// </summary>
     Auto,
 

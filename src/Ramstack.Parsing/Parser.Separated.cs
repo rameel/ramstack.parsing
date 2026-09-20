@@ -5,18 +5,28 @@ partial class Parser
     /// <summary>
     /// Creates a parser that repeatedly applies the main parser, interleaved with a separator specified by another parser.
     /// </summary>
+    /// <remarks>
+    /// If an item and its following separator both succeed without consuming input, repetition stops
+    /// once the minimum number of items has been matched. The successfully parsed item is included in the result.
+    /// </remarks>
     /// <typeparam name="T">The type of the value produced by the main parser.</typeparam>
     /// <typeparam name="TSeparator">The type of the value produced by the separator parser.</typeparam>
     /// <param name="parser">The main parser.</param>
     /// <param name="separator">The parser that identifies the separators placed between the elements parsed by the main parser.</param>
     /// <param name="allowTrailing"><see langword="true" /> if a trailing separator is allowed; otherwise, <see langword="false" />.</param>
-    /// <param name="min">The minimum number of repetitions.</param>
-    /// <param name="max">The maximum number of repetitions.</param>
+    /// <param name="min">The minimum number of repetitions. Must be non-negative and no greater than <paramref name="max"/>.</param>
+    /// <param name="max">The maximum number of repetitions. Must be greater than zero.</param>
     /// <returns>
     /// A parser that repeatedly applies the main parser, interleaved with the specified separator.
     /// </returns>
-    public static Parser<List<T>> Separated<T, TSeparator>(this Parser<T> parser, Parser<TSeparator> separator, bool allowTrailing = false, int min = 0, int max = int.MaxValue) =>
-        new SeparatedParser<T>(parser, separator.Void(), allowTrailing, min, max);
+    public static Parser<List<T>> Separated<T, TSeparator>(this Parser<T> parser, Parser<TSeparator> separator, bool allowTrailing = false, int min = 0, int max = int.MaxValue)
+    {
+        Argument.ThrowIfNegative(min);
+        Argument.ThrowIfNegativeOrZero(max);
+        Argument.ThrowIfGreaterThan(min, max);
+
+        return new SeparatedParser<T>(parser, separator.Void(), allowTrailing, min, max);
+    }
 
     #region Inner type: SeparatedParser
 
@@ -40,6 +50,8 @@ partial class Parser
 
             do
             {
+                var position = context.Position;
+
                 if (!parser.TryParse(ref context, out var result))
                     break;
 
@@ -47,6 +59,10 @@ partial class Parser
 
                 separatorBookmark = context.BookmarkPosition();
                 if (!separator.TryParse(ref context, out _))
+                    break;
+
+                // Stop empty matches once the minimum count has been reached.
+                if (list.Count >= min && context.Position == position)
                     break;
             }
             while (list.Count < max);
@@ -113,6 +129,8 @@ partial class Parser
 
             do
             {
+                var position = context.Position;
+
                 if (!_parser.TryParse(ref context, out value))
                     break;
 
@@ -120,6 +138,10 @@ partial class Parser
 
                 separatorBookmark = context.BookmarkPosition();
                 if (!_separator.TryParse(ref context, out value))
+                    break;
+
+                // Stop empty matches once the minimum count has been reached.
+                if (count >= _min && context.Position == position)
                     break;
             }
             while (count < _max);

@@ -42,13 +42,16 @@ partial class ParsersTests
         Assert.That(parser.GetType().ToString(), Is.EqualTo("Ramstack.Parsing.Parser+DeferredDiagnosticChoiceParser`1[System.Char]"));
 
         var parsers = (Parser<char>[])parser.GetType().GetField("_parsers", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(parser)!;
-        Assert.That(parsers.Length, Is.EqualTo(2));
+        Assert.That(parsers.Length, Is.EqualTo(3));
 
-        Assert.That(parsers[0].Name, Is.EqualTo(@"[0-9a-z\p{Nd}]"));
-        Assert.That(parsers[0].GetType().ToString(), Is.EqualTo("Ramstack.Parsing.Parser+RangeParser`2[System.Char,Ramstack.Parsing.Parser+BitVectorSearcher`1[Ramstack.Parsing.Utilities.Block128Bit]]"));
+        Assert.That(parsers[0].Name, Is.EqualTo(@"[a-z]"));
+        Assert.That(parsers[0].GetType().ToString(), Is.EqualTo("Ramstack.Parsing.Parser+RangeParser`2[System.Char,Ramstack.Parsing.Parser+RangeSearcher]"));
 
         Assert.That(parsers[1].Name, Is.EqualTo(@"escape sequence"));
         Assert.That(parsers[1].GetType().ToString(), Is.EqualTo("Ramstack.Parsing.Literal+EscapeSequenceParser`1[System.Char]"));
+
+        Assert.That(parsers[2].Name, Is.EqualTo(@"[0-9a-g\p{Nd}]"));
+        Assert.That(parsers[2].GetType().ToString(), Is.EqualTo("Ramstack.Parsing.Parser+RangeParser`2[System.Char,Ramstack.Parsing.Parser+BitVectorSearcher`1[Ramstack.Parsing.Utilities.Block128Bit]]"));
     }
 
     [Test]
@@ -70,12 +73,21 @@ partial class ParsersTests
 
         var parsers = (Parser<char>[])parser.GetType().GetProperty("Parsers", BindingFlags.Instance | BindingFlags.Public)!.GetValue(parser)!;
 
-        Assert.That(parsers.Length, Is.EqualTo(3));
+        Assert.That(parsers.Length, Is.EqualTo(5));
 
-        Assert.That(parsers[0].Name, Is.EqualTo(@"[0-9a-z\p{Nd}]"));
-        Assert.That(parsers[0].GetType().ToString(), Is.EqualTo("Ramstack.Parsing.Parser+RangeParser`2[System.Char,Ramstack.Parsing.Parser+BitVectorSearcher`1[Ramstack.Parsing.Utilities.Block128Bit]]"));
+        Assert.That(parsers[0].Name, Is.EqualTo(@"[a-z]"));
+        Assert.That(parsers[0].GetType().ToString(), Is.EqualTo("Ramstack.Parsing.Parser+RangeParser`2[System.Char,Ramstack.Parsing.Parser+RangeSearcher]"));
+
         Assert.That(parsers[1].GetType().ToString(), Is.EqualTo("Ramstack.Parsing.Parser+ThenParser`1[System.Char]"));
-        Assert.That(parsers[2].GetType().ToString(), Is.EqualTo("Ramstack.Parsing.Literal+UnicodeEscapeSequenceParser`1[System.Char]"));
+
+        Assert.That(parsers[2].Name, Is.EqualTo(@"[0-7]"));
+        Assert.That(parsers[2].GetType().ToString(), Is.EqualTo("Ramstack.Parsing.Parser+RangeParser`2[System.Char,Ramstack.Parsing.Parser+RangeSearcher]"));
+
+        Assert.That(parsers[3].Name, Is.EqualTo(@"unicode escape"));
+        Assert.That(parsers[3].GetType().ToString(), Is.EqualTo("Ramstack.Parsing.Literal+UnicodeEscapeSequenceParser`1[System.Char]"));
+
+        Assert.That(parsers[4].Name, Is.EqualTo(@"[6-9a-g\p{Nd}]"));
+        Assert.That(parsers[4].GetType().ToString(), Is.EqualTo("Ramstack.Parsing.Parser+RangeParser`2[System.Char,Ramstack.Parsing.Parser+BitVectorSearcher`1[Ramstack.Parsing.Utilities.Block128Bit]]"));
     }
 
     [Test]

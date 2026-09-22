@@ -448,6 +448,11 @@ partial class Parser
             var s = context.Remaining;
             var count = 0;
 
+            // Limit the span before scanning
+            var length = Math.Min(s.Length, _max);
+            if ((uint)length <= (uint)s.Length)
+                s = s.Slice(0, length);
+
             while (s.Length != 0)
             {
                 var index = _searcher.IndexOfAnyExcept(s);
@@ -490,7 +495,6 @@ partial class Parser
                 if (count < _max)
                     context.ReportExpected(context.Position + count, Name);
 
-                count = Math.Min(count, _max);
                 context.Advance(count);
 
                 value = ListFactory<char>.CreateList(context.MatchedSegment);
@@ -541,6 +545,11 @@ partial class Parser
             var s = context.Remaining;
             var count = 0;
 
+            // Limit the span before scanning
+            var length = Math.Min(s.Length, _max);
+            if ((uint)length <= (uint)s.Length)
+                s = s.Slice(0, length);
+
             while (s.Length != 0)
             {
                 var index = _searcher.IndexOfAnyExcept(s);
@@ -582,7 +591,6 @@ partial class Parser
                 if (count < _max)
                     context.ReportExpected(context.Position + count, Name);
 
-                count = Math.Min(count, _max);
                 context.Advance(count);
             }
             else

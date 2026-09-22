@@ -131,4 +131,34 @@ partial class ParsersTests
         Assert.That(parsers, Has.None.SameAs(p2));
         Assert.That(p3.Parse("d").Value, Is.EqualTo(4));
     }
+
+    [Test]
+    public void Choice_LongerLiteralBeforeCharClass_KeepsAlternativeOrder()
+    {
+        var parser = Choice(
+            L("==").Void(),
+            L('=').Void(),
+            L('!').Void());
+
+        Assert.That(parser.Parse("==").Length, Is.EqualTo(2));
+        Assert.That(parser.Parse("==").Success, Is.True);
+
+        Assert.That(parser.Parse("=").Length, Is.EqualTo(1));
+        Assert.That(parser.Parse("!").Length, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void Choice_NonCharClassParserBetweenCharClasses_KeepsAlternativeOrder()
+    {
+        var parser = Choice(
+            L('!').Void(),
+            L("==").Void(),
+            L('=').Void());
+
+        Assert.That(parser.Parse("==").Length, Is.EqualTo(2));
+        Assert.That(parser.Parse("==").Success, Is.True);
+
+        Assert.That(parser.Parse("!").Length, Is.EqualTo(1));
+        Assert.That(parser.Parse("=").Length, Is.EqualTo(1));
+    }
 }

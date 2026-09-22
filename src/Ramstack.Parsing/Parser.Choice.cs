@@ -40,28 +40,34 @@ partial class Parser
 
         if (typeof(T) == typeof(char) || typeof(T) == typeof(Unit))
         {
-            var count = 0;
-            foreach (var parser in list)
-                if (parser is ICharClassSupport)
-                    count++;
-
-            if (count > 1)
+            // Merge only contiguous runs of character class parsers and keep each
+            // merged parser in place. Merging character classes across a regular
+            // parser would move them ahead of it and change the ordered choice:
+            // the alternative that used to win would lose to a later character class.
+            for (var i = 0; i < list.Count; i++)
             {
+                if (list[i] is not ICharClassSupport)
+                    continue;
+
+                var j = i + 1;
+                while (j < list.Count && list[j] is ICharClassSupport)
+                    j++;
+
+                if (j - i == 1)
+                    continue;
+
                 var @class = new CharClass(CharClassUnicodeCategory.Create(0));
-                for (var i = list.Count - 1; i >= 0; i--)
+                for (var k = i; k < j; k++)
                 {
-                    if (list[i] is ICharClassSupport s)
-                    {
-                        @class = @class.MergeClasses(s.GetCharClass());
-                        list.RemoveAt(i);
-                    }
+                    var s = (ICharClassSupport)list[k];
+                    @class = @class.MergeClasses(s.GetCharClass());
                 }
 
                 var p = Set(@class);
-                list.Insert(0,
-                    (Parser<T>)(object)(
-                        typeof(T) == typeof(Unit) ? p.Void() : p)
-                        );
+                list[i] = (Parser<T>)(object)(
+                    typeof(T) == typeof(Unit) ? p.Void() : p);
+
+                list.RemoveRange(i + 1, j - i - 1);
             }
         }
 

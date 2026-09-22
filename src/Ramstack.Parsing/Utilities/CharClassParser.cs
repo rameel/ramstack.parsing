@@ -19,7 +19,7 @@ internal static class CharClassParser
         // if (pattern is ['[', .., ']'])
         //     pattern = pattern[1..^1];
 
-        Argument.ThrowIfNullOrEmpty(nameof(pattern));
+        Argument.ThrowIfNullOrEmpty(pattern);
 
         var elements = new List<CharClassElement>();
         var p = 0;

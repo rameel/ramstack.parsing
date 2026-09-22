@@ -110,6 +110,7 @@ partial class Parser
             }
 
             context.RestoreDiagnosticState(state);
+            context.ReportExpected(Name);
             value = default;
             return false;
         }

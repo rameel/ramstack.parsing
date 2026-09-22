@@ -18,24 +18,21 @@ partial class Parser
 
         var list = new List<Parser<T>>();
 
-        while (true)
+        foreach (var parser in parsers)
         {
-            foreach (var parser in parsers)
+            switch (parser)
             {
-                switch (parser)
-                {
-                    case ChoiceParser<T> p:
-                        list.AddRange(p.Parsers);
-                        break;
+                // A named choice is a diagnostics boundary and stays a single alternative.
+                // Nested unnamed choices were flattened when they were created,
+                // so one pass expands the whole tree.
+                case ChoiceParser<T> { Name: null } p:
+                    list.AddRange(p.Parsers);
+                    break;
 
-                    default:
-                        list.Add(parser);
-                        break;
-                }
+                default:
+                    list.Add(parser);
+                    break;
             }
-
-            if (list.Count == parsers.Length)
-                break;
         }
 
         if (list.Count == 1)
@@ -66,9 +63,9 @@ partial class Parser
                         typeof(T) == typeof(Unit) ? p.Void() : p)
                         );
             }
-
-            parsers = list.ToArray();
         }
+
+        parsers = list.ToArray();
 
         if (parsers.Length == 1)
             return parsers[0];

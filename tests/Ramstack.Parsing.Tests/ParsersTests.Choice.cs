@@ -1,3 +1,5 @@
+using System.Reflection;
+
 using static Ramstack.Parsing.Parser;
 
 namespace Ramstack.Parsing;
@@ -68,5 +70,65 @@ partial class ParsersTests
         Assert.That(
             parser.Parse("?").ErrorMessage,
             Is.EqualTo("(1:1) Expected 'a' or '('"));
+    }
+
+    [Test]
+    public void Choice_NestedParser_FlattensAlternatives()
+    {
+        var parser1 =
+            Choice(
+                Choice(
+                    L('a'),
+                    L('b').Between(L('('), L(')'))),
+            L('c'));
+
+        var parser2 =
+            L('a')
+                .Or(L('b').Between(L('('), L(')')))
+                .Or(L('c'));
+
+        Assert.That(parser1.Parse("a").Value, Is.EqualTo('a'));
+        Assert.That(parser1.Parse("(b)").Value, Is.EqualTo('b'));
+        Assert.That(parser1.Parse("c").Value, Is.EqualTo('c'));
+
+        Assert.That(parser2.Parse("a").Value, Is.EqualTo('a'));
+        Assert.That(parser2.Parse("(b)").Value, Is.EqualTo('b'));
+        Assert.That(parser2.Parse("c").Value, Is.EqualTo('c'));
+    }
+
+    [Test]
+    public void Choice_NestedNamedParser_KeepsName()
+    {
+        var p = Choice(L('a'), L('b').Between(L('('), L(')'))).As("letter");
+        var parser = Choice(p, L('c'));
+
+        Assert.That(
+            parser.Parse("?").ErrorMessage,
+            Is.EqualTo("(1:1) Expected letter or 'c'"));
+    }
+
+    [Test]
+    public void Choice_NestedParsers_NonCharValue_FlattensTheWholeTree()
+    {
+        var p1 = Choice(
+            L("a").Do(_ => 1),
+            L("b").Do(_ => 2));
+
+        var p2 = Choice(
+            p1,
+            L("c").Do(_ => 3));
+
+        var p3 = Choice(
+            L("d").Do(_ => 4),
+            p2);
+
+        var parsers = (Parser<int>[])p3.GetType()
+            .GetProperty("Parsers", BindingFlags.Instance | BindingFlags.Public)!
+            .GetValue(p3)!;
+
+        Assert.That(parsers.Length, Is.EqualTo(4));
+        Assert.That(parsers, Has.None.SameAs(p1));
+        Assert.That(parsers, Has.None.SameAs(p2));
+        Assert.That(p3.Parse("d").Value, Is.EqualTo(4));
     }
 }

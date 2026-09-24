@@ -34,6 +34,18 @@ public abstract class Parser<T>
     /// <returns>
     /// <see langword="true"/> if the parser succeeded; otherwise, <see langword="false"/>.
     /// </returns>
+    /// <remarks>
+    /// <para>
+    ///   Any failed match returns <see langword="false"/>, including a forced termination
+    ///   through <see cref="Parser.Fail{T}(string)"/> or <see cref="Parser.FatalError(string)"/>.
+    /// </para>
+    /// <para>
+    ///   Exceptions thrown by user-provided functions, such as the callbacks passed to
+    ///   <c>Map</c>, <c>Do</c>, or <c>Fold</c>, are not suppressed and propagate to the caller.
+    ///   Use <see cref="Parse(ReadOnlySpan{char})"/> to capture them in
+    ///   <see cref="ParseResult{T}.Exception"/> instead.
+    /// </para>
+    /// </remarks>
     public bool TryParse(ReadOnlySpan<char> source, [NotNullWhen(true)] out T? value)
     {
         try
@@ -46,9 +58,9 @@ public abstract class Parser<T>
             if (TryParse(ref context, out value))
                 return true;
         }
-        catch
+        catch (FatalErrorException)
         {
-            // Ignore exceptions
+            // A forced parse error is an ordinary failed match for the boolean API.
         }
 
         value = default;

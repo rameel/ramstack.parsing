@@ -11,14 +11,37 @@ partial class Parser
     /// <returns>
     /// A parser that attempts to match the specified literal using the provided comparison type.
     /// </returns>
+    /// <remarks>
+    /// Comparisons that use the current culture capture it when the parser is created.
+    /// Later changes to the current culture do not affect the parser or its named and void variants.
+    /// Culture-aware matches consume the matched source segment, whose length may differ from
+    /// the literal length, including zero for literals with no collation weight.
+    /// </remarks>
     public static Parser<string> L(string literal, StringComparison comparison = StringComparison.Ordinal)
     {
         Argument.ThrowIfNullOrEmpty(literal);
 
         var expected = literal.ToPrintable();
-        return comparison == StringComparison.Ordinal
-            ? new OrdinalStringParser<string>(literal) { Name = expected }
-            : new StringParser<string>(literal, comparison) { Name = expected };
+        if (comparison == StringComparison.Ordinal)
+            return new OrdinalStringParser<string, CompareOptionsNone>(literal) { Name = expected };
+
+        if (comparison == StringComparison.OrdinalIgnoreCase)
+            return new OrdinalStringParser<string, CompareOptionsIgnoreCase>(literal) { Name = expected };
+
+        var culture = comparison switch
+        {
+            StringComparison.CurrentCulture or
+            StringComparison.CurrentCultureIgnoreCase => CultureInfo.CurrentCulture,
+            _ => CultureInfo.InvariantCulture
+        };
+
+        var options = comparison switch
+        {
+            StringComparison.CurrentCulture or StringComparison.InvariantCulture => CompareOptions.None,
+            _ => CompareOptions.IgnoreCase,
+        };
+
+        return new StringParser<string>(literal, culture.CompareInfo, options) { Name = expected };
     }
 
     /// <summary>
@@ -72,36 +95,69 @@ partial class Parser
     /// <returns>
     /// A parser that parses one of the specified literals using the provided comparison type.
     /// </returns>
+    /// <remarks>
+    /// When multiple literals match the beginning of the source, the parser returns the one that comes
+    /// first when the literals are sorted in descending order using the specified comparison.
+    /// For ordinal comparisons, this means the longest matching literal.
+    /// Ties are resolved by the original order of the literals.
+    /// Comparisons that use the current culture capture it when the parser is created,
+    /// using the same culture for ordering, deduplication and matching.
+    /// Later changes to the current culture do not affect the parser or its named and void variants.
+    /// Culture-aware matches consume the matched source segment, whose length may differ from
+    /// the literal length, including zero for literals with no collation weight.
+    /// </remarks>
     public static Parser<string> OneOf(string[] literals, StringComparison comparison = StringComparison.Ordinal)
     {
         Argument.ThrowIfNullOrEmpty(literals);
+
+        for (var i = 0; i < literals.Length; i++)
+            Argument.ThrowIfNullOrEmpty(literals[i], $"{nameof(literals)}[{i}]");
 
         if (literals.Length == 1)
             return L(literals[0], comparison);
 
         var expected = literals.Select(l => l.ToPrintable()).ToArray();
-        var comparer = StringComparer.FromComparison(comparison);
 
-        var dictionary = new CharMap(
-            Permute(literals, comparison)
-                .GroupBy(l => l.Key)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g
-                        .Select(p => p.Value)
-                        .OrderDescending(comparer)
-                        .Distinct(comparer)
-                        .ToArray()));
-
-        return comparison switch
+        if (comparison is StringComparison.Ordinal or StringComparison.OrdinalIgnoreCase)
         {
-            StringComparison.CurrentCulture => new StringDictionaryParser<string>(in dictionary, CultureInfo.CurrentCulture, CompareOptions.None, expected),
-            StringComparison.CurrentCultureIgnoreCase => new StringDictionaryParser<string>(in dictionary, CultureInfo.CurrentCulture, CompareOptions.IgnoreCase, expected),
-            StringComparison.InvariantCulture => new StringDictionaryParser<string>(in dictionary, CultureInfo.InvariantCulture, CompareOptions.None, expected),
-            StringComparison.InvariantCultureIgnoreCase => new StringDictionaryParser<string>(in dictionary, CultureInfo.InvariantCulture, CompareOptions.IgnoreCase, expected),
-            StringComparison.Ordinal => new OrdinalStringDictionaryParser<string, CompareOptionsNone>(in dictionary, expected),
-            _ => new OrdinalStringDictionaryParser<string, CompareOptionsIgnoreCase>(in dictionary, expected)
+            var ordinalComparer = StringComparer.FromComparison(comparison);
+            var ignoreCase = comparison == StringComparison.OrdinalIgnoreCase;
+            var dictionary = new CharMap(
+                literals
+                    .GroupBy(l => GetBucketKey(l[0], ignoreCase))
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g
+                            .Distinct(ordinalComparer)
+                            .OrderDescending(ordinalComparer)
+                            .ToArray()));
+
+            return ignoreCase
+                ? new OrdinalStringDictionaryParser<string, CompareOptionsIgnoreCase>(dictionary, expected)
+                : new OrdinalStringDictionaryParser<string, CompareOptionsNone>(dictionary, expected);
+        }
+
+        var culture = comparison switch
+        {
+            StringComparison.CurrentCulture or StringComparison.CurrentCultureIgnoreCase => CultureInfo.CurrentCulture,
+            StringComparison.InvariantCulture or StringComparison.InvariantCultureIgnoreCase => CultureInfo.InvariantCulture,
+            _ => throw new ArgumentOutOfRangeException(nameof(comparison))
         };
+
+        var options = comparison switch
+        {
+            StringComparison.CurrentCultureIgnoreCase or
+            StringComparison.InvariantCultureIgnoreCase => CompareOptions.IgnoreCase,
+            _ => CompareOptions.None
+        };
+
+        var comparer = StringComparer.Create(culture, options);
+        var candidates = literals
+            .Distinct(comparer)
+            .OrderDescending(comparer)
+            .ToArray();
+
+        return new CultureStringParser<string>(candidates, culture.CompareInfo, options, expected);
     }
 
     #region Inner type: OrdinalStringParser
@@ -111,12 +167,13 @@ partial class Parser
     /// This parser is specialized for performance with ordinal comparison.
     /// </summary>
     /// <typeparam name="T">The type of the value produced by the parser.</typeparam>
-    private sealed class OrdinalStringParser<T> : Parser<T>
+    /// <typeparam name="TCompareOptions">The compare options used for matching strings.</typeparam>
+    private sealed class OrdinalStringParser<T, TCompareOptions> : Parser<T>
     {
         private readonly string _literal;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OrdinalStringParser{T}"/> class.
+        /// Initializes a new instance of the <see cref="OrdinalStringParser{T,TCompareOptions}"/> class.
         /// </summary>
         /// <param name="literal">The string to match.</param>
         public OrdinalStringParser(string literal) =>
@@ -125,14 +182,23 @@ partial class Parser
         /// <inheritdoc />
         public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value)
         {
-            if (context.Remaining.StartsWith(_literal))
+            var literal = _literal;
+            // Null-check trick: prove to the JIT that literal is non-null so the
+            // string -> ReadOnlySpan<char> conversion stays branch-free.
+            _ = literal.Length;
+
+            var result = typeof(TCompareOptions) == typeof(CompareOptionsIgnoreCase)
+                ? context.Remaining.StartsWith(literal.AsSpan(), StringComparison.OrdinalIgnoreCase)
+                : context.Remaining.StartsWith(literal.AsSpan());
+
+            if (result)
             {
                 if (typeof(T) != typeof(Unit))
-                    value = ((T)(object)_literal)!;
+                    value = (T)(object)literal;
                 else
                     value = default!;
 
-                context.Advance(_literal.Length);
+                context.Advance(literal.Length);
                 return true;
             }
 
@@ -144,11 +210,11 @@ partial class Parser
 
         /// <inheritdoc />
         protected internal override Parser<T> ToNamedParser(string? name) =>
-            new OrdinalStringParser<T>(_literal) { Name = name };
+            new OrdinalStringParser<T, TCompareOptions>(_literal) { Name = name };
 
         /// <inheritdoc />
         protected internal override Parser<Unit> ToVoidParser() =>
-            new OrdinalStringParser<Unit>(_literal) { Name = Name };
+            new OrdinalStringParser<Unit, TCompareOptions>(_literal) { Name = Name };
     }
 
     #endregion
@@ -162,27 +228,29 @@ partial class Parser
     private sealed class StringParser<T> : Parser<T>
     {
         private readonly string _literal;
-        private readonly StringComparison _comparison;
+        private readonly CompareInfo _compareInfo;
+        private readonly CompareOptions _compareOptions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StringParser{T}"/> class.
         /// </summary>
         /// <param name="literal">The string to match.</param>
-        /// <param name="comparison">The string comparison type to use for matching the literal.</param>
-        public StringParser(string literal, StringComparison comparison) =>
-            (_literal, _comparison) = (literal, comparison);
+        /// <param name="compareInfo">The comparison information captured when the parser is created.</param>
+        /// <param name="compareOptions">The comparison options to use for matching the literal.</param>
+        public StringParser(string literal, CompareInfo compareInfo, CompareOptions compareOptions) =>
+            (_literal, _compareInfo, _compareOptions) = (literal, compareInfo, compareOptions);
 
         /// <inheritdoc />
         public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value)
         {
-            if (context.Remaining.StartsWith(_literal, _comparison))
+            if (_compareInfo.IsPrefix(context.Remaining, _literal, _compareOptions, out var length))
             {
                 if (typeof(T) != typeof(Unit))
-                    value = ((T)(object)_literal)!;
+                    value = (T)(object)_literal;
                 else
                     value = default!;
 
-                context.Advance(_literal.Length);
+                context.Advance(length);
                 return true;
             }
 
@@ -193,11 +261,11 @@ partial class Parser
 
         /// <inheritdoc />
         protected internal override Parser<T> ToNamedParser(string? name) =>
-            new StringParser<T>(_literal, _comparison) { Name = name };
+            new StringParser<T>(_literal, _compareInfo, _compareOptions) { Name = name };
 
         /// <inheritdoc />
         protected internal override Parser<Unit> ToVoidParser() =>
-            new StringParser<Unit>(_literal, _comparison) { Name = Name };
+            new StringParser<Unit>(_literal, _compareInfo, _compareOptions) { Name = Name };
     }
 
     #endregion
@@ -219,7 +287,7 @@ partial class Parser
         /// </summary>
         /// <param name="literals">A dictionary mapping initial characters to arrays of string literals expected at the beginning of the source.</param>
         /// <param name="expected">An array of error messages describing expected literals, used when parsing fails.</param>
-        public OrdinalStringDictionaryParser(in CharMap literals, string[] expected)
+        public OrdinalStringDictionaryParser(CharMap literals, string[] expected)
         {
             _literals = literals;
             _expected = expected;
@@ -229,18 +297,19 @@ partial class Parser
         public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value)
         {
             var s = context.Remaining;
-
-            if (s.Length != 0 && _literals[s[0]] is {} literals)
+            if (s.Length != 0)
             {
-                foreach (var literal in literals)
+                var literals = typeof(TCompareOptions) == typeof(CompareOptionsIgnoreCase)
+                    ? _literals[GetBucketKey(s[0], ignoreCase: true)]
+                    : _literals[s[0]];
+
+                foreach (var literal in literals ?? [])
                 {
                     _ = literal.Length;
 
-                    bool result;
-                    if (typeof(TCompareOptions) == typeof(CompareOptionsIgnoreCase))
-                        result = s.StartsWith(literal, StringComparison.OrdinalIgnoreCase);
-                    else
-                        result = s.StartsWith(literal);
+                    var result = typeof(TCompareOptions) == typeof(CompareOptionsIgnoreCase)
+                        ? s.StartsWith(literal.AsSpan(), StringComparison.OrdinalIgnoreCase)
+                        : s.StartsWith(literal.AsSpan());
 
                     if (result)
                     {
@@ -271,43 +340,41 @@ partial class Parser
 
         /// <inheritdoc />
         protected internal override Parser<T> ToNamedParser(string? name) =>
-            new OrdinalStringDictionaryParser<T, TCompareOptions>(in _literals, _expected) { Name = name };
+            new OrdinalStringDictionaryParser<T, TCompareOptions>(_literals, _expected) { Name = name };
 
         /// <inheritdoc />
         protected internal override Parser<Unit> ToVoidParser() =>
-            new OrdinalStringDictionaryParser<Unit, TCompareOptions>(in _literals, _expected) { Name = Name };
+            new OrdinalStringDictionaryParser<Unit, TCompareOptions>(_literals, _expected) { Name = Name };
     }
 
     #endregion
 
-    #region Inner type: StringDictionaryParser
+    #region Inner type: CultureStringParser
 
     /// <summary>
-    /// Represents a parser that attempts to match one of the specified literals based on specific cultural and comparison options.
+    /// Represents a parser that attempts to match one of the specified literals using culture-specific string comparison.
     /// </summary>
     /// <typeparam name="T">The type of the value produced by the parser.</typeparam>
-    private sealed class StringDictionaryParser<T> : Parser<T>
+    private sealed class CultureStringParser<T> : Parser<T>
     {
-        private readonly CharMap _literals;
-        private readonly CultureInfo _culture;
-        private readonly CompareInfo _comparer;
+        private readonly string[] _literals;
+        private readonly CompareInfo _compareInfo;
+        private readonly CompareOptions _compareOptions;
         private readonly string[] _expected;
-        private readonly CompareOptions _options;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StringDictionaryParser{T}"/> class.
+        /// Initializes a new instance of the <see cref="CultureStringParser{T}"/> class.
         /// </summary>
-        /// <param name="literals">A dictionary mapping initial characters to arrays of string literals expected at the beginning of the source.</param>
-        /// <param name="culture">The culture to use for comparisons, which affects how strings are compared and ordered.</param>
-        /// <param name="options">An optional combination of <see cref="CompareOptions"/> enumeration values to use during the match.</param>
+        /// <param name="literals">An array of literals sorted in descending order using the captured comparison.</param>
+        /// <param name="compareInfo">The comparison information captured when the parser is created.</param>
+        /// <param name="compareOptions">An optional combination of <see cref="CompareOptions"/> enumeration values to use during the match.</param>
         /// <param name="expected">An array of error messages describing expected literals, used when parsing fails.</param>
-        public StringDictionaryParser(in CharMap literals, CultureInfo culture, CompareOptions options, string[] expected)
+        public CultureStringParser(string[] literals, CompareInfo compareInfo, CompareOptions compareOptions, string[] expected)
         {
             _literals = literals;
-            _culture = culture;
-            _comparer = culture.CompareInfo;
+            _compareInfo = compareInfo;
+            _compareOptions = compareOptions;
             _expected = expected;
-            _options = options;
         }
 
         /// <inheritdoc />
@@ -315,22 +382,19 @@ partial class Parser
         {
             var s = context.Remaining;
 
-            if (s.Length != 0 && _literals[s[0]] is {} literals)
+            foreach (var literal in _literals)
             {
-                foreach (var literal in literals)
+                _ = literal.Length;
+
+                if (_compareInfo.IsPrefix(s, literal, _compareOptions, out var length))
                 {
-                    _ = literal.Length;
+                    if (typeof(T) != typeof(Unit))
+                        value = (T)(object)literal;
+                    else
+                        value = default!;
 
-                    if (_comparer.IsPrefix(s, literal, _options))
-                    {
-                        if (typeof(T) != typeof(Unit))
-                            value = (T)(object)literal;
-                        else
-                            value = default!;
-
-                        context.Advance(literal.Length);
-                        return true;
-                    }
+                    context.Advance(length);
+                    return true;
                 }
             }
 
@@ -350,31 +414,25 @@ partial class Parser
 
         /// <inheritdoc />
         protected internal override Parser<T> ToNamedParser(string? name) =>
-            new StringDictionaryParser<T>(in _literals, _culture, _options, _expected) { Name = name };
+            new CultureStringParser<T>(_literals, _compareInfo, _compareOptions, _expected) { Name = name };
 
         /// <inheritdoc />
         protected internal override Parser<Unit> ToVoidParser() =>
-            new StringDictionaryParser<Unit>(in _literals, _culture, _options, _expected) { Name = Name };
+            new CultureStringParser<Unit>(_literals, _compareInfo, _compareOptions, _expected) { Name = Name };
     }
 
     #endregion
 
-    private static IEnumerable<(char Key, string Value)> Permute(string[] literals, StringComparison comparison)
+    private static char GetBucketKey(char c, bool ignoreCase)
     {
-        var list = literals.Select(s => (Key: s[0], Value: s)).ToArray();
+        if (!ignoreCase)
+            return c;
 
-        if (comparison is StringComparison.Ordinal
-            or StringComparison.InvariantCulture
-            or StringComparison.CurrentCulture)
-            return list.Distinct();
-
-        var ci = comparison == StringComparison.CurrentCultureIgnoreCase
-            ? CultureInfo.CurrentCulture
-            : CultureInfo.InvariantCulture;
-
-        return list
-            .Concat(list.Select(s => s with { Key = ci.TextInfo.ToUpper(s.Key) }))
-            .Concat(list.Select(s => s with { Key = ci.TextInfo.ToLower(s.Key) }));
+        // All high surrogates share a single bucket.
+        // char.ToUpperInvariant cannot fold supplementary characters,
+        // so this keeps both parts of a case pair in the same bucket
+        // even if their leading code units would not match otherwise.
+        return char.IsHighSurrogate(c) ? '\uD800' : char.ToUpperInvariant(c);
     }
 
     /// <summary>

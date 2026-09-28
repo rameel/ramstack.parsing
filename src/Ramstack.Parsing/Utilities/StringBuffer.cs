@@ -40,8 +40,12 @@ internal struct StringBuffer : IDisposable
     /// Initializes a new instance of the <see cref="StringBuffer"/> structure.
     /// </summary>
     /// <param name="capacity">The initial capacity of the buffer.</param>
-    public StringBuffer(int capacity) =>
-        _chars = ArrayPool<char>.Shared.Rent(capacity);
+    public StringBuffer(int capacity)
+    {
+        _chars = [];
+        if (capacity != 0)
+            _chars = ArrayPool<char>.Shared.Rent(capacity);
+    }
 
     /// <summary>
     /// Appends a single character to the string buffer.
@@ -109,6 +113,7 @@ internal struct StringBuffer : IDisposable
     {
         var chars = _chars;
         var count = _count;
+
         _chars = [];
         _count = 0;
 
@@ -135,14 +140,19 @@ internal struct StringBuffer : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Dispose()
     {
-        if (_count != 0)
-            DisposeImpl(_chars);
+        var chars = _chars;
+
+        _chars = [];
+        _count = 0;
+
+        if (chars is not null)
+            DisposeImpl(chars);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        static void DisposeImpl(char[] buffer)
+        static void DisposeImpl(char[] chars)
         {
-            if (buffer.Length != 0)
-                ArrayPool<char>.Shared.Return(buffer);
+            if (chars.Length != 0)
+                ArrayPool<char>.Shared.Return(chars);
         }
     }
 

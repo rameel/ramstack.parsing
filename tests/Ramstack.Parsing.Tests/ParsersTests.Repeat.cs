@@ -53,6 +53,19 @@ partial class ParsersTests
     }
 
     [Test]
+    public void Repeat_UnitCharParser_ReturnsUnitList()
+    {
+        var parser = L('a').Void().Repeat<Unit>(2, 3);
+        var result = parser.Parse("aaaa");
+
+        Assert.That(result.Success, Is.True);
+        Assert.That(result.Value, Is.EqualTo(new Unit[3]));
+        Assert.That(result.Length, Is.EqualTo(3));
+
+        Assert.That(parser.Parse("a").Success, Is.False);
+    }
+
+    [Test]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public void Repeat_InfiniteLoopPrevention_ZeroLength()
     {

@@ -132,7 +132,7 @@ partial class Parser
         Argument.ThrowIfNegativeOrZero(max);
         Argument.ThrowIfGreaterThan(min, max);
 
-        return parser is ICharClassSupport s
+        return typeof(T) == typeof(char) && parser is ICharClassSupport s
             ? (Parser<List<T>>)(object)CreateRepeatParser(s.GetCharClass(), min, max)
             : new RepeatParser<T>(parser, min, max);
     }

@@ -335,7 +335,7 @@ internal static class CharClassExtensions
         else
         {
             sb.Append("\\u");
-            sb.Append(((ushort)c).ToString("x4"));
+            sb.Append(((ushort)c).ToString("x4", provider: null));
         }
     }
 

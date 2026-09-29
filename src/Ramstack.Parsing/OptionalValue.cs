@@ -4,6 +4,8 @@ namespace Ramstack.Parsing;
 /// Represents an optional value of type <typeparamref name="T"/>.
 /// </summary>
 /// <typeparam name="T">The underlying type of the optional value.</typeparam>
+[SuppressMessage("Design", "CA1051:Do not declare visible instance fields",
+    Justification = "For performance reasons, the field is read in place, while a property getter would copy large T values on every access.")]
 public readonly struct OptionalValue<T>
 {
     /// <summary>

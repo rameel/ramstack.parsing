@@ -3,6 +3,8 @@ namespace Ramstack.Parsing;
 /// <summary>
 /// Specifies the types of numeric string representations.
 /// </summary>
+[SuppressMessage("Naming", "CA1720:Identifier contains type name",
+    Justification = "The members name the numeric kinds, not the corresponding .NET types.")]
 public enum NumberKind
 {
     /// <summary>

@@ -37,15 +37,18 @@ partial class Parser
         /// <inheritdoc />
         public override bool TryParse(ref ParseContext context, out OptionalValue<T> value)
         {
-            value = default;
-
             if (parser.TryParse(ref context, out var result))
             {
+                Unsafe.SkipInit(out value);
+
+                // Write directly into the caller's slot: constructing OptionalValue<T> here
+                // would copy T into a temporary and then into `value`.
                 Unsafe.AsRef(in value.Value) = result;
                 Unsafe.AsRef(in value.HasValue) = true;
             }
             else
             {
+                value = default;
                 context.Advance(0);
             }
 

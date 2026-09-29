@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 
 using Ramstack.Parsing;
 
@@ -21,7 +22,7 @@ public static class TinyCParser
         var number =
             Set("0-9")
                 .OneOrMore()
-                .Map(Node (m) => Node.Number(int.Parse(m)))
+                .Map(Node (m) => Node.Number(int.Parse(m, NumberStyles.Integer, CultureInfo.InvariantCulture)))
                 .As("number");
 
         var variable =

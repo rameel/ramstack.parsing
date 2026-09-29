@@ -9,7 +9,7 @@ public readonly struct PositionBookmark
     /// <summary>
     /// Gets the zero-based parsing position.
     /// </summary>
-    public readonly int Position;
+    public int Position { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PositionBookmark"/> structure.

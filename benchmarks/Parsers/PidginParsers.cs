@@ -94,7 +94,7 @@ public static class PidginParsers
                                 Char('r').Select (_ => '\r'),
                                 Char('t').Select (_ => '\t'),
                                 Char('u').Then(HexDigit.Repeat(4)
-                                    .Select(h => (char)int.Parse(new string(h.ToArray()), NumberStyles.HexNumber)))
+                                    .Select(h => (char)int.Parse(new string(h.ToArray()), NumberStyles.HexNumber, CultureInfo.InvariantCulture)))
                             )
                         )
                 ).ManyString().Between(Quote)

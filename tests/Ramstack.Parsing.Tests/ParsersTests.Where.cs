@@ -52,29 +52,80 @@ partial class ParsersTests
         Assert.That(context.ToString(), Is.EqualTo("(1:1) Expected octet"));
     }
 
-    [TestCase(false, "(1:2) Expected 'c'")]
-    [TestCase(true,  "(1:4) Expected 'c'")]
-    public void Where_InnerFailure_SkipsPredicateAndPreservesDiagnostics(bool composite, string error)
+    [TestCase("-1")]
+    [TestCase("256")]
+    public void Where_RejectedValueAfterPrefix_RestoresPosition(string input)
+    {
+        var parser = Literal
+            .Number<int>()
+            .ThenIgnore(S)
+            .Where(
+                n => n is >= 0 and <= 255,
+                "octet");
+
+        var context = new ParseContext($"!{input} ?");
+
+        Assert.That(L('!').TryParse(ref context, out _), Is.True);
+        Assert.That(context.Position, Is.EqualTo(1));
+        Assert.That(context.MatchedSegment.Index, Is.EqualTo(0));
+        Assert.That(context.MatchedSegment.Length, Is.EqualTo(1));
+
+        Assert.That(parser.TryParse(ref context, out var value), Is.False);
+        Assert.That(value, Is.Zero);
+
+        Assert.That(context.Position, Is.EqualTo(1));
+        Assert.That(context.MatchedSegment.Length, Is.Zero);
+        Assert.That(context.Remaining.ToString(), Is.EqualTo($"{input} ?"));
+        Assert.That(context.ToString(), Is.EqualTo("(1:2) Expected octet"));
+    }
+
+    [Test]
+    public void Where_PrimitiveFailure_PreservesInnerState()
     {
         var calls = 0;
-        var inner = composite
-            ? L("ab").Then(L('c'))
-            : L('c');
-
-        var parser = L('!').Then(inner.Where(_ =>
+        var parser = L('c').Where(_ =>
         {
             calls++;
             return true;
-        }, "validated character"));
+        }, "validated character");
 
         var context = new ParseContext("!abx");
 
+        Assert.That(L('!').TryParse(ref context, out _), Is.True);
+
         Assert.That(parser.TryParse(ref context, out var value), Is.False);
+
         Assert.That(value, Is.EqualTo('\0'));
         Assert.That(calls, Is.Zero);
-        Assert.That(context.Position, Is.Zero);
+
+        Assert.That(context.Position, Is.EqualTo(1));
+        Assert.That(context.MatchedSegment.Index, Is.EqualTo(0));
+        Assert.That(context.MatchedSegment.Length, Is.EqualTo(1));
+        Assert.That(context.ToString(), Is.EqualTo("(1:2) Expected 'c'"));
+    }
+
+    [Test]
+    public void Where_CompositeFailure_PreservesInnerState()
+    {
+        var calls = 0;
+        var parser = L("ab").Then(L('c')).Where(_ =>
+        {
+            calls++;
+            return true;
+        }, "validated character");
+
+        var context = new ParseContext("!abx");
+
+        Assert.That(L('!').TryParse(ref context, out _), Is.True);
+
+        Assert.That(parser.TryParse(ref context, out var value), Is.False);
+
+        Assert.That(value, Is.EqualTo('\0'));
+        Assert.That(calls, Is.Zero);
+
+        Assert.That(context.Position, Is.EqualTo(1));
         Assert.That(context.MatchedSegment.Length, Is.Zero);
-        Assert.That(context.ToString(), Is.EqualTo(error));
+        Assert.That(context.ToString(), Is.EqualTo("(1:4) Expected 'c'"));
     }
 
     [Test]
@@ -105,6 +156,20 @@ partial class ParsersTests
 
         Assert.That(result.Success, Is.True);
         Assert.That(result.Value, Is.EqualTo(2));
+    }
+
+    [Test]
+    public void Where_OuterRejection_DoesNotRetryInnerAlternative()
+    {
+        var parserA = L('a').Do(_ => 1);
+        var parserB = L('a').Do(_ => 2);
+
+        var parser = parserA.Or(parserB).Where(n => n == 2, "two");
+        var result = parser.Parse("a");
+
+        Assert.That(result.Success, Is.False);
+        Assert.That(result.Value, Is.Zero);
+        Assert.That(result.ErrorMessage, Is.EqualTo("(1:1) Expected two"));
     }
 
     [Test]
@@ -186,6 +251,8 @@ partial class ParsersTests
 
         Assert.That(context.Position, Is.EqualTo(accepted ? input.Length : 0));
         Assert.That(context.MatchedSegment.Length, Is.EqualTo(accepted ? input.Length : 0));
+        Assert.That(context.DiagnosticState, Is.EqualTo(DiagnosticState.Suppressed));
+        Assert.That(context.ToString(), Is.Empty);
     }
 
     [TestCase("42", true, null)]
@@ -339,5 +406,25 @@ partial class ParsersTests
         Assert.That(parser.Void().Parse("a").Exception, Is.SameAs(exception));
         Assert.That(Assert.Throws<InvalidOperationException>(() => parser.Void().TryParse("a", out _)), Is.SameAs(exception));
         Assert.That(fallbackCalls, Is.Zero);
+    }
+
+    [Test]
+    public void Where_FatalErrorInPredicate_UsesFatalErrorContract()
+    {
+        var parser = L('a').Where(c =>
+        {
+            if (c == 'a')
+                FatalError("forced failure");
+
+            return true;
+        }, "accepted character");
+
+        Assert.That(parser.TryParse("a", out var value), Is.False);
+        Assert.That(value, Is.EqualTo('\0'));
+
+        var result = parser.Parse("a");
+
+        Assert.That(result.ErrorMessage, Is.EqualTo("(1:2) forced failure"));
+        Assert.That(result.Exception, Is.Null);
     }
 }

@@ -88,10 +88,13 @@ public abstract class Parser<T>
                 };
             }
 
+            var message = context.ToString();
             return new ParseResult<T>
             {
                 Length = 0,
-                ErrorMessage = context.ToString()
+                ErrorMessage = message.Length == 0
+                    ? "Parsing failed."
+                    : message
             };
         }
         catch (FatalErrorException exception)

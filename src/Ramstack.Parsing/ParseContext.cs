@@ -263,9 +263,22 @@ public ref struct ParseContext
         _match.Length = 0;
     }
 
-    /// <inheritdoc />
-    public readonly override string ToString() =>
-        GenerateErrorMessage(_source, _diagnostics.Index, _diagnostics.ToString());
+    /// <summary>
+    /// Returns the accumulated parsing diagnostics, including line and column information.
+    /// </summary>
+    /// <returns>
+    /// The formatted diagnostic message, or an empty string if no diagnostics have been recorded.
+    /// </returns>
+    /// <remarks>
+    /// The presence or absence of diagnostics does not indicate whether parsing succeeded.
+    /// </remarks>
+    public readonly override string ToString()
+    {
+        var message = _diagnostics.ToString();
+        return message.Length != 0
+            ? GenerateErrorMessage(_source, _diagnostics.Index, message)
+            : "";
+    }
 
     /// <summary>
     /// Generates a formatted error message that includes line and column information.

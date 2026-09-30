@@ -17,4 +17,12 @@ partial class ParsersTests
         Assert.That(Eol.Map(m => (m.Index, m.Length)).Parse(input).Value, Is.EqualTo((0, 0)));
         Assert.That(Eol.Map(m => m.ToString()).Parse(input).Value, Is.Empty);
     }
+
+    [Test]
+    public void Eof_TrailingInput_ReportsEndOfInput()
+    {
+        var parser = L('4').ThenIgnore(Eof);
+
+        Assert.That(parser.Parse("4x").ErrorMessage, Is.EqualTo("(1:2) Expected end of input"));
+    }
 }

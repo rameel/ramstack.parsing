@@ -41,7 +41,7 @@ public abstract class Parser<T>
     /// </para>
     /// <para>
     ///   Exceptions thrown by user-provided functions, such as the callbacks passed to
-    ///   <c>Map</c>, <c>Do</c>, or <c>Fold</c>, are not suppressed and propagate to the caller.
+    ///   <c>Map</c>, <c>Do</c>, or <c>FoldL</c>, are not suppressed and propagate to the caller.
     ///   Use <see cref="Parse(ReadOnlySpan{char})"/> to capture them in
     ///   <see cref="ParseResult{T}.Exception"/> instead.
     /// </para>

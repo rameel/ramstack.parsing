@@ -12,14 +12,35 @@ partial class ParsersTests
     [TestCase("1+2-", 3, 3)]
     [TestCase("1+2+3+4-2", 8, 9)]
     [TestCase("1+2+3+4-2$", 8, 9)]
-    public void FoldTest(string expr, int result, int length)
+    public void FoldLTest(string expr, int result, int length)
     {
         var number = Literal.Number<int>();
-        var parser = number.Fold(OneOf("+-"), (l, r, o) => o == '+' ? l + r : l - r);
+        var parser = number.FoldL(OneOf("+-"), (l, r, o) => o == '+' ? l + r : l - r);
 
         Assert.That(parser.Parse(expr).Success, Is.True);
         Assert.That(parser.Parse(expr).Value, Is.EqualTo(result));
         Assert.That(parser.Map(m => (m.Index, m.Length)).Parse(expr).Value, Is.EqualTo((0, length)));
+    }
+
+    [TestCase("8", 8, 1)]
+    [TestCase("8-3-1", 4, 5)]
+    [TestCase("8-3-", 5, 3)]
+    public void Fold_EquivalentToFoldL(string expr, int expected, int length)
+    {
+        var number = Literal.Number<int>();
+        var op = L('-');
+        var reduce = (int l, int r, char _) => l - r;
+
+        var parsers = new[] { number.Fold(op, reduce), number.FoldL(op, reduce) };
+
+        foreach (var parser in parsers)
+        {
+            var result = parser.Parse(expr);
+
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Value, Is.EqualTo(expected));
+            Assert.That(result.Length, Is.EqualTo(length));
+        }
     }
 
     [TestCase("2", "2", 1)]
@@ -39,7 +60,7 @@ partial class ParsersTests
     }
 
     [Test]
-    public void Fold_NoInputConsumed_StopsWithoutReducing([Values] bool rightAssociative)
+    public void FoldL_NoInputConsumed_StopsWithoutReducing([Values] bool rightAssociative)
     {
         var operand = new BoundedParser<int>(Return(2));
         var op = Return('-');
@@ -53,7 +74,7 @@ partial class ParsersTests
 
         var parser = rightAssociative
             ? operand.FoldR(op, reduce)
-            : operand.Fold(op, reduce);
+            : operand.FoldL(op, reduce);
 
         var context = new ParseContext("!tail");
         context.Advance(1);
@@ -71,7 +92,7 @@ partial class ParsersTests
     }
 
     [Test]
-    public void FoldVoid_NoInputConsumed_StopsWithoutReducing([Values] bool rightAssociative)
+    public void FoldLVoid_NoInputConsumed_StopsWithoutReducing([Values] bool rightAssociative)
     {
         var operand = new BoundedParser<int>(Return(2));
         var op = Return('-');
@@ -85,7 +106,7 @@ partial class ParsersTests
 
         var parser = rightAssociative
             ? operand.FoldR(op, reduce)
-            : operand.Fold(op, reduce);
+            : operand.FoldL(op, reduce);
 
         var context = new ParseContext("!tail");
         context.Advance(1);
@@ -103,7 +124,7 @@ partial class ParsersTests
 
     [TestCase(false, 6)]
     [TestCase(true, 8)]
-    public void Fold_TrailingEmptyPair_StopsWithoutReducing(bool rightAssociative, int expected)
+    public void FoldL_TrailingEmptyPair_StopsWithoutReducing(bool rightAssociative, int expected)
     {
         var operand = new BoundedParser<int>(
             Literal.Number<int>().DefaultOnFail(2)
@@ -120,7 +141,7 @@ partial class ParsersTests
 
         var parser = rightAssociative
             ? operand.FoldR(op, reduce)
-            : operand.Fold(op, reduce);
+            : operand.FoldL(op, reduce);
 
         var result = parser.Parse("10-3-1!");
 
@@ -131,7 +152,7 @@ partial class ParsersTests
     }
 
     [Test]
-    public void FoldVoid_TrailingEmptyPair_StopsWithoutReducing([Values] bool rightAssociative)
+    public void FoldLVoid_TrailingEmptyPair_StopsWithoutReducing([Values] bool rightAssociative)
     {
         var operand = new BoundedParser<int>(
             Literal.Number<int>().DefaultOnFail(2)
@@ -148,7 +169,7 @@ partial class ParsersTests
 
         var parser = rightAssociative
             ? operand.FoldR(op, reduce)
-            : operand.Fold(op, reduce);
+            : operand.FoldL(op, reduce);
 
         var result = parser.Void().Parse("10-3-1!");
 
@@ -159,14 +180,14 @@ partial class ParsersTests
 
     [TestCase(false, -4)]
     [TestCase(true, 2)]
-    public void Fold_OnlyOperandConsumesInput_ContinuesParsing(bool rightAssociative, int expected)
+    public void FoldL_OnlyOperandConsumesInput_ContinuesParsing(bool rightAssociative, int expected)
     {
         var operand = Set('0', '9').Do(c => c - '0');
         var op = Return('-');
 
         var parser = rightAssociative
             ? operand.FoldR(op, (l, r, _) => l - r)
-            : operand.Fold(op, (l, r, _) => l - r);
+            : operand.FoldL(op, (l, r, _) => l - r);
 
         var result = parser.Parse("123!");
 
@@ -176,14 +197,14 @@ partial class ParsersTests
     }
 
     [Test]
-    public void FoldVoid_OnlyOperandConsumesInput_ContinuesParsing([Values] bool rightAssociative)
+    public void FoldLVoid_OnlyOperandConsumesInput_ContinuesParsing([Values] bool rightAssociative)
     {
         var operand = Set('0', '9').Do(c => c - '0');
         var op = Return('-');
 
         var parser = rightAssociative
             ? operand.FoldR(op, (l, r, _) => l - r)
-            : operand.Fold(op, (l, r, _) => l - r);
+            : operand.FoldL(op, (l, r, _) => l - r);
 
         var result = parser.Void().Parse("123!");
 
@@ -193,14 +214,14 @@ partial class ParsersTests
 
     [TestCase(false, -2)]
     [TestCase(true, 2)]
-    public void Fold_OnlyOperatorConsumesInput_ContinuesParsing(bool rightAssociative, int expected)
+    public void FoldL_OnlyOperatorConsumesInput_ContinuesParsing(bool rightAssociative, int expected)
     {
         var operand = Return(2);
         var op = L('-');
 
         var parser = rightAssociative
             ? operand.FoldR(op, (l, r, _) => l - r)
-            : operand.Fold(op, (l, r, _) => l - r);
+            : operand.FoldL(op, (l, r, _) => l - r);
 
         var result = parser.Parse("--!");
 
@@ -210,14 +231,14 @@ partial class ParsersTests
     }
 
     [Test]
-    public void FoldVoid_OnlyOperatorConsumesInput_ContinuesParsing([Values] bool rightAssociative)
+    public void FoldLVoid_OnlyOperatorConsumesInput_ContinuesParsing([Values] bool rightAssociative)
     {
         var operand = Return(2);
         var op = L('-');
 
         var parser = rightAssociative
             ? operand.FoldR(op, (l, r, _) => l - r)
-            : operand.Fold(op, (l, r, _) => l - r);
+            : operand.FoldL(op, (l, r, _) => l - r);
 
         var result = parser.Void().Parse("--!");
 

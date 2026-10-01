@@ -3,13 +3,21 @@ namespace Ramstack.Parsing;
 partial class Parser
 {
     /// <summary>
+    /// Creates a left-associative parser. This method is equivalent to <see cref="FoldL{T, TOperator}"/>.
+    /// </summary>
+    /// <inheritdoc cref="FoldL{T, TOperator}"/>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static Parser<T> Fold<T, TOperator>(this Parser<T> parser, Parser<TOperator> op, Func<T, T, TOperator, T> reduce) =>
+        parser.FoldL(op, reduce);
+
+    /// <summary>
     /// Creates a left-associative parser.
     /// </summary>
     /// <remarks>
     /// <code>
     /// // Example: Number ([+-] Number)*
     /// // 1 + 2 + 3 + 4 => (((1 + 2) + 3) + 4)
-    /// var sum = number.Fold(OneOf("+-"), (l, r, op) => op == '+' ? l + r : l - r);
+    /// var sum = number.FoldL(OneOf("+-"), (l, r, op) => op == '+' ? l + r : l - r);
     /// </code>
     /// If an operator-operand pair consumes no input, it is discarded and parsing stops
     /// without calling the reduction function for that pair.
@@ -22,8 +30,8 @@ partial class Parser
     /// <returns>
     /// A parser that performs left-associative folding.
     /// </returns>
-    public static Parser<T> Fold<T, TOperator>(this Parser<T> parser, Parser<TOperator> op, Func<T, T, TOperator, T> reduce) =>
-        new FoldParser<T, TOperator>(parser, op, reduce);
+    public static Parser<T> FoldL<T, TOperator>(this Parser<T> parser, Parser<TOperator> op, Func<T, T, TOperator, T> reduce) =>
+        new FoldLParser<T, TOperator>(parser, op, reduce);
 
     /// <summary>
     /// Creates a right-associative parser.
@@ -50,7 +58,7 @@ partial class Parser
     public static Parser<T> FoldR<T, TOperator>(this Parser<T> parser, Parser<TOperator> op, Func<T, T, TOperator, T> reduce) =>
         new FoldRParser<T, TOperator>(parser, op, reduce);
 
-    #region Inner type: FoldParser
+    #region Inner type: FoldLParser
 
     /// <summary>
     /// Represents a left-associative parser.
@@ -60,7 +68,7 @@ partial class Parser
     /// <param name="parser">The main parser that matches a value.</param>
     /// <param name="op">The operator parser that matches an operator token.</param>
     /// <param name="reduce">A reduction function.</param>
-    private sealed class FoldParser<T, TOperator>(Parser<T> parser, Parser<TOperator> op, Func<T, T, TOperator, T> reduce) : Parser<T>
+    private sealed class FoldLParser<T, TOperator>(Parser<T> parser, Parser<TOperator> op, Func<T, T, TOperator, T> reduce) : Parser<T>
     {
         /// <inheritdoc />
         public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value)

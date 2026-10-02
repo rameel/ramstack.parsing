@@ -35,12 +35,12 @@ public static class ExpressionParser
             ).Do((u, _, d) => u.HasValue ? -d : d);
 
         var mul_expr =
-            unary_expr.Fold(
+            unary_expr.FoldL(
                 OneOf("*/").ThenIgnore(S),
                 (l, r, o) => o == '*' ? l * r : l / r);
 
         sum_expr.Parser =
-            mul_expr.Fold(
+            mul_expr.FoldL(
                 OneOf("+-").ThenIgnore(S),
                 (l, r, o) => o == '+' ? l + r : l - r);
 

@@ -1,22 +1,42 @@
 # Tiny-C
 
-This project implements a parser for the [Tiny-C](http://www.iro.umontreal.ca/~felipe/IFT2030-Automne2002/Complements/tinyc.c) language, a highly simplified version of `C` designed as an educational tool for learning about compilers.
-
-All variables are predefined, of integer type, and initialized to zero.
+This project implements a parser for the [Tiny-C](http://www.iro.umontreal.ca/~felipe/IFT2030-Automne2002/Complements/tinyc.c) language,
+a highly simplified version of `C` designed as an educational tool for learning about compilers.
 
 The main differences from the original `Tiny-C` are:
 - Variable names are not limited to single letters.
 - Additional operators are supported.
+- Line comments (`// ...`) and block comments (`/* ... */`) are supported.
 
 ## Tiny-C Grammar
 
-```sh
+```
 start
   = S statement EOF
   ;
 
 keyword
-  = ("while" / "do" / "if" / "else") ![\w]
+  = while_keyword / do_keyword / if_keyword / else_keyword
+  ;
+
+identifier_part
+  = [a-zA-Z_0-9]
+  ;
+
+while_keyword
+  = "while" !identifier_part
+  ;
+
+do_keyword
+  = "do" !identifier_part
+  ;
+
+if_keyword
+  = "if" !identifier_part
+  ;
+
+else_keyword
+  = "else" !identifier_part
   ;
 
 number
@@ -24,11 +44,23 @@ number
   ;
 
 variable
-  = !keyword [a-zA-Z_][a-zA-Z0-9_]*
+  = !keyword [a-z] identifier_part*
   ;
 
 S
-  = [ \t\n\r]*
+  = (single_comment / multiline_comment / [\s])*
+  ;
+
+single_comment
+  = "//" (!EOL .)* EOL
+  ;
+
+multiline_comment
+  = "/*" (!"*/" .)* "*/"
+  ;
+
+EOL
+  = "\r\n" / [\r\n\u0085\u2028\u2029] / EOF
   ;
 
 EOF
@@ -44,11 +76,11 @@ number_expr
   ;
 
 expr
-  = assigment_expr
+  = assignment_expr
   / ternary_expr
   ;
 
-assigment_expr
+assignment_expr
   = var_expr "=" S expr
   ;
 
@@ -81,7 +113,7 @@ eq_expr
   ;
 
 relational_expr
-  = shift_expr (("<" / "<=" / ">" / ">=") S shift_expr)*
+  = shift_expr (("<=" / "<" / ">=" / ">") S shift_expr)*
   ;
 
 shift_expr
@@ -120,15 +152,15 @@ statement
   ;
 
 if_statement
-  = "if" S "(" S expr ")" S statement ("else" S statement)?
+  = if_keyword S "(" S expr ")" S statement (else_keyword S statement)?
   ;
 
 while_statement
-  = "while" S "(" S expr ")" S statement
+  = while_keyword S "(" S expr ")" S statement
   ;
 
 do_while_statement
-  = "do" S statement "while" S "(" S expr ")" S ";" S
+  = do_keyword S statement while_keyword S "(" S expr ")" S ";" S
   ;
 
 block_statement

@@ -2,11 +2,9 @@
 
 This project implements a simple JSON parser.
 
-## JSON Grammar
-
-```sh
+```text
 start
-  = value $
+  = S value $
   ;
 
 value
@@ -18,7 +16,7 @@ object
   ;
 
 member
-  = string ":" S value
+  = string S ":" S value
   ;
 
 array
@@ -26,6 +24,6 @@ array
   ;
 
 S
-  = [ \t\r\n]*
+  = [\s]*
   ;
 ```

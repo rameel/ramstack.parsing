@@ -55,6 +55,6 @@ public static class JsonParser
                 @object
                 ).ThenIgnore(S);
 
-        return S.Then(value);
+        return value.Between(S, Eof);
     }
 }

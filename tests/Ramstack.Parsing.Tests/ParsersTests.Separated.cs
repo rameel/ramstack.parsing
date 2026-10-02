@@ -165,7 +165,7 @@ partial class ParsersTests
         var success = parser.TryParse(ref context, out var value);
 
         Assert.That(success, Is.True);
-        Assert.That(value, Is.EqualTo(new[] { 12, 7 }));
+        Assert.That(value, Is.EqualTo([12, 7]));
         Assert.That(item.Attempts, Is.EqualTo(2));
 
         Assert.That(context.Position, Is.EqualTo(3));
@@ -206,7 +206,7 @@ partial class ParsersTests
         var result = parser.Parse("abc!");
 
         Assert.That(result.Success, Is.True);
-        Assert.That(result.Value, Is.EqualTo(new[] { 'a', 'b', 'c' }));
+        Assert.That(result.Value, Is.EqualTo(['a', 'b', 'c']));
         Assert.That(result.Length, Is.EqualTo(3));
     }
 
@@ -233,7 +233,7 @@ partial class ParsersTests
         var result = parser.Parse(",,!");
 
         Assert.That(result.Success, Is.True);
-        Assert.That(result.Value, Is.EqualTo(new[] { 'x', 'x', 'x' }));
+        Assert.That(result.Value, Is.EqualTo(['x', 'x', 'x']));
         Assert.That(result.Length, Is.EqualTo(2));
     }
 
@@ -260,7 +260,7 @@ partial class ParsersTests
         var success = parser.TryParse(ref context, out var value);
 
         Assert.That(success, Is.True);
-        Assert.That(value, Is.EqualTo(new[] { 'a' }));
+        Assert.That(value, Is.EqualTo(['a']));
         Assert.That(context.Position, Is.EqualTo(expectedLength));
         Assert.That(context.MatchedSegment.Index, Is.Zero);
         Assert.That(context.MatchedSegment.Length, Is.EqualTo(expectedLength));

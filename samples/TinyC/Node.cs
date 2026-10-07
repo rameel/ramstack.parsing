@@ -14,6 +14,7 @@ public abstract record Node
     public static Node Unary(char op, Node operand) => new UnaryNode(op, operand);
     public static Node Binary(string op, Node left, Node right) => new BinaryNode(op, left, right);
     public static Node Assign(Node variable, Node value) => Binary("=", variable, value);
+    public static Node ExpressionStatement(Node expression) => new ExpressionStatementNode(expression);
     public static Node Block(IReadOnlyList<Node> statements) => new BlockNode(statements);
     public static Node Block(Node statement) => statement is BlockNode ? statement : new BlockNode([statement]);
 
@@ -57,6 +58,7 @@ public abstract record Node
                     break;
 
                 case TernaryNode c:
+                    sb.Append('(');
                     Print(c.Test, sb);
                     sb.IncrementIndent();
                     sb
@@ -68,6 +70,7 @@ public abstract record Node
                         .AppendLine()
                         .Append(": ");
                     Print(c.IfFalse, sb);
+                    sb.Append(')');
                     sb.DecrementIndent();
                     break;
 
@@ -95,8 +98,9 @@ public abstract record Node
                     break;
 
                 case BinaryNode(Operator: "=", var variable, var expr):
+                    sb.Append('(');
                     Print(variable, sb);
-                    sb.Append(" = (");
+                    sb.Append(" = ");
                     Print(expr, sb);
                     sb.Append(')');
                     break;
@@ -109,16 +113,17 @@ public abstract record Node
                     sb.Append(')');
                     break;
 
+                case ExpressionStatementNode statement:
+                    Print(statement.Expression, sb);
+                    sb.AppendLine(";");
+                    break;
+
                 case BlockNode block:
                     sb.AppendLine("{");
                     sb.IncrementIndent();
 
                     foreach (var stmt in block.Statements)
-                    {
                         Print(stmt, sb);
-                        if (stmt is NumberNode or VariableNode or UnaryNode or BinaryNode)
-                            sb.AppendLine(";");
-                    }
 
                     sb.DecrementIndent();
                     sb.AppendLine("}");
@@ -135,5 +140,6 @@ public abstract record Node
     public sealed record DoWhileLoopNode(Node Test, Node Body) : Node;
     public sealed record UnaryNode(char Operator, Node Operand) : Node;
     public sealed record BinaryNode(string Operator, Node Left, Node Right) : Node;
+    public sealed record ExpressionStatementNode(Node Expression) : Node;
     public sealed record BlockNode(IReadOnlyList<Node> Statements) : Node;
 }

@@ -14,23 +14,14 @@ public static class TinyCParser
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     private static Parser<Node> CreateParser()
     {
-        var keyword =
-            Seq(
-                OneOf("while", "do", "if", "else"),
-                Not(Set("\\w")));
+        var identifier_part =
+            Set("a-zA-Z_0-9");
 
         var number =
             Set("0-9")
                 .OneOrMore()
                 .Map(Node (m) => Node.Number(int.Parse(m, NumberStyles.Integer, CultureInfo.InvariantCulture)))
                 .As("number");
-
-        var variable =
-            Seq(
-                Not(keyword),
-                Set("a-z"),
-                Set("a-zA-Z_0-9").ZeroOrMore()
-                ).Map(Identifier).As("variable");
 
         var multiline_comment =
             Seq(
@@ -63,16 +54,30 @@ public static class TinyCParser
             Seq(L('='), ws).Void();
 
         var if_keyword =
-            Seq(L("if"), ws).Void();
+            Keyword("if").ThenIgnore(ws).Void();
 
         var else_keyword =
-            Seq(L("else"), ws).Void();
+            Keyword("else").ThenIgnore(ws).Void();
 
         var while_keyword =
-            Seq(L("while"), ws).Void();
+            Keyword("while").ThenIgnore(ws).Void();
 
         var do_keyword =
-            Seq(L("do"), ws).Void();
+            Keyword("do").ThenIgnore(ws).Void();
+
+        var keyword =
+            Choice(
+                while_keyword,
+                do_keyword,
+                if_keyword,
+                else_keyword);
+
+        var variable =
+            Seq(
+                Not(keyword),
+                Set("a-z"),
+                identifier_part.ZeroOrMore()
+                ).Map(Identifier).As("variable");
 
         var expr =
             Deferred<Node>();
@@ -101,52 +106,52 @@ public static class TinyCParser
                 primary_expr
             ).Do(CreateUnary);
 
-        var mul_expr = unary_expr.Fold(
+        var mul_expr = unary_expr.FoldL(
             OneOf("*/%").ThenIgnore(ws),
             CreateBinary);
 
         var sum_expr =
-            mul_expr.Fold(
+            mul_expr.FoldL(
                 OneOf("+-").ThenIgnore(ws),
                 CreateBinary);
 
         var shift_expr =
-            sum_expr.Fold(
+            sum_expr.FoldL(
                 OneOf("<<", ">>").ThenIgnore(ws),
                 (l, r, o) => Node.Binary(o, l, r));
 
         var relational_expr =
-            shift_expr.Fold(
+            shift_expr.FoldL(
                 OneOf("<", "<=", ">", ">=").ThenIgnore(ws),
                 (l, r, o) => Node.Binary(o, l, r));
 
         var eq_expr =
-            relational_expr.Fold(
+            relational_expr.FoldL(
                 OneOf("==", "!=").ThenIgnore(ws),
                 (l, r, o) => Node.Binary(o, l, r));
 
         var bitwise_and_expr =
-            eq_expr.Fold(
+            eq_expr.FoldL(
                 L('&').ThenIgnore(ws),
                 (l, r, _) => Node.Binary("&", l, r));
 
         var bitwise_xor_expr =
-            bitwise_and_expr.Fold(
+            bitwise_and_expr.FoldL(
                 L('^').ThenIgnore(ws),
                 (l, r, _) => Node.Binary("^", l, r));
 
         var bitwise_or_expr =
-            bitwise_xor_expr.Fold(
+            bitwise_xor_expr.FoldL(
                 L('|').ThenIgnore(ws),
                 (l, r, _) => Node.Binary("|", l, r));
 
         var logical_and_expr =
-            bitwise_or_expr.Fold(
+            bitwise_or_expr.FoldL(
                 L("&&").ThenIgnore(ws),
                 (l, r, _) => Node.Binary("&&", l, r));
 
         var logical_or_expr =
-            logical_and_expr.Fold(
+            logical_and_expr.FoldL(
                 L("||").ThenIgnore(ws),
                 (l, r, _) => Node.Binary("||", l, r));
 
@@ -213,7 +218,7 @@ public static class TinyCParser
             ).Do(CreateDoWhile);
 
         var expr_statement =
-            expr.ThenIgnore(semicolon);
+            expr.ThenIgnore(semicolon).Do(Node.ExpressionStatement);
 
         statement.Parser =
             Choice(
@@ -226,6 +231,9 @@ public static class TinyCParser
 
         return statement
             .Between(ws, Eof);
+
+        Parser<string> Keyword(string word) =>
+            L(word).ThenIgnore(Not(identifier_part)).As($"'{word}'");
 
         static Node Identifier(Match m) =>
             Node.Variable(m.ToString());

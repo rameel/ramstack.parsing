@@ -16,16 +16,19 @@ public static class ParlotParsers
 
     private static Parlot.Fluent.Parser<TextSpan> CreateEmailParser()
     {
-        var dot = Literals.Char('.');
-        var plus = Literals.Char('+');
-        var minus = Literals.Char('-');
-        var at = Literals.Char('@');
-        var wordChar = Literals.Pattern(char.IsLetterOrDigit).Then(_ => 'w');
-        var wordDotPlusMinus = OneOrMany(OneOf(wordChar, dot, plus, minus));
-        var wordDotMinus = OneOrMany(OneOf(wordChar, dot, minus));
-        var wordMinus = OneOrMany(OneOf(wordChar, minus));
-        return Capture(wordDotPlusMinus.And(at).And(wordMinus).And(dot).And(wordDotMinus.Eof()));
+        return Capture(
+            Literals.Pattern(c => IsWordCharacter(c) || c is '.' or '+' or '-', minSize: 1)
+                .And(Literals.Char('@'))
+                .And(Literals.Pattern(c => IsWordCharacter(c) || c == '-', minSize: 1))
+                .And(Literals.Char('.'))
+                .And(Literals.Pattern(IsWordCharacter, minSize: 2))
+                .Eof());
     }
+
+    private static bool IsWordCharacter(char c) =>
+        char.IsLetterOrDigit(c) || char.GetUnicodeCategory(c) is
+            System.Globalization.UnicodeCategory.NonSpacingMark or
+            System.Globalization.UnicodeCategory.ConnectorPunctuation;
 
     private static Parlot.Fluent.Parser<double> CreateExpressionParser()
     {
@@ -35,8 +38,7 @@ public static class ParlotParsers
          *
          * additive       => multiplicative ( ( "-" | "+" ) multiplicative )* ;
          * multiplicative => unary ( ( "/" | "*" ) unary )* ;
-         * unary          => ( "-" ) unary
-         *                   | primary ;
+         * unary          => "-"? primary ;
          * primary        => NUMBER
          *                   | "(" expression ")" ;
          */
@@ -58,8 +60,10 @@ public static class ParlotParsers
         // primary => NUMBER | "(" expression ")";
         var primary = number.Or(groupExpression).Named("primary");
 
-        // ( "-" ) unary | primary;
-        var unary = primary.Unary((minus, x => -x)).Named("unary");
+        // unary => "-"? primary;
+        var unary = minus.Optional().And(primary)
+            .Then(x => x.Item1.HasValue ? -x.Item2 : x.Item2)
+            .Named("unary");
 
         // multiplicative => unary ( ( "/" | "*" ) unary )* ;
         var multiplicative = unary.LeftAssociative(
@@ -74,7 +78,8 @@ public static class ParlotParsers
         ).Named("additive");
 
         expression.Parser = additive;
-        return expression.Named("expression");
+        return expression.Named("expression")
+            .AndSkip(Literals.Pattern(char.IsWhiteSpace).Optional()).Eof();
     }
 
     private static Parlot.Fluent.Parser<object?> CreateJsonParser()
@@ -136,7 +141,7 @@ public static class ParlotParsers
                 Terms.Char('}')
                 ).Then(object? (members) => members.ToDictionary());
 
-        return value.Parser = text
+        value.Parser = text
             .Or(number)
             .Or(boolTrue)
             .Or(boolFalse)
@@ -145,5 +150,7 @@ public static class ParlotParsers
             .Or(array)
             .Or(emptyMap)
             .Or(map);
+
+        return value.AndSkip(Literals.Pattern(char.IsWhiteSpace).Optional()).Eof();
     }
 }

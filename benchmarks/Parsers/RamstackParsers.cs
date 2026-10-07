@@ -1,24 +1,22 @@
-using static Ramstack.Parsing.Character;
 using static Ramstack.Parsing.Parser;
 
 namespace Ramstack.Parsing.Benchmarks.Parsers;
 
 public static class RamstackParsers
 {
-    public static readonly Parser<string> EmailParser = CreateEmailParser();
-    public static readonly Parser<Unit> EmailVoidParser = EmailParser.Void();
+    public static readonly Parser<Unit> EmailParser = CreateEmailParser();
     public static readonly Parser<double> ExpressionParser = Samples.CalcExpr.ExpressionParser.Parser;
     public static readonly Parser<object?> JsonParser = Samples.Json.JsonParser.Parser;
 
-    private static Parser<string> CreateEmailParser()
+    private static Parser<Unit> CreateEmailParser()
     {
         var parser = Seq(
-            Choice(LetterOrDigit, OneOf("_.+-")).OneOrMore(),
+            Set("\\w.+-").OneOrMore(),
             L('@'),
-            Choice(LetterOrDigit, L('-')).OneOrMore(),
+            Set("\\w-").OneOrMore(),
             L('.'),
-            LetterOrDigit.AtLeast(2)
-        ).Text();
+            Set("\\w").AtLeast(2)
+        ).Void().ThenIgnore(Eof);
 
         return parser;
     }

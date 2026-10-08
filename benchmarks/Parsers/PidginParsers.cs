@@ -10,14 +10,22 @@ namespace Ramstack.Parsing.Benchmarks.Parsers;
 
 public static class PidginParsers
 {
-    public static readonly Parser<char, double> ExpressionParser = ExprParserImpl.Instance;
-    public static readonly Parser<char, string> EmailParser =
-        from local in OneOf(LetterOrDigit, Char('_'), Char('.'), Char('+'), Char('-')).AtLeastOnceString()
-        from at in Char('@')
-        from domain in OneOf(LetterOrDigit, Char('-')).AtLeastOnceString()
-        from dot in Char('.')
-        from tld in Letter.AtLeastOnceString().Where(t => t.Length >= 2)
-        select $"{local}@{domain}.{tld}";
+    public static readonly Parser<char, double> ExpressionParser =
+        ExprParserImpl.Instance.Between(SkipWhitespaces).Before(End);
+
+    public static readonly Parser<char, Pidgin.Unit> EmailParser =
+        Token(c => IsWordCharacter(c) || c is '.' or '+' or '-').SkipAtLeastOnce()
+            .Before(Char('@'))
+            .Before(Token(c => IsWordCharacter(c) || c == '-').SkipAtLeastOnce())
+            .Before(Char('.'))
+            .Before(Token(IsWordCharacter))
+            .Before(Token(IsWordCharacter))
+            .Before(Token(IsWordCharacter).SkipMany())
+            .Before(End);
+
+    private static bool IsWordCharacter(char c) =>
+        char.IsLetterOrDigit(c) || char.GetUnicodeCategory(c) is
+            UnicodeCategory.NonSpacingMark or UnicodeCategory.ConnectorPunctuation;
 
     private static class ExprParserImpl
     {
@@ -37,22 +45,22 @@ public static class PidginParsers
             }
         );
 
-        private static Parser<char, Func<double, double>> Unary(Parser<char, char> op) => op.Select<Func<double, double>>(_ => d => -d);
         private static readonly Parser<char, Func<double, double, double>> Add = Binary(Tok("+").ThenReturn('+'));
         private static readonly Parser<char, Func<double, double, double>> Sub = Binary(Tok("-").ThenReturn('-'));
         private static readonly Parser<char, Func<double, double, double>> Mul = Binary(Tok("*").ThenReturn('*'));
         private static readonly Parser<char, Func<double, double, double>> Div = Binary(Tok("/").ThenReturn('/'));
-        private static readonly Parser<char, Func<double, double>> Neg = Unary(Tok("-").ThenReturn('-'));
         private static readonly Parser<char, double> Literal = Tok(Real).Labelled("decimal literal");
 
         public static readonly Parser<char, double> Instance = Pidgin.Expression.ExpressionParser.Build<char, double>(
             expr => (
-                OneOf(
-                    Literal,
-                    Parenthesized(expr).Labelled("parenthesized expression")
-                ),
+                // unary => "-"? primary
+                Tok("-").Optional().Then(
+                    OneOf(
+                        Literal,
+                        Parenthesized(expr).Labelled("parenthesized expression")
+                    ),
+                    (minus, x) => minus.HasValue ? -x : x),
                 [
-                    Operator.Prefix(Neg),
                     Operator.InfixL(Mul).And(Operator.InfixL(Div)),
                     Operator.InfixL(Add).And(Operator.InfixL(Sub))
                 ]
@@ -144,6 +152,16 @@ public static class PidginParsers
                 .Between(LBrace, RBrace)
                 .Select<object?>(members => members.ToDictionary());
 
-        public static object? Parse(string input) => Json.ParseOrThrow(input);
+        private static readonly Parser<char, object?> Document =
+            Json.Between(SkipWhitespaces).Before(End);
+
+        public static object? Parse(string input) => Document.ParseOrThrow(input);
+
+        public static bool TryParse(string input, out object? value)
+        {
+            var result = Document.Parse(input);
+            value = result.Success ? result.Value : null;
+            return result.Success;
+        }
     }
 }

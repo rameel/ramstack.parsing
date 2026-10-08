@@ -1,7 +1,7 @@
-#Ignore thumbnails created by windows
+# Ignore thumbnails created by windows
 [Tt]humbs.db
 
-#Ignore files build by Visual Studio
+# Ignore files build by Visual Studio
 *.obj
 *.exe
 *.pdb
@@ -33,5 +33,8 @@ obj/
 *.ReSharper.user
 [Tt]est[Rr]esult*
 
-#Ignore Rider/Idea files
+# Ignore benchmark artifacts
+BenchmarkDotNet.Artifacts/
+
+# Ignore Rider/Idea files
 .idea/

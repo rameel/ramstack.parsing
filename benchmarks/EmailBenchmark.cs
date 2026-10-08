@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Columns;
 
 using Pidgin;
 
@@ -10,53 +11,81 @@ namespace Ramstack.Parsing.Benchmarks;
 
 [MemoryDiagnoser]
 [OperationsPerSecond]
+[HideColumns(Column.Error, Column.StdDev)]
 public partial class EmailBenchmark
 {
-    private static readonly string Email = "development.team-2021@example.com";
+    public const string RegexPattern = @"\A[\w.+-]+@[\w-]+\.\w{2,}\z";
+    private readonly string _emailValue = "development.team-2021@example.com";
 
-    private static readonly Regex EmailRegex = new Regex(@"^[\w._+-]+@[\w-]+\.\w{2,}$");
-    private static readonly Regex EmailRegexCompiled = new Regex((@"^[\w._+-]+@[\w-]+\.\w{2,}$"), RegexOptions.Compiled);
+    public static readonly Regex EmailRegex = new Regex(RegexPattern);
+    public static readonly Regex EmailRegexCompiled = new Regex(RegexPattern, RegexOptions.Compiled);
 
-    [GeneratedRegex(@"^[\w._+-]+@[\w-]+\.\w{2,}$")]
+    [GeneratedRegex(RegexPattern)]
     private static partial Regex EmailRegexGenerated();
 
     [GlobalSetup]
     public void Setup()
     {
-        if (!EmailRegex.IsMatch(Email)) throw new Exception(nameof(EmailRegex));
-        if (!EmailRegexCompiled.IsMatch(Email)) throw new Exception(nameof(EmailRegexCompiled));
-        if (!EmailRegexGenerated().IsMatch(Email)) throw new Exception(nameof(EmailRegexGenerated));
-        if (!RamstackParsers.EmailParser.TryParse(Email, out _)) throw new Exception("RamstackParsers.EmailParser");
-        if (!ParlotParsers.EmailParser.TryParse(Email, out _)) throw new Exception("ParlotParsers.EmailParser");
-        if (!ParlotParsers.EmailParserCompiled.TryParse(Email, out _)) throw new Exception("ParlotParsers.EmailParserCompiled");
-        PidginParsers.EmailParser.ParseOrThrow(Email);
+        (string Name, Func<string, bool> Match)[] matchers =
+        [
+            ("Ramstack", input => RamstackParsers.EmailParser.TryParse(input, out _)),
+            ("Regex", EmailRegex.IsMatch),
+            ("Regex:Compiled", EmailRegexCompiled.IsMatch),
+            ("Regex:Generated", EmailRegexGenerated().IsMatch),
+            ("Parlot", input => ParlotParsers.EmailParser.TryParse(input, out _)),
+            ("Parlot:Compiled", input => ParlotParsers.EmailParserCompiled.TryParse(input, out _)),
+            ("Pidgin", input => PidginParsers.EmailParser.Parse(input).Success)
+        ];
+        (string Input, bool Expected)[] cases =
+        [
+            (_emailValue, true),
+            ("a_b+c.d-e@host-name.c0", true),
+            ("e\u0301@\u203Fhost.\u203F\u0301", true),
+            ("x@host.12", true),
+            ("", false),
+            ("@host.com", false),
+            ("x@.com", false),
+            ("x@host.c", false),
+            ("x@host.co.uk", false),
+            ("x@host.c-", false),
+            (_emailValue + "!", false),
+            (_emailValue + "\n", false),
+            (_emailValue + "\r\n", false),
+            (" " + _emailValue, false),
+            ("x\u200D@host.com", false)
+        ];
+
+        foreach (var (name, match) in matchers)
+        foreach (var (input, expected) in cases)
+            if (match(input) != expected)
+                throw new InvalidOperationException($"{name}: unexpected email match for {input}");
     }
 
-    [Benchmark(Description = "Ramstack")]
+    [Benchmark(Baseline = true, Description = "Ramstack")]
     public bool RamstackEmail() =>
-        RamstackParsers.EmailVoidParser.TryParse(Email, out _);
+        RamstackParsers.EmailParser.TryParse(_emailValue, out _);
 
     [Benchmark(Description = "Regex")]
     public bool RegexEmail() =>
-        EmailRegex.IsMatch(Email);
+        EmailRegex.IsMatch(_emailValue);
 
     [Benchmark(Description = "Regex:Compiled")]
     public bool RegexEmailCompiled() =>
-        EmailRegexCompiled.IsMatch(Email);
+        EmailRegexCompiled.IsMatch(_emailValue);
 
     [Benchmark(Description = "Regex:Generated")]
     public bool RegexEmailGenerated() =>
-        EmailRegexGenerated().IsMatch(Email);
+        EmailRegexGenerated().IsMatch(_emailValue);
 
     [Benchmark(Description = "Parlot")]
     public bool ParlotEmail() =>
-        ParlotParsers.EmailParser.TryParse(Email, out _);
+        ParlotParsers.EmailParser.TryParse(_emailValue, out _);
 
     [Benchmark(Description = "Parlot:Compiled")]
     public bool ParlotEmailCompiled() =>
-        ParlotParsers.EmailParserCompiled.TryParse(Email, out _);
+        ParlotParsers.EmailParserCompiled.TryParse(_emailValue, out _);
 
     [Benchmark(Description = "Pidgin")]
     public bool PidginEmail() =>
-        PidginParsers.EmailParser.Parse(Email).Success;
+        PidginParsers.EmailParser.Parse(_emailValue).Success;
 }

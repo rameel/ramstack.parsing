@@ -25,6 +25,8 @@ partial class Parser
         /// <inheritdoc />
         public override bool TryParse(ref ParseContext context, [NotNullWhen(true)] out T? value)
         {
+            context.Advance(0);
+
             value = returnValue!;
             return true;
         }

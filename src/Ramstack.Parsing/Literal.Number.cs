@@ -68,7 +68,16 @@ partial class Literal
 
             #if NET8_0_OR_GREATER
             if (kind == NumberKind.BinaryNumber)
+            {
+                #if NET8_0
+                if (typeof(T) == typeof(BigInteger))
+                    throw new ArgumentException(
+                        $"Number kind {kind} is not supported for BigInteger.",
+                        nameof(kind));
+                #endif
+
                 return new NumberLiteral<T, BinaryNumberLiteralKind>(name ?? "binary number", NumberStyles.BinaryNumber);
+            }
             #endif
 
             throw new ArgumentException(

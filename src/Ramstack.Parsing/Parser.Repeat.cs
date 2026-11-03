@@ -79,8 +79,12 @@ partial class Parser
     /// <returns>
     /// A parser that applies the specified parser at least <paramref name="count"/> times.
     /// </returns>
-    public static Parser<List<T>> AtLeast<T>(this Parser<T> parser, int count) =>
-        Repeat(parser, count, int.MaxValue);
+    public static Parser<List<T>> AtLeast<T>(this Parser<T> parser, int count)
+    {
+        Argument.ThrowIfNegative(count);
+
+        return Repeat(parser, count, int.MaxValue);
+    }
 
     /// <summary>
     /// Creates a parser that applies the specified parser at least <paramref name="count"/> times.
@@ -90,8 +94,12 @@ partial class Parser
     /// <returns>
     /// A parser that applies the specified parser at least <paramref name="count"/> times.
     /// </returns>
-    public static Parser<Unit> AtLeast(this Parser<Unit> parser, int count) =>
-        Repeat(parser, count, int.MaxValue);
+    public static Parser<Unit> AtLeast(this Parser<Unit> parser, int count)
+    {
+        Argument.ThrowIfNegative(count);
+
+        return Repeat(parser, count, int.MaxValue);
+    }
 
     /// <summary>
     /// Creates a parser that applies the specified parser exactly <paramref name="count"/> times.
@@ -102,8 +110,12 @@ partial class Parser
     /// <returns>
     /// A parser that applies the specified parser exactly <paramref name="count"/> times.
     /// </returns>
-    public static Parser<List<T>> Repeat<T>(this Parser<T> parser, int count) =>
-        Repeat(parser, count, count);
+    public static Parser<List<T>> Repeat<T>(this Parser<T> parser, int count)
+    {
+        Argument.ThrowIfNegativeOrZero(count);
+
+        return Repeat(parser, count, count);
+    }
 
     /// <summary>
     /// Creates a parser that applies the specified parser exactly <paramref name="count"/> times.
@@ -113,8 +125,12 @@ partial class Parser
     /// <returns>
     /// A parser that applies the specified parser exactly <paramref name="count"/> times.
     /// </returns>
-    public static Parser<Unit> Repeat(this Parser<Unit> parser, int count) =>
-        Repeat(parser, count, count);
+    public static Parser<Unit> Repeat(this Parser<Unit> parser, int count)
+    {
+        Argument.ThrowIfNegativeOrZero(count);
+
+        return Repeat(parser, count, count);
+    }
 
     /// <summary>
     /// Creates a parser that applies the specified parser between <paramref name="min"/> and <paramref name="max"/> times, inclusive.
@@ -286,7 +302,6 @@ partial class Parser
             .First()
             .parser;
     }
-
 
     #region Inner type: RepeatParser
 

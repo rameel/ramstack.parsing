@@ -40,6 +40,10 @@ public abstract class Parser<T>
     ///   through <see cref="Parser.Fail{T}(string)"/> or <see cref="Parser.FatalError(string)"/>.
     /// </para>
     /// <para>
+    ///   A successful match may consume only a prefix of the source text.
+    ///   To require the entire input to match, append <see cref="Parser.Eof"/> using <c>ThenIgnore</c>.
+    /// </para>
+    /// <para>
     ///   Exceptions thrown by user-provided functions, such as the callbacks passed to
     ///   <c>Map</c>, <c>Do</c>, or <c>FoldL</c>, are not suppressed and propagate to the caller.
     ///   Use <see cref="Parse(ReadOnlySpan{char})"/> to capture them in
@@ -74,6 +78,11 @@ public abstract class Parser<T>
     /// <returns>
     /// A <see cref="ParseResult{T}"/> containing the parsed result or error information.
     /// </returns>
+    /// <remarks>
+    /// A successful match may consume only a prefix of the source text.
+    /// To require the entire input to match, append <see cref="Parser.Eof"/> using <c>ThenIgnore</c>,
+    /// for example, <c>parser.ThenIgnore(Parser.Eof).Parse(source)</c>.
+    /// </remarks>
     public ParseResult<T> Parse(ReadOnlySpan<char> source)
     {
         var context = new ParseContext(source);

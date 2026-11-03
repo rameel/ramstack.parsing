@@ -71,58 +71,74 @@ partial class Parser
         Repeat(parser, 0, int.MaxValue);
 
     /// <summary>
-    /// Creates a parser that applies the specified parser at least the defined number of times.
+    /// Creates a parser that applies the specified parser at least <paramref name="count"/> times.
     /// </summary>
     /// <typeparam name="T">The type of the value produced by the specified parser.</typeparam>
-    /// <param name="parser">The <see cref="Parser{T}"/> to apply at least the specified number of times.</param>
-    /// <param name="count">The minimum number of repetitions.</param>
+    /// <param name="parser">The <see cref="Parser{T}"/> to apply at least <paramref name="count"/> times.</param>
+    /// <param name="count">The minimum number of repetitions. Must be non-negative.</param>
     /// <returns>
-    /// A parser that applies the specified parser at least a defined number of times.
+    /// A parser that applies the specified parser at least <paramref name="count"/> times.
     /// </returns>
-    public static Parser<List<T>> AtLeast<T>(this Parser<T> parser, int count) =>
-        Repeat(parser, count, int.MaxValue);
+    public static Parser<List<T>> AtLeast<T>(this Parser<T> parser, int count)
+    {
+        Argument.ThrowIfNegative(count);
+
+        return Repeat(parser, count, int.MaxValue);
+    }
 
     /// <summary>
-    /// Creates a parser that applies the specified parser at least the specified number of times.
+    /// Creates a parser that applies the specified parser at least <paramref name="count"/> times.
     /// </summary>
-    /// <param name="parser">The <see cref="Parser{T}"/> to apply at least the specified number of times.</param>
-    /// <param name="count">The minimum number of repetitions.</param>
+    /// <param name="parser">The <see cref="Parser{T}"/> to apply at least <paramref name="count"/> times.</param>
+    /// <param name="count">The minimum number of repetitions. Must be non-negative.</param>
     /// <returns>
-    /// A parser that applies the specified parser at least a defined number of times.
+    /// A parser that applies the specified parser at least <paramref name="count"/> times.
     /// </returns>
-    public static Parser<Unit> AtLeast(this Parser<Unit> parser, int count) =>
-        Repeat(parser, count, int.MaxValue);
+    public static Parser<Unit> AtLeast(this Parser<Unit> parser, int count)
+    {
+        Argument.ThrowIfNegative(count);
+
+        return Repeat(parser, count, int.MaxValue);
+    }
 
     /// <summary>
-    /// Creates a parser that applies the specified parser a defined number of times.
+    /// Creates a parser that applies the specified parser exactly <paramref name="count"/> times.
     /// </summary>
     /// <typeparam name="T">The type of the value produced by the specified parser.</typeparam>
     /// <param name="parser">The <see cref="Parser{T}"/> to apply the specified number of times.</param>
-    /// <param name="count">The number of repetitions.</param>
+    /// <param name="count">The number of repetitions. Must be greater than zero.</param>
     /// <returns>
-    /// A parser that applies the specified parser a defined number of times.
+    /// A parser that applies the specified parser exactly <paramref name="count"/> times.
     /// </returns>
-    public static Parser<List<T>> Repeat<T>(this Parser<T> parser, int count) =>
-        Repeat(parser, count, count);
+    public static Parser<List<T>> Repeat<T>(this Parser<T> parser, int count)
+    {
+        Argument.ThrowIfNegativeOrZero(count);
+
+        return Repeat(parser, count, count);
+    }
 
     /// <summary>
-    /// Creates a parser that applies the specified parser a defined number of times.
+    /// Creates a parser that applies the specified parser exactly <paramref name="count"/> times.
     /// </summary>
     /// <param name="parser">The <see cref="Parser{T}"/> to apply the specified number of times.</param>
-    /// <param name="count">The number of repetitions.</param>
+    /// <param name="count">The number of repetitions. Must be greater than zero.</param>
     /// <returns>
-    /// A parser that applies the specified parser a defined number of times.
+    /// A parser that applies the specified parser exactly <paramref name="count"/> times.
     /// </returns>
-    public static Parser<Unit> Repeat(this Parser<Unit> parser, int count) =>
-        Repeat(parser, count, count);
+    public static Parser<Unit> Repeat(this Parser<Unit> parser, int count)
+    {
+        Argument.ThrowIfNegativeOrZero(count);
+
+        return Repeat(parser, count, count);
+    }
 
     /// <summary>
     /// Creates a parser that applies the specified parser between <paramref name="min"/> and <paramref name="max"/> times, inclusive.
     /// </summary>
     /// <typeparam name="T">The type of the value produced by the specified parser.</typeparam>
     /// <param name="parser">The parser to apply repeatedly.</param>
-    /// <param name="min">The minimum number of repetitions.</param>
-    /// <param name="max">The maximum number of repetitions.</param>
+    /// <param name="min">The minimum number of repetitions. Must be non-negative and no greater than <paramref name="max"/>.</param>
+    /// <param name="max">The maximum number of repetitions. Must be greater than zero.</param>
     /// <returns>
     /// A parser that applies the specified parser between <paramref name="min"/> and <paramref name="max"/> times, inclusive.
     /// </returns>
@@ -141,8 +157,8 @@ partial class Parser
     /// Creates a parser that applies the specified parser between <paramref name="min"/> and <paramref name="max"/> times, inclusive.
     /// </summary>
     /// <param name="parser">The parser to apply repeatedly.</param>
-    /// <param name="min">The minimum number of repetitions.</param>
-    /// <param name="max">The maximum number of repetitions.</param>
+    /// <param name="min">The minimum number of repetitions. Must be non-negative and no greater than <paramref name="max"/>.</param>
+    /// <param name="max">The maximum number of repetitions. Must be greater than zero.</param>
     /// <returns>
     /// A parser that applies the specified parser between <paramref name="min"/> and <paramref name="max"/> times, inclusive.
     /// </returns>
@@ -287,11 +303,10 @@ partial class Parser
             .parser;
     }
 
-
     #region Inner type: RepeatParser
 
     /// <summary>
-    /// Represents a parser that applies the specified parser a defined number of times.
+    /// Represents a parser that applies another parser within specified repetition limits.
     /// </summary>
     /// <typeparam name="T">The type of the value produced by the specified parser.</typeparam>
     private sealed class RepeatParser<T> : Parser<List<T>>
@@ -301,7 +316,7 @@ partial class Parser
         private readonly int _max;
 
         /// <summary>
-        /// Represents a parser that applies the specified parser a defined number of times.
+        /// Initializes a new instance of the <see cref="RepeatParser{T}"/> class.
         /// </summary>
         /// <param name="parser">The <see cref="Parser{T}"/> to be applied a specified number of times.</param>
         /// <param name="min">The minimum number of repetitions.</param>
@@ -367,7 +382,7 @@ partial class Parser
 
     /// <summary>
     /// Represents a specialized parser used as an optimization that discards the parsed result,
-    /// while applying the specified parser a defined number of times.
+    /// while applying another parser within specified repetition limits.
     /// </summary>
     private sealed class VoidRepeatParser : Parser<Unit>
     {

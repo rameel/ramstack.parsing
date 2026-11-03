@@ -89,7 +89,7 @@ partial class Parser
     ///   </item>
     /// </list>
     ///
-    /// The following features are **not supported**:
+    /// The following features are <em>not supported</em>:
     /// <list type="bullet">
     ///     <item><description>Named Unicode blocks (e.g., <c>\p{Cyrillic}</c>).</description></item>
     ///     <item><description>Negation within ranges (e.g., <c>^0-9</c>).</description></item>

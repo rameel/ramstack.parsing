@@ -61,7 +61,7 @@ internal static class Argument
     /// <summary>
     /// Throws an <see cref="ArgumentOutOfRangeException"/> if <paramref name="value"/> is negative.
     /// </summary>
-    /// <typeparam name="T">The type of the value being checked, which implements <see cref="IComparable{T}"/>.</typeparam>
+    /// <typeparam name="T">The type of the value being checked, which implements <see cref="System.Numerics.INumberBase{T}"/>.</typeparam>
     /// <param name="value">The value to check.</param>
     /// <param name="paramName">The name of the parameter being checked. Automatically supplied by the compiler.</param>
     public static void ThrowIfNegative<T>(T value, [CallerArgumentExpression("value")] string? paramName = null) where T : struct, System.Numerics.INumberBase<T>
@@ -73,7 +73,7 @@ internal static class Argument
     /// <summary>
     /// Throws an <see cref="ArgumentOutOfRangeException"/> if <paramref name="value"/> is negative or zero.
     /// </summary>
-    /// <typeparam name="T">The type of the value being checked, which implements <see cref="IComparable{T}"/>.</typeparam>
+    /// <typeparam name="T">The type of the value being checked, which implements <see cref="System.Numerics.INumberBase{T}"/>.</typeparam>
     /// <param name="value">The value to check.</param>
     /// <param name="paramName">The name of the parameter being checked. Automatically supplied by the compiler.</param>
     public static void ThrowIfNegativeOrZero<T>(T value, [CallerArgumentExpression("value")] string? paramName = null) where T : struct, System.Numerics.INumberBase<T>
@@ -85,7 +85,7 @@ internal static class Argument
     /// <summary>
     /// Throws an <see cref="ArgumentOutOfRangeException"/> if <paramref name="value"/> is equal to <paramref name="other"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the values being compared, which implements <see cref="IEquatable{T}"/>.</typeparam>
+    /// <typeparam name="T">The type of the values being compared, which implements <see cref="System.Numerics.IEqualityOperators{TSelf,TOther,TResult}"/>.</typeparam>
     /// <param name="value">The value to check.</param>
     /// <param name="other">The reference value to compare against.</param>
     /// <param name="paramName">The name of the parameter being checked. Automatically supplied by the compiler.</param>
@@ -98,7 +98,7 @@ internal static class Argument
     /// <summary>
     /// Throws an <see cref="ArgumentOutOfRangeException"/> if <paramref name="value"/> is not equal to <paramref name="other"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the values being compared, which implements <see cref="IEquatable{T}"/>.</typeparam>
+    /// <typeparam name="T">The type of the values being compared, which implements <see cref="System.Numerics.IEqualityOperators{TSelf,TOther,TResult}"/>.</typeparam>
     /// <param name="value">The value to check.</param>
     /// <param name="other">The reference value to compare against.</param>
     /// <param name="paramName">The name of the parameter being checked. Automatically supplied by the compiler.</param>

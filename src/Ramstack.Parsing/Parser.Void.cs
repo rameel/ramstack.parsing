@@ -8,8 +8,14 @@ partial class Parser
     /// <typeparam name="T">The type of the value produced by the parser.</typeparam>
     /// <param name="parser">The parser to convert.</param>
     /// <returns>
-    /// A parser instance that performs the same parsing as the original parser, but does not capture the result.
+    /// A parser that matches the input while discarding the parsed value.
     /// </returns>
+    /// <remarks>
+    /// Transformations whose results are discarded may be skipped, including callbacks passed to
+    /// <c>Map</c>, <c>Do</c>, <c>FoldL</c>, <c>FoldR</c>, and <c>Prefixed</c>.
+    /// Side effects and exceptions in skipped callbacks do not occur.
+    /// This also applies when a combinator discards a parser's result internally.
+    /// </remarks>
     public static Parser<Unit> Void<T>(this Parser<T> parser) =>
         parser as Parser<Unit> ?? parser.ToVoidParser();
 

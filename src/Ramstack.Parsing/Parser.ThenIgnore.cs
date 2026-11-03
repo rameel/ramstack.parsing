@@ -45,6 +45,8 @@ partial class Parser
             }
 
             context.RestorePosition(bookmark);
+            value = default;
+
             return false;
         }
 

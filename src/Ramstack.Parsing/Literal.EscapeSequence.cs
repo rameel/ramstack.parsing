@@ -146,7 +146,7 @@ partial class Literal
     ];
 
     /// <summary>
-    /// Gets a parser that matches the escape sequence.
+    /// Gets a parser that matches an escape sequence and returns the decoded character.
     /// </summary>
     public static Parser<char> EscapeSequence { get; } = new EscapeSequenceParser<char>();
 

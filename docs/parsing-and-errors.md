@@ -24,6 +24,16 @@ var invalid = parser.Parse("42!"); // Success: false
 A successful parse can match only a prefix. Add `ThenIgnore(Eof)` when the entire
 input must match. Build parsers once and reuse them.
 
+Use the boolean API when diagnostics are unnecessary:
+
+```csharp
+var integer = Literal.Number<int>().ThenIgnore(Eof);
+if (integer.TryParse("42", out var value))
+{
+    Console.WriteLine(value); // 42
+}
+```
+
 ## Lookahead and errors
 
 | Operation               | Purpose                                                                   |
@@ -37,3 +47,28 @@ input must match. Build parsers once and reuse them.
 
 `Optional` and `DefaultOnFail` handle ordinary failures; they do not recover from
 forced termination.
+
+Lookahead can prevent a keyword from matching the beginning of an identifier:
+
+```csharp
+var identifierPart = Character.LetterOrDigit.Or(L('_'));
+var keyword = L("if").ThenIgnore(Not(identifierPart));
+
+Console.WriteLine(keyword.Parse("if(").Value);       // if
+Console.WriteLine(keyword.Parse("iffy").Success);    // False
+Console.WriteLine(keyword.Parse("if_else").Success); // False
+```
+
+Provide a custom error when a required rule has no match:
+
+```csharp
+var required = Literal
+    .Number<int>()
+    .Or(Fail<int>("An integer is required."));
+    
+var result = required.Parse("oops");
+
+Console.WriteLine(result.Success); // False
+Console.WriteLine(result.ErrorMessage); // (1:1) An integer is required.
+Console.WriteLine(required.TryParse("oops", out _)); // False
+```

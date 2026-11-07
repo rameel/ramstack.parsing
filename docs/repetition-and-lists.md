@@ -22,15 +22,42 @@ such as `ZeroOrMore` or `Repeat` returns `Unit` instead.
 `Separated` allows an empty list by default. Use `min` and `max` to constrain its
 size and `allowTrailing: true` to accept a final separator.
 
+## Repeated items
+
+Use `Text` to turn repeated character matches into a single string:
+
 ```csharp
+var code = Set("0-9").Repeat(4).Text().ThenIgnore(Eof);
+
+Console.WriteLine(code.Parse("1234").Value);  // 1234
+Console.WriteLine(code.Parse("123").Success); // False
+Console.WriteLine(code.Parse("12345").Success); // False
+```
+
+## Lists and terminators
+
+```csharp
+// "[1, 2, 3]" => List<int> { 1, 2, 3 }; "[]" => an empty list
 var item = Literal.Number<int>().ThenIgnore(S);
 var comma = L(',').ThenIgnore(S);
 var list = item.Separated(comma)
     .Between(L('[').ThenIgnore(S), L(']'))
     .ThenIgnore(Eof);
-// "[1, 2, 3]" => List<int> { 1, 2, 3 }; "[]" => an empty list
 
-var comment = Any.Until(L("*/")).Text()
-    .Between(L("/*"), L("*/"));
 // "/*note*/" => "note"; Between consumes the terminator left by Until
+var comment = Any.Until(L("*/")).Text().Between(L("/*"), L("*/"));
+```
+
+## Optional values
+
+`Optional` preserves whether a value was present. `DefaultOnFail` supplies a replacement instead:
+
+```csharp
+var marker = L('!').Optional().ThenIgnore(Eof);
+Console.WriteLine(marker.Parse("!").Value.HasValue); // True
+Console.WriteLine(marker.Parse("").Value.HasValue);  // False
+
+var count = Literal.Number<int>().DefaultOnFail(10).ThenIgnore(Eof);
+Console.WriteLine(count.Parse("").Value);   // 10
+Console.WriteLine(count.Parse("12").Value); // 12
 ```

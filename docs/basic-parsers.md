@@ -26,12 +26,26 @@ Match characters, fixed text, and values such as numbers and quoted strings.
 groups. These return `char`; `S`, `Eol`, and `Eof` return `Unit`, representing
 success without a meaningful value.
 
+`OneOf` distinguishes a set of characters from a set of strings:
+
+```csharp
+var sign = OneOf("+-");
+var comparison = OneOf("=", "==");
+
+Console.WriteLine(sign.Parse("+").Value);        // +
+Console.WriteLine(comparison.Parse("==").Value); // ==
+```
+
+Combine character classes to describe an identifier:
+
 ```csharp
 var identifier = Seq(
     Set("a-zA-Z_"),
     Set("a-zA-Z0-9_").ZeroOrMore()
 ).Text();
-// "item_42" => "item_42"
+
+Console.WriteLine(identifier.Parse("item_42").Value); // item_42
+Console.WriteLine(identifier.Parse("42item").Success); // False
 ```
 
 ## Literals
@@ -51,4 +65,14 @@ var identifier = Seq(
 ```csharp
 var integer = Literal.Number<int>();      // "42" => 42
 var text = Literal.DoubleQuotedString;    // "\"hello\"" => "hello"
+```
+
+Numeric formats and escape sequences produce values directly:
+
+```csharp
+var hex = Literal.Number<int>(NumberKind.HexNumber);
+Console.WriteLine(hex.Parse("2A").Value); // 42
+
+var quoted = Literal.DoubleQuotedString.Parse("\"A\\u0042\"");
+Console.WriteLine(quoted.Value); // AB
 ```

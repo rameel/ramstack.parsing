@@ -1,10 +1,13 @@
 # Parser guide
 
+> Draft: a brief overview of the available parsers and combinators.
+
 A `Parser<T>` reads text and produces a value of type `T`. Small parsers match
 individual tokens; combinators join them into lists, expressions, and grammars.
 The examples use these imports:
 
 ```csharp
+using System;
 using Ramstack.Parsing;
 using static Ramstack.Parsing.Parser;
 ```

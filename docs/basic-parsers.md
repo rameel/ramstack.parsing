@@ -36,6 +36,16 @@ Console.WriteLine(sign.Parse("+").Value);        // +
 Console.WriteLine(comparison.Parse("==").Value); // ==
 ```
 
+`L` and the string overloads of `OneOf` return the supplied literal,
+even if a case-insensitive match has different spelling in the source.
+Use `Text` for the original spelling:
+
+```csharp
+var word = L("hello", StringComparison.OrdinalIgnoreCase);
+Console.WriteLine(word.Parse("HELLO").Value);        // hello
+Console.WriteLine(word.Text().Parse("HELLO").Value); // HELLO
+```
+
 Combine character classes to describe an identifier:
 
 ```csharp
@@ -47,6 +57,34 @@ var identifier = Seq(
 Console.WriteLine(identifier.Parse("item_42").Value); // item_42
 Console.WriteLine(identifier.Parse("42item").Success); // False
 ```
+
+### Character classes and Unicode
+
+Write `Set` patterns without surrounding square brackets. Use verbatim C# strings
+for patterns with backslashes:
+
+| Pattern                    | Meaning                                                                          |
+| -------------------------- | -------------------------------------------------------------------------------- |
+| `a-z`, `0-9`               | An inclusive character range.                                                    |
+| `abc_`                     | Any of the listed characters.                                                    |
+| `\p{L}`, `\p{Nd}`, `\P{L}` | A Unicode letter, a decimal digit, or a character outside the letter categories. |
+| `\d`, `\w`, `\s`           | A Unicode decimal digit, word character, or whitespace character.                |
+| `\n`, `\r`, `\t`, `\u0041` | A character escape or a four-digit Unicode escape.                               |
+| `\-`, `\\`                 | A literal hyphen or backslash.                                                   |
+
+`OneOf("a-z")` means `a`, `-`, or `z`; `Set("a-z")` means a range.
+`Set` is a character-class parser: `^`, `[`, `]`, and `.` match themselves.
+For example, `Set("^a")` accepts `^` or `a`. It has no regex anchors, class subtraction,
+or named Unicode blocks such as `\p{IsGreek}`.
+
+```csharp
+Console.WriteLine(Set(@"\p{L}").Parse("Ж").Value);     // Ж
+Console.WriteLine(Character.Digit.Parse("٣").Success); // True
+Console.WriteLine(Set("0-9").Parse("٣").Success);      // False
+```
+
+Character parsers read one UTF-16 code unit (`char`), so an emoji can require two matches.
+`S` includes line breaks; use `OneOf(" \t").ZeroOrMore().Void()` when only horizontal spaces are allowed.
 
 ## Literals
 
@@ -76,3 +114,28 @@ Console.WriteLine(hex.Parse("2A").Value); // 42
 var quoted = Literal.DoubleQuotedString.Parse("\"A\\u0042\"");
 Console.WriteLine(quoted.Value); // AB
 ```
+
+Numbers use invariant culture: a decimal point is `.`.
+Integer input permits an optional sign and ASCII digits;
+floating-point input also permits a fraction and exponent, such as `1.5e2`. 
+fraction requires digits on both sides of the point. An incomplete suffix
+such as `1e+` stays unread, so use `Eof` or a delimiter to reject it.
+An integer outside the target type's range fails normally.
+
+`HexNumber` and `BinaryNumber` read digits without a sign or a base prefix.
+Parse a prefix separately, for example `L("0x").Then(hex)`.
+Binary `BigInteger` requires a target of .NET 9 or later.
+
+Quoted strings return decoded contents; `Text()` returns the original spelling,
+including quotes and escapes:
+
+```csharp
+var text = Literal.DoubleQuotedString;
+Console.WriteLine(text.Parse("\"A\\u0042\"").Value); // AB
+Console.WriteLine(text.Text().Parse("\"A\\u0042\"").Value); // "A\u0042"
+Console.WriteLine(Literal.QuotedCharacter.Parse("'ab'").Success); // False
+```
+
+Quoted strings require a closing quote and reject unescaped CR/LF and unknown escapes.
+Unicode escapes use `\u` plus exactly four hexadecimal digits; `\x` and `\U` forms are unsupported.
+These are general-purpose literals: their number and string syntax does not enforce a strict JSON grammar.

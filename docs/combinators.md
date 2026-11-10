@@ -30,6 +30,13 @@ Whitespace is handled explicitly: `p.ThenIgnore(S)` accepts whitespace after `p`
 while `p.Between(S, S)` accepts it on both sides.
 
 Alternatives are ordered: `L("a").Or(L("ab"))` accepts the prefix `"a"` of `"ab"`.
+Once an alternative succeeds, a later failure outside the choice does not make
+it try another alternative. Put longer literals first, or use the string
+overloads of `OneOf` for the longest ordinal match.
+
+`Seq`, `Then`, `ThenIgnore`, and `Between` restore their starting position on
+ordinary failure, so another branch can try the same input. Restoring the
+position does not undo changes made by callbacks.
 
 The choice of sequence combinator determines which values survive:
 
@@ -81,3 +88,51 @@ var port = Literal.Number<int>()
 Console.WriteLine(port.Parse("8080").Value); // 8080
 Console.WriteLine(port.Parse("0").Success);  // False
 ```
+
+`Do(n => n < 10)` produces a successful boolean result, even when the value is `false`.
+Use `Where` to reject a value. Its predicate also runs when the parsed value is discarded.
+
+### Matched text and source locations
+
+The matched segment used by `Text` and `Map` can be smaller than the consumed input
+reported by `ParseResult.Length`:
+
+| Parser                          | Matched segment                           |
+| ------------------------------- | ----------------------------------------- |
+| `Seq`, repetition, lists, folds | The whole successful sequence.            |
+| `a.Then(b)`                     | The segment from `b`.                     |
+| `a.ThenIgnore(b)`               | The segment from `a`.                     |
+| `p.Between(open, close)`        | The segment from `p`, without delimiters. |
+
+```csharp
+var token = L("hello").ThenIgnore(S);
+Console.WriteLine(token.Text().Parse("hello   ").Value); // hello
+Console.WriteLine(token.Parse("hello   ").Length);       // 8
+Console.WriteLine(Seq(L("hello"), S).Text().Parse("hello   ").Value!.Length); // 8
+```
+
+`Map` receives a `Match` with `Index`, `Length`, and a `ReadOnlySpan<char>` in `Value`.
+The two-argument form can attach a source location to a parsed value:
+
+```csharp
+var located = L("id=")
+    .Then(Literal.Number<int>()
+    .Map((match, value) =>
+        (Value: value, Start: match.Index, Width: match.Length)));
+
+Console.WriteLine(located.Parse("id=042").Value); // (42, 3, 3)
+```
+
+`Match` is a ref struct and cannot be stored in an ordinary heap object.
+Keep its offsets or copy the text with `ToString()` if the result needs to outlive the parse.
+
+### Callbacks and discarded values
+
+`Void`, `Then`, `ThenIgnore`, `Between`, lookahead, and separators discard values
+that are not needed. `Text` and the one-argument `Map` also discard the inner
+value. This can avoid creating intermediate lists or other result objects.
+
+The library may skip `Do`, `Map`, or fold callbacks when their result is discarded.
+A callback that runs can belong to an attempt that later fails. Keep callbacks
+free of external side effects; put validation in `Where` and perform actions
+after the top-level parse succeeds.

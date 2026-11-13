@@ -10,12 +10,10 @@ show how to do that.
 ## Build parsers once
 
 Building a parser does work, for example it prepares tables for character sets.
-Build it once, keep it in a `static readonly` field, and reuse it. Each call to
-`Parse` or `TryParse` creates its own position, so one parser can serve many
-inputs.
+Build it once and reuse it. See [Reuse the parser](getting-started.md#reuse-the-parser).
 
-The `Character` properties create a new parser each time you read them. Keep them
-in a field too.
+A `Character` property can build a new parser each time you read it. If you use
+one in several places, keep it in a field too.
 
 ## Use TryParse when you do not need an error message
 
@@ -28,7 +26,8 @@ again only when it fails.
 A parser that only reads or checks input does not need to build a value.
 `Then`, `ThenIgnore`, `Between`, `And`, `Not`, separators, and `Void()` throw
 values away, and the library can skip the work of building them. Write the
-punctuation of your grammar with these methods.
+punctuation of your grammar with these methods. See
+[Callbacks and thrown-away values](working-with-values.md#callbacks-and-thrown-away-values).
 
 ## Use Text instead of a list of characters
 
@@ -40,9 +39,9 @@ var word = Set("a-z").OneOrMore().Text();
 Console.WriteLine(word.Parse("hello world").Value); // hello
 ```
 
-Repeating a single character set (`Set`, or `OneOf` with a string of characters)
-uses a special scan that is made for this case. Prefer it to repeating a more
-complex parser when you only need a run of characters.
+Repetition of a single character set (`Set`, or `OneOf` with a string of
+characters) is optimized for this case. Prefer it to repeating a more complex
+parser when you only need a run of characters.
 
 ## Prefer ordinal comparisons
 

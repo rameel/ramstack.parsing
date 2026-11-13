@@ -21,7 +21,8 @@ var right = number.ThenIgnore(Eof);
 Console.WriteLine(right.Parse("12abc").Success); // False
 ```
 
-Add `ThenIgnore(Eof)` to the outermost parser.
+Add `ThenIgnore(Eof)` to the outermost parser. See
+[Parse a prefix or the whole input](getting-started.md#parse-a-prefix-or-the-whole-input).
 
 ## Forgetting spaces
 
@@ -62,6 +63,7 @@ Console.WriteLine(right.Parse("<=").Success); // True
 ```
 
 `OneOf` tries longer words first. With `Choice`, put `L("<=")` before `L("<")`.
+See [Choice and Or](combining-parsers.md#choice-and-or-try-alternatives).
 
 ## Matching a keyword that is only the start of a word
 
@@ -73,7 +75,8 @@ var right = L("if").ThenIgnore(Not(Set("A-Za-z0-9_")));
 Console.WriteLine(right.Parse("iffy").Success); // False
 ```
 
-Add a check that no identifier character follows the keyword.
+Add a check that no identifier character follows the keyword. See
+[And and Not](combining-parsers.md#and-and-not-check-what-comes-next).
 
 ## Expecting a repetition to give text back
 
@@ -88,7 +91,8 @@ Console.WriteLine(right.Parse("notes.txt").Value); // notes
 ```
 
 `Any.OneOrMore()` reads the whole input, so nothing is left for `.txt`. `Until`
-stops before the terminator.
+stops before the terminator. See
+[Until](repetition-and-lists.md#until-stop-before-a-terminator).
 
 ## Putting Text in the wrong place
 
@@ -127,7 +131,8 @@ Console.WriteLine(right.Parse("xxb").Value!.Count); // 2
 
 The `wrong` parser returns two items for the two `x` characters and a third, empty
 item at `b`. Use an item that reads text every time it succeeds. If only a part of
-the item is optional, put `Optional` inside the item.
+the item is optional, put `Optional` inside the item. See
+[Parsers that can match no text](repetition-and-lists.md#parsers-that-can-match-no-text).
 
 ## Checking a value with Do
 
@@ -143,7 +148,8 @@ var right = Literal.Number<int>().Where(n => n < 10, "number below 10");
 Console.WriteLine(right.Parse("50").Success); // False
 ```
 
-Use `Where` to check a value.
+Use `Where` to check a value. See
+[Where](working-with-values.md#where-check-a-parsed-value).
 
 ## Using Value without checking Success
 
@@ -157,7 +163,8 @@ Console.WriteLine(result.Value);   // 0
 Console.WriteLine(result.Success); // False
 ```
 
-Always check `Success` first, or use `TryParse`.
+Always check `Success` first, or use `TryParse`. See
+[Read a result](getting-started.md#read-a-result).
 
 ## Counting or logging inside a callback
 
@@ -165,7 +172,7 @@ The functions that you pass to `Do`, `Map`, and folds can run during an attempt
 that later fails. They can also be skipped when the value is thrown away. So a
 counter or a log line inside a callback can be wrong. Build values in callbacks,
 and do external work after a successful parse. See
-[Void and Unit](working-with-values.md#void-and-unit-throw-a-value-away).
+[Callbacks and thrown-away values](working-with-values.md#callbacks-and-thrown-away-values).
 
 ## Left recursion
 

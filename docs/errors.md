@@ -140,6 +140,7 @@ Console.WriteLine(number.Parse("0").ErrorMessage); // (1:2) Zero is not allowed.
 The position in a fatal error is the current position. In the second example,
 the number has already been read, so the column is 2. A callback can be skipped
 when its value is thrown away, so use `Where` for checks that must always run.
+See [Callbacks and thrown-away values](working-with-values.md#callbacks-and-thrown-away-values).
 
 ## When your own code throws
 

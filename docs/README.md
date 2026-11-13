@@ -11,10 +11,10 @@ guide to the methods you need.
 | --- | --- |
 | [Getting started](getting-started.md) | Install the library, run a parser, read results, handle spaces, and require the whole input. |
 | [Basic parsers](basic-parsers.md) | `L`, `OneOf`, `Set`, Unicode categories, `Character`, `Any`, `S`, `Eol`, `Eof`, and `Regex`. |
-| [Combining parsers](combining-parsers.md) | `Seq`, `Then`, `ThenIgnore`, `Between`, `Choice`, `Or`, `Optional`, `DefaultOnFail`, `Return`, `And`, `Not`, and `Where`. |
-| [Repetition and lists](repetition-and-lists.md) | `ZeroOrMore`, `Many`, `OneOrMore`, `AtLeast`, `Repeat`, `Separated`, and `Until`. |
-| [Working with values](working-with-values.md) | `Do`, `Map`, `Text`, `Void`, `Match`, and `Unit`. |
 | [Numbers and quoted text](literals.md) | `Literal.Number<T>`, `NumberKind`, quoted strings, quoted characters, and escape sequences. |
+| [Combining parsers](combining-parsers.md) | `Seq`, `Then`, `ThenIgnore`, `Between`, `Choice`, `Or`, `Optional`, `DefaultOnFail`, `Return`, `And`, and `Not`. |
+| [Repetition and lists](repetition-and-lists.md) | `ZeroOrMore`, `Many`, `OneOrMore`, `AtLeast`, `Repeat`, `Separated`, and `Until`. |
+| [Working with values](working-with-values.md) | `Do`, `Where`, `Map`, `Text`, `Void`, `Match`, `Unit`, and when callbacks run. |
 | [Recursive parsers and expressions](recursive-parsers.md) | `Deferred`, `Recursive`, `FoldL`, `FoldR`, `Prefixed`, and operator precedence. |
 | [Errors](errors.md) | Error messages, `As`, `Error`, `Fail`, `FatalError`, and exceptions. |
 | [Writing your own parser](custom-parsers.md) | `ParseContext` and a custom `Parser<T>` class. |
@@ -94,7 +94,8 @@ default for .NET 6.
   alternatives first.
 - Repetition is greedy. It reads as much as it can and never gives text back.
 - Keep the functions that build values free of side effects. They may run during
-  an attempt that later fails, or be skipped when the value is thrown away.
+  an attempt that later fails, or be skipped when the value is thrown away. See
+  [Callbacks and thrown-away values](working-with-values.md#callbacks-and-thrown-away-values).
 - Build a parser once and reuse it. Finish setting up recursive parsers before use.
 
 See [Common mistakes](common-mistakes.md) for examples of what goes wrong when you

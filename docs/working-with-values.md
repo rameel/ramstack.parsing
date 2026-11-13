@@ -9,13 +9,13 @@ matches. These methods let you choose. The examples use the
 | Method | Callback receives | Result |
 | --- | --- | --- |
 | `Do(value => ...)` | The parsed value. | The callback's return value. |
+| `Where(value => ..., expected)` | The parsed value. | The same value, or a normal failure when the callback returns `false`. |
 | `Map(match => ...)` | The matched segment. | The callback's return value. The original parsed value is thrown away. |
 | `Map((match, value) => ...)` | Both the matched segment and the parsed value. | The callback's return value. |
 | `Text()` | No callback needed. | The matched segment as a string. |
 | `Void()` | No callback needed. | `Unit`. The value is thrown away. |
 
-The *matched segment* is the part of the input that a parser matched. A callback
-is a function that you pass to a method.
+The *matched segment* is the part of the input that a parser matched.
 
 ## Do: change the parsed value
 
@@ -33,9 +33,30 @@ Console.WriteLine(pair.Parse("2:30").Value); // 02:30:00
 ```
 
 The tuple overloads let a callback take 2 through 10 values as separate
-parameters. They are useful after `Seq`. Use `Where` if you want to reject a
-parsed value. If you return `false` from `Do`, `false` just becomes the
-successful result. See [Common mistakes](common-mistakes.md#checking-a-value-with-do).
+parameters. They are useful after `Seq`. If you return `false` from `Do`,
+`false` just becomes the successful result. To reject a value, use `Where`.
+
+## Where: check a parsed value
+
+`parser.Where(predicate, expected)` accepts the result only if the predicate
+returns `true`. If it returns `false`, the parser moves the input position back
+to the start and reports `expected` there. The description must be non-empty.
+
+```csharp
+var port = Literal.Number<int>()
+    .Where(n => n >= 1 && n <= 65535, "valid port")
+    .ThenIgnore(Eof);
+
+Console.WriteLine(port.Parse("8080").Success); // True
+Console.WriteLine(port.Parse("0").Success);    // False
+Console.WriteLine(port.Parse("0").ErrorMessage); // (1:1) Expected valid port
+```
+
+Use `Where` for ranges, allowed values, and other checks on a parsed value. A
+rejection is a normal failure, so `Or` can try another parser. An exception from
+the predicate is an exception, not a rejection. Unlike `Do`, the predicate runs
+even when the value is thrown away; see
+[below](#callbacks-and-thrown-away-values).
 
 ## Map: use the matched segment
 
@@ -135,13 +156,20 @@ Console.WriteLine(punctuation.Parse("()").Success); // True
 Console.WriteLine(punctuation.Parse("()").Length);  // 2
 ```
 
-Throwing values away can avoid creating strings, lists, tuples, and other result
-objects. `Then`, `ThenIgnore`, `Between`, `And`, `Not`, and separators also
-throw away the values that they do not need.
+## Callbacks and thrown-away values
 
-The library may skip `Do`, `Map`, or fold callbacks when their result is
-thrown away. The one-argument `Map` and `Text` also throw away the inner value.
-For example, the callback below is skipped:
+`Void` is not the only method that throws a value away. Others do it too:
+
+- `Then` throws away the first value, and `ThenIgnore` the second.
+- `Between` throws away the surrounding values.
+- `And` and `Not` throw away the value of the parser they check.
+- `Separated` throws away the separators, and `Until` the terminator.
+- `Text` and the one-argument `Map` throw away the inner value.
+
+This avoids creating strings, lists, tuples, and other result objects that
+nobody reads. It also means that the library may skip a callback in `Do`, `Map`,
+a fold, or `Prefixed` when its result is thrown away. For example, the callback
+below is skipped:
 
 ```csharp
 var calls = 0;
@@ -155,9 +183,17 @@ Console.WriteLine(token.Void().Parse("x").Success); // True
 Console.WriteLine(calls);                            // 0
 ```
 
-Keep callbacks focused on building values. Put checks in `Where`, and do
-external actions after a successful top-level parse. A callback that does run may
-run during an attempt that later fails. Moving the input position back does not
-undo changes to external state.
+`Where` is different. Its predicate decides whether the parser matches, so it
+runs even when the value is thrown away:
 
-Next: [Numbers and quoted text](literals.md).
+```csharp
+var nonZero = Set("0-9").Where(c => c != '0', "non-zero digit");
+Console.WriteLine(nonZero.Void().Parse("0").Success); // False
+```
+
+A callback that does run may run during an attempt that later fails. Moving the
+input position back does not undo changes to external state. So keep callbacks
+focused on building values, put checks in `Where`, and do external actions, such
+as logging or counting, after a successful top-level parse.
+
+Next: [Recursive parsers and expressions](recursive-parsers.md).

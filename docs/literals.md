@@ -73,8 +73,9 @@ Console.WriteLine(Literal.Number<byte>().Parse("256").Success); // False
 Use `Eof`, a delimiter, or a boundary check to reject an invalid suffix.
 An integer outside the range of the target type fails normally. A floating-point
 value follows the parsing rules of the .NET type. For example, `double` turns
-`1e999` into infinity, and `decimal` fails. Use `Where` for any extra range or
-finite-value checks that your format needs.
+`1e999` into infinity, and `decimal` fails. Use
+[`Where`](working-with-values.md#where-check-a-parsed-value) for any extra range
+or finite-value checks that your format needs.
 
 ### Hexadecimal and binary integers
 
@@ -206,4 +207,4 @@ var escape = Literal.EscapeSequence.Or(Literal.UnicodeEscapeSequence);
 Console.WriteLine(escape.Parse(@"\u0042").Value); // B
 ```
 
-Next: [Recursive parsers and expressions](recursive-parsers.md).
+Next: [Combining parsers](combining-parsers.md).

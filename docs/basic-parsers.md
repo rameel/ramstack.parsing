@@ -58,7 +58,8 @@ Console.WriteLine(comparison.Parse("<=").Value); // <=
 
 With ordinal comparisons, `OneOf` tries longer words first. So `OneOf("<", "<=")`
 reads `<=` when the input has it. The order in which you wrote the words does not
-matter. `Choice` is different: it tries alternatives in the order you gave them.
+matter. [`Choice`](combining-parsers.md#choice-and-or-try-alternatives) is
+different: it tries alternatives in the order you gave them.
 
 With culture-based comparisons, `OneOf` tries the words in descending sort order.
 Words that compare equal are merged, and only the first one is kept. This also
@@ -169,9 +170,6 @@ Console.WriteLine(Character.Digit.Parse("٣").Success);  // True
 Console.WriteLine(Set("0-9").Parse("٣").Success);       // False
 ```
 
-Each time you read a `Character` property, it creates a new parser. Keep it in
-a variable or a field if you use it in several places.
-
 These parsers read one C# `char` at a time. Some characters, such as emoji, use
 two `char` values. `Any` and the `Character` parsers do not join the pair.
 
@@ -237,4 +235,4 @@ var named = code.As("product code");
 Console.WriteLine(named.Parse("1").ErrorMessage); // (1:1) Expected product code
 ```
 
-Next: [Combining parsers](combining-parsers.md).
+Next: [Numbers and quoted text](literals.md).

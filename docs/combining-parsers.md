@@ -37,8 +37,7 @@ Console.WriteLine(pair.Parse("12:34").Value); // 46
 ```
 
 If one part fails, `Seq` moves the input position back to where the sequence
-began. An alternative can then try the same text. This does not undo side effects
-in your callbacks.
+began. An alternative can then try the same text.
 
 ## Then and ThenIgnore: keep one result
 
@@ -60,8 +59,7 @@ Console.WriteLine(word.Parse("hello   ").Length); // 8
 ```
 
 Use these methods for punctuation, prefixes, whitespace, and `Eof`. If either
-part fails, they move the input position back to the start. The ignored parser
-becomes a void parser, so its callbacks can be skipped.
+part fails, they move the input position back to the start.
 
 ## Between: surround a value
 
@@ -79,8 +77,7 @@ Console.WriteLine(bracketed.Parse("[42").Success); // False
 ```
 
 `Between` requires both surrounding parsers. If any part fails, it moves the
-input position back to the start. The surrounding values are thrown away, and
-their callbacks can be skipped.
+input position back to the start. The surrounding values are thrown away.
 
 ## Choice and Or: try alternatives
 
@@ -104,8 +101,9 @@ Once an alternative succeeds, a later failure outside the choice does not make
 it try the other alternatives. Put `L("<=")` before `L("<")`, or use
 `OneOf("<", "<=")`, which tries longer words first.
 
-A normal failure lets the choice try the next alternative. A fatal error (`Fail`
-or `FatalError`) stops the whole parse. A choice does not recover from it.
+A normal failure lets the choice try the next alternative. A
+[fatal error](errors.md#fail-and-fatalerror-stop-parsing) stops the whole parse,
+and the choice does not try the remaining alternatives.
 
 ## Optional: keep track of whether a value was present
 
@@ -206,30 +204,5 @@ var named = unnamed.As("'if'");
 Console.WriteLine(unnamed.Parse("iffy").ErrorMessage); // Parsing failed.
 Console.WriteLine(named.Parse("iffy").ErrorMessage);   // (1:1) Expected 'if'
 ```
-
-Lookahead turns its inner parser into a void parser, so callbacks inside it can
-be skipped. A fatal error or an exception is not turned into a match or a
-failure. It still stops the parse.
-
-## Where: check a parsed value
-
-`parser.Where(predicate, expected)` accepts the result only if the predicate
-returns `true`. If it returns `false`, the parser moves the input position back
-to the start and reports `expected` there. The description must be non-empty.
-
-```csharp
-var port = Literal.Number<int>()
-    .Where(n => n >= 1 && n <= 65535, "valid port")
-    .ThenIgnore(Eof);
-
-Console.WriteLine(port.Parse("8080").Success); // True
-Console.WriteLine(port.Parse("0").Success);    // False
-Console.WriteLine(port.Parse("0").ErrorMessage); // (1:1) Expected valid port
-```
-
-Use `Where` for ranges, allowed values, and other checks on a parsed value. A
-rejection is a normal failure, so `Or` can try another parser. `Where` still
-runs its predicate when its value is thrown away. An exception from the
-predicate is an exception, not a rejection.
 
 Next: [Repetition and lists](repetition-and-lists.md).

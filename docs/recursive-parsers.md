@@ -138,9 +138,7 @@ Console.WriteLine(sum.ThenIgnore(Eof).Parse("1+").Success); // False
 ```
 
 If a whole operator/operand pair reads no text, the fold throws that pair away
-and stops. It does not call the `reduce` function for that pair. The `reduce`
-function can also be skipped when the folded value is thrown away, so keep
-validation in the operand parsers.
+and stops. It does not call the `reduce` function for that pair.
 
 ## Prefixed: read operators before an operand
 
@@ -171,7 +169,7 @@ Console.WriteLine(tree.Parse("!-x").Value); // (!(-x))
 not use the call stack. If the operand is missing, `Prefixed` fails and the position
 goes back to where it started, including the operators that it read. If an
 operator reads no text, `Prefixed` stops looking for operators and does not call
-`apply` for it. Like the folds, it skips `apply` when the value is thrown away.
+`apply` for it.
 
 Use the parser as the operand of a binary level. The binary `-` and the prefix `-`
 do not clash, because each one is tried at a different place:

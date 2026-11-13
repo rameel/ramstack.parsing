@@ -43,10 +43,10 @@ began. An alternative can then try the same text.
 
 Both methods require two parsers to succeed in order:
 
-| Method | Value kept |
-| --- | --- |
-| `first.Then(second)` | The second value. |
-| `first.ThenIgnore(second)` | The first value. |
+| Method                     | Value kept        |
+| -------------------------- | ----------------- |
+| `first.Then(second)`       | The second value. |
+| `first.ThenIgnore(second)` | The first value.  |
 
 ```csharp
 var number = L("id=").Then(Literal.Number<int>()).ThenIgnore(L(';'));
@@ -175,9 +175,9 @@ These are lookahead parsers: they test a parser and leave the input position
 where it was. Both return `Unit`. They do not record error messages for the
 parser that they check.
 
-| Method | Succeeds when |
-| --- | --- |
-| `And(parser)` | The supplied parser succeeds. |
+| Method        | Succeeds when                       |
+| ------------- | ----------------------------------- |
+| `And(parser)` | The supplied parser succeeds.       |
 | `Not(parser)` | The supplied parser fails normally. |
 
 ```csharp

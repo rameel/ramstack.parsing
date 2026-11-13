@@ -89,18 +89,18 @@ Console.WriteLine(Set(@"\p{L}").Parse("é").Value);       // é
 Console.WriteLine(Set(@"\d").Parse("5").Value);          // 5
 ```
 
-| Pattern | Matches |
-| --- | --- |
-| `a-z`, `0-9` | An inclusive range. |
-| `abc_` | Any of these literal characters. |
-| `\p{L}`, `\p{Nd}` | A Unicode general category. |
-| `\P{L}` | A character outside that Unicode general category. |
-| `\d`, `\D` | A Unicode decimal digit, or a character outside that class. |
-| `\w`, `\W` | A word character, or a character outside that class. |
-| `\s`, `\S` | Whitespace, or a character outside that class. |
+| Pattern                                              | Matches                                                                      |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `a-z`, `0-9`                                         | An inclusive range.                                                          |
+| `abc_`                                               | Any of these literal characters.                                             |
+| `\p{L}`, `\p{Nd}`                                    | A Unicode general category.                                                  |
+| `\P{L}`                                              | A character outside that Unicode general category.                           |
+| `\d`, `\D`                                           | A Unicode decimal digit, or a character outside that class.                  |
+| `\w`, `\W`                                           | A word character, or a character outside that class.                         |
+| `\s`, `\S`                                           | Whitespace, or a character outside that class.                               |
 | `\n`, `\r`, `\t`, `\a`, `\b`, `\v`, `\f`, `\e`, `\0` | A character escape. Here `\b` means backspace and `\0` is the NUL character. |
-| `\\`, `\-` | A literal backslash or hyphen. |
-| `\u0041` | A character given by exactly four hexadecimal digits. |
+| `\\`, `\-`                                           | A literal backslash or hyphen.                                               |
+| `\u0041`                                             | A character given by exactly four hexadecimal digits.                        |
 
 Use a verbatim C# string, such as `@"\d"`, or double the backslash in a normal
 string, such as `"\\d"`.
@@ -151,17 +151,17 @@ Console.WriteLine(letterOrDigit.Parse("7").Value); // 7
 
 The `Character` class provides ready-made `Parser<char>` properties:
 
-| Property | What it reads |
-| --- | --- |
-| `Letter` | Any Unicode letter. |
-| `Uppercase`, `Lowercase` | An uppercase letter, or a lowercase letter. |
-| `Digit` | A decimal digit from any script. |
-| `Number` | A character in any Unicode number category. |
-| `LetterOrDigit` | A letter or a decimal digit. |
-| `HexDigit` | An ASCII hexadecimal digit: `0-9`, `A-F`, or `a-f`. |
+| Property                                        | What it reads                                       |
+| ----------------------------------------------- | --------------------------------------------------- |
+| `Letter`                                        | Any Unicode letter.                                 |
+| `Uppercase`, `Lowercase`                        | An uppercase letter, or a lowercase letter.         |
+| `Digit`                                         | A decimal digit from any script.                    |
+| `Number`                                        | A character in any Unicode number category.         |
+| `LetterOrDigit`                                 | A letter or a decimal digit.                        |
+| `HexDigit`                                      | An ASCII hexadecimal digit: `0-9`, `A-F`, or `a-f`. |
 | `Symbol`, `Separator`, `Punctuation`, `Control` | A character in the matching Unicode category group. |
-| `WhiteSpace` | One whitespace character. |
-| `Surrogate`, `HighSurrogate`, `LowSurrogate` | One UTF-16 surrogate code unit. |
+| `WhiteSpace`                                    | One whitespace character.                           |
+| `Surrogate`, `HighSurrogate`, `LowSurrogate`    | One UTF-16 surrogate code unit.                     |
 
 ```csharp
 Console.WriteLine(Character.Letter.Parse("Ж").Value);   // Ж
@@ -175,12 +175,12 @@ two `char` values. `Any` and the `Character` parsers do not join the pair.
 
 ## Any, S, Eol, and Eof
 
-| Parser | Result | What it does |
-| --- | --- | --- |
-| `Any` | `char` | Reads any one UTF-16 code unit, including a line break. Fails at the end of the input. |
-| `S` | `Unit` | Reads zero or more whitespace characters, using `char.IsWhiteSpace`. Always succeeds. |
-| `Eol` | `Unit` | Reads a line break. At the end of the input it succeeds without reading anything. |
-| `Eof` | `Unit` | Succeeds only at the end of the input, without reading anything. |
+| Parser | Result | What it does                                                                           |
+| ------ | ------ | -------------------------------------------------------------------------------------- |
+| `Any`  | `char` | Reads any one UTF-16 code unit, including a line break. Fails at the end of the input. |
+| `S`    | `Unit` | Reads zero or more whitespace characters, using `char.IsWhiteSpace`. Always succeeds.  |
+| `Eol`  | `Unit` | Reads a line break. At the end of the input it succeeds without reading anything.      |
+| `Eof`  | `Unit` | Succeeds only at the end of the input, without reading anything.                       |
 
 `Unit` means that the parser has no useful value to return.
 

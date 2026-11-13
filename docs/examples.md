@@ -130,11 +130,11 @@ See [Recursive parsers](recursive-parsers.md) for `FoldR` and a power example.
 
 The repository has larger working grammars:
 
-| Sample | Useful for |
-| --- | --- |
-| [Calculator source](../samples/CalcExpr/ExpressionParser.cs) and [grammar](../samples/CalcExpr/README.md) | Recursive expressions and operator precedence. |
-| [JSON source](../samples/Json/JsonParser.cs) and [grammar](../samples/Json/README.md) | Recursive arrays and objects, lists, and values with different .NET types. |
-| [TinyC source](../samples/TinyC/TinyCParser.cs) and [grammar](../samples/TinyC/README.md) | Statements, comments, keyword boundaries, and syntax trees. |
+| Sample                                                                                                    | Useful for                                                                 |
+| --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| [Calculator source](../samples/CalcExpr/ExpressionParser.cs) and [grammar](../samples/CalcExpr/README.md) | Recursive expressions and operator precedence.                             |
+| [JSON source](../samples/Json/JsonParser.cs) and [grammar](../samples/Json/README.md)                     | Recursive arrays and objects, lists, and values with different .NET types. |
+| [TinyC source](../samples/TinyC/TinyCParser.cs) and [grammar](../samples/TinyC/README.md)                 | Statements, comments, keyword boundaries, and syntax trees.                |
 
 The JSON sample uses the library's general number and string parsers. Treat it
 as a grammar example, not as a strict JSON validator. Those parsers accept forms

@@ -27,22 +27,22 @@ if (number.TryParse(ref context, out var first)
 }
 ```
 
-| Member | Use |
-| --- | --- |
-| `Source` | Read the whole input span. |
-| `Remaining` | Read the span from the current position to the end. |
-| `Position` | Read the current zero-based offset. |
-| `MatchedSegment` | Read the segment that a parser marked most recently. |
-| `Advance(count)` | Read `count` characters and mark them as the matched segment. `count` must be from 0 to `Remaining.Length`. |
-| `SetMatched(index, length)` | Mark the segment that `Map` and `Text` receive, without changing the position. The segment must lie inside `Source`. |
-| `BookmarkPosition()` | Save a `PositionBookmark` so that you can go back. |
-| `RestorePosition(bookmark)` | Go back to the saved position and make the matched segment empty. It does not undo error messages or the work of callbacks. |
-| `ReportExpected(text)` / `ReportExpected(string[])` | Record what was expected at the current position, when error messages are on. |
-| `DiagnosticState` | Get or set `Normal` or `Suppressed`. Error messages are recorded only in the `Normal` state. |
-| `SuppressDiagnostics()` | Turn error messages off and return the previous state. |
-| `SuppressDiagnosticsIfNamed(name)` | Turn error messages off when the name is not `null`, and return the previous state. |
-| `RestoreDiagnosticState(state)` | Restore a saved state. |
-| `ToString()` | Format the recorded expectations with a line and column. An empty string means that nothing was recorded. |
+| Member                                              | Use                                                                                                                         |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `Source`                                            | Read the whole input span.                                                                                                  |
+| `Remaining`                                         | Read the span from the current position to the end.                                                                         |
+| `Position`                                          | Read the current zero-based offset.                                                                                         |
+| `MatchedSegment`                                    | Read the segment that a parser marked most recently.                                                                        |
+| `Advance(count)`                                    | Read `count` characters and mark them as the matched segment. `count` must be from 0 to `Remaining.Length`.                 |
+| `SetMatched(index, length)`                         | Mark the segment that `Map` and `Text` receive, without changing the position. The segment must lie inside `Source`.        |
+| `BookmarkPosition()`                                | Save a `PositionBookmark` so that you can go back.                                                                          |
+| `RestorePosition(bookmark)`                         | Go back to the saved position and make the matched segment empty. It does not undo error messages or the work of callbacks. |
+| `ReportExpected(text)` / `ReportExpected(string[])` | Record what was expected at the current position, when error messages are on.                                               |
+| `DiagnosticState`                                   | Get or set `Normal` or `Suppressed`. Error messages are recorded only in the `Normal` state.                                |
+| `SuppressDiagnostics()`                             | Turn error messages off and return the previous state.                                                                      |
+| `SuppressDiagnosticsIfNamed(name)`                  | Turn error messages off when the name is not `null`, and return the previous state.                                         |
+| `RestoreDiagnosticState(state)`                     | Restore a saved state.                                                                                                      |
+| `ToString()`                                        | Format the recorded expectations with a line and column. An empty string means that nothing was recorded.                   |
 
 Error messages may remain from an attempt that failed, even when a later parser
 succeeds. Do not use `context.ToString()` to decide whether parsing succeeded. Use

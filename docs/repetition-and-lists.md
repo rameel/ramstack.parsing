@@ -32,11 +32,11 @@ Console.WriteLine(spaces.Parse("   x").Length); // 3
 
 ## Repeat and AtLeast
 
-| Method | Accepted number of matches |
-| --- | --- |
-| `Repeat(count)` | Exactly `count`. |
-| `Repeat(min, max)` | From `min` to `max`, inclusive. |
-| `AtLeast(count)` | At least `count`, with no practical upper limit. |
+| Method             | Accepted number of matches                       |
+| ------------------ | ------------------------------------------------ |
+| `Repeat(count)`    | Exactly `count`.                                 |
+| `Repeat(min, max)` | From `min` to `max`, inclusive.                  |
+| `AtLeast(count)`   | At least `count`, with no practical upper limit. |
 
 ```csharp
 var threeDigits = Set("0-9").Repeat(3).Text().ThenIgnore(Eof);

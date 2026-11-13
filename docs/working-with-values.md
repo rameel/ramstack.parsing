@@ -6,14 +6,14 @@ A parser can return a value, keep the source text, or only check that the input
 matches. These methods let you choose. The examples use the
 [standard imports](README.md#reading-the-examples).
 
-| Method | Callback receives | Result |
-| --- | --- | --- |
-| `Do(value => ...)` | The parsed value. | The callback's return value. |
-| `Where(value => ..., expected)` | The parsed value. | The same value, or a normal failure when the callback returns `false`. |
-| `Map(match => ...)` | The matched segment. | The callback's return value. The original parsed value is thrown away. |
-| `Map((match, value) => ...)` | Both the matched segment and the parsed value. | The callback's return value. |
-| `Text()` | No callback needed. | The matched segment as a string. |
-| `Void()` | No callback needed. | `Unit`. The value is thrown away. |
+| Method                          | Callback receives                              | Result                                                                 |
+| ------------------------------- | ---------------------------------------------- | ---------------------------------------------------------------------- |
+| `Do(value => ...)`              | The parsed value.                              | The callback's return value.                                           |
+| `Where(value => ..., expected)` | The parsed value.                              | The same value, or a normal failure when the callback returns `false`. |
+| `Map(match => ...)`             | The matched segment.                           | The callback's return value. The original parsed value is thrown away. |
+| `Map((match, value) => ...)`    | Both the matched segment and the parsed value. | The callback's return value.                                           |
+| `Text()`                        | No callback needed.                            | The matched segment as a string.                                       |
+| `Void()`                        | No callback needed.                            | `Unit`. The value is thrown away.                                      |
 
 The *matched segment* is the part of the input that a parser matched.
 
@@ -94,12 +94,12 @@ Console.WriteLine(result.Value.Width); // 3
 `Match` is a `readonly ref struct`. It gives a view of a part of the source
 without first making a string:
 
-| Member | Meaning |
-| --- | --- |
-| `Index` | Zero-based start offset in the source passed to this parse. |
-| `Length` | Number of UTF-16 code units in the segment. |
-| `Value` | A `ReadOnlySpan<char>` over the segment. |
-| `ToString()` | Copies the segment into a string. |
+| Member       | Meaning                                                     |
+| ------------ | ----------------------------------------------------------- |
+| `Index`      | Zero-based start offset in the source passed to this parse. |
+| `Length`     | Number of UTF-16 code units in the segment.                 |
+| `Value`      | A `ReadOnlySpan<char>` over the segment.                    |
+| `ToString()` | Copies the segment into a string.                           |
 
 `Match` can also be converted to `ReadOnlySpan<char>` or deconstructed into
 `(index, length)`. You cannot store it in a normal heap object. If you need the

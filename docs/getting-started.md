@@ -51,13 +51,13 @@ allows spaces on either side. `ThenIgnore(Eof)` checks that nothing is left.
 
 `Parse` returns `ParseResult<T>`:
 
-| Property | Meaning |
-| --- | --- |
-| `Success` | Whether the parser succeeded. Check this before you use `Value`. |
-| `Value` | The result on success; otherwise `default(T)`. Its type is nullable, so the examples write `result.Value!` when they know the parse succeeded. A successful result can also be `null`, if your grammar returns `null`. |
-| `Length` | The number of UTF-16 characters read on success, including spaces and delimiters that the parser threw away. It is zero on failure. |
-| `ErrorMessage` | The error text with a line and column, or `Parsing failed.` when nothing more is known. It is `null` on success. |
-| `Exception` | The exception caught during parsing, such as one thrown by a function you passed to `Do`. It is `null` for ordinary failures. |
+| Property       | Meaning                                                                                                                                                                                                                |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Success`      | Whether the parser succeeded. Check this before you use `Value`.                                                                                                                                                       |
+| `Value`        | The result on success; otherwise `default(T)`. Its type is nullable, so the examples write `result.Value!` when they know the parse succeeded. A successful result can also be `null`, if your grammar returns `null`. |
+| `Length`       | The number of UTF-16 characters read on success, including spaces and delimiters that the parser threw away. It is zero on failure.                                                                                    |
+| `ErrorMessage` | The error text with a line and column, or `Parsing failed.` when nothing more is known. It is `null` on success.                                                                                                       |
+| `Exception`    | The exception caught during parsing, such as one thrown by a function you passed to `Do`. It is `null` for ordinary failures.                                                                                          |
 
 `result.ToString()` returns the value's text on success and the error message on
 failure. Use the individual properties when your code needs to tell them apart.

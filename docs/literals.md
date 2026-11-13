@@ -30,12 +30,12 @@ Add `S` where the grammar allows it.
 
 ### Supported types and kinds
 
-| Target type | Supported kinds |
-| --- | --- |
-| `sbyte`, `byte`, `short`, `ushort`, `int`, `uint`, `long`, `ulong`, `nint`, `nuint` | `Auto`, `Integer`, `HexNumber`; also `BinaryNumber` on .NET 8 or later. |
-| `Int128`, `UInt128` (.NET 7 or later) | The same integer kinds. |
-| `BigInteger` | `Auto`, `Integer`, `HexNumber`; also `BinaryNumber` in apps that target .NET 9 or later (see below). |
-| `float`, `double`, `decimal`, `Half` | `Auto`, `Float`. |
+| Target type                                                                         | Supported kinds                                                                                      |
+| ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `sbyte`, `byte`, `short`, `ushort`, `int`, `uint`, `long`, `ulong`, `nint`, `nuint` | `Auto`, `Integer`, `HexNumber`; also `BinaryNumber` on .NET 8 or later.                              |
+| `Int128`, `UInt128` (.NET 7 or later)                                               | The same integer kinds.                                                                              |
+| `BigInteger`                                                                        | `Auto`, `Integer`, `HexNumber`; also `BinaryNumber` in apps that target .NET 9 or later (see below). |
+| `float`, `double`, `decimal`, `Half`                                                | `Auto`, `Float`.                                                                                     |
 
 `BigInteger` is in `System.Numerics`. On .NET 7 or later, `T` also has an
 `INumber<T>` constraint, but the method still accepts only the types in the table.
@@ -182,17 +182,17 @@ Console.WriteLine(Literal.EscapeSequence.Parse(@"\q").Success); // False
 `EscapeSequence` accepts these two-character forms. Quoted strings and quoted
 characters use the same table:
 
-| Source escape | Decoded character |
-| --- | --- |
-| `\0` | NUL, U+0000. |
-| `\a` | Bell, U+0007. |
-| `\b` | Backspace, U+0008. |
-| `\t` | Tab, U+0009. |
-| `\n` | Line feed, U+000A. |
-| `\v` | Vertical tab, U+000B. |
-| `\f` | Form feed, U+000C. |
-| `\r` | Carriage return, U+000D. |
-| `\e` | Escape, U+001B. |
+| Source escape          | Decoded character                                          |
+| ---------------------- | ---------------------------------------------------------- |
+| `\0`                   | NUL, U+0000.                                               |
+| `\a`                   | Bell, U+0007.                                              |
+| `\b`                   | Backspace, U+0008.                                         |
+| `\t`                   | Tab, U+0009.                                               |
+| `\n`                   | Line feed, U+000A.                                         |
+| `\v`                   | Vertical tab, U+000B.                                      |
+| `\f`                   | Form feed, U+000C.                                         |
+| `\r`                   | Carriage return, U+000D.                                   |
+| `\e`                   | Escape, U+001B.                                            |
 | `\"`, `\'`, `\/`, `\\` | A literal double quote, single quote, slash, or backslash. |
 
 `UnicodeEscapeSequence` accepts `\u` followed by exactly four hexadecimal

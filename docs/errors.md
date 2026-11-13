@@ -42,20 +42,20 @@ useful than "expected end of input" at column 2.
 
 Every built-in parser has a default name for its messages:
 
-| Parser | Name in the message |
-| --- | --- |
-| `L('a')`, `L("hello")` | `'a'`, `'hello'` |
-| `OneOf("yes", "no")` | `'yes'` and `'no'`, as two separate items. |
-| `OneOf("+-")`, `Set("a-z")` | The sorted set: `[+-]`, `[a-z]`. A pattern such as `A-Za-z0-9_` shows as `[0-9A-Z_a-z]`. |
-| `Literal.Number<int>()` | `number` |
-| `Literal.Number<double>()` | `floating-point number` |
-| `NumberKind.HexNumber`, `NumberKind.BinaryNumber` | `hexadecimal number`, `binary number` |
-| `Literal.DoubleQuotedString`, `Literal.SingleQuotedString` | `double-quoted string`, `single-quoted string` |
-| `Literal.QuotedCharacter` | `quoted-character` |
-| `Literal.EscapeSequence`, `Literal.UnicodeEscapeSequence` | `escape sequence`, `unicode escape` |
-| `Eof`, `Eol`, `Any` | `end of input`, `end of line`, `any character` |
-| `Character.Letter`, `Character.Digit`, `Character.WhiteSpace` | `letter`, `digit`, `whitespace` |
-| `Regex(...)` | The text of the pattern. |
+| Parser                                                        | Name in the message                                                                      |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `L('a')`, `L("hello")`                                        | `'a'`, `'hello'`                                                                         |
+| `OneOf("yes", "no")`                                          | `'yes'` and `'no'`, as two separate items.                                               |
+| `OneOf("+-")`, `Set("a-z")`                                   | The sorted set: `[+-]`, `[a-z]`. A pattern such as `A-Za-z0-9_` shows as `[0-9A-Z_a-z]`. |
+| `Literal.Number<int>()`                                       | `number`                                                                                 |
+| `Literal.Number<double>()`                                    | `floating-point number`                                                                  |
+| `NumberKind.HexNumber`, `NumberKind.BinaryNumber`             | `hexadecimal number`, `binary number`                                                    |
+| `Literal.DoubleQuotedString`, `Literal.SingleQuotedString`    | `double-quoted string`, `single-quoted string`                                           |
+| `Literal.QuotedCharacter`                                     | `quoted-character`                                                                       |
+| `Literal.EscapeSequence`, `Literal.UnicodeEscapeSequence`     | `escape sequence`, `unicode escape`                                                      |
+| `Eof`, `Eol`, `Any`                                           | `end of input`, `end of line`, `any character`                                           |
+| `Character.Letter`, `Character.Digit`, `Character.WhiteSpace` | `letter`, `digit`, `whitespace`                                                          |
+| `Regex(...)`                                                  | The text of the pattern.                                                                 |
 
 ```csharp
 Console.WriteLine(L("hello").Parse("x").ErrorMessage);                // (1:1) Expected 'hello'
@@ -146,11 +146,11 @@ See [Callbacks and thrown-away values](working-with-values.md#callbacks-and-thro
 
 `Parse` and `TryParse` treat exceptions differently:
 
-| Situation | `Parse(source)` | `TryParse(source, out value)` |
-| --- | --- | --- |
-| Failure | Failed result with `ErrorMessage`. `Exception` is `null`. | Returns `false`. |
-| `Fail` or `FatalError` | Failed result with your message and the current location. `Exception` is `null`. | Returns `false`. |
-| Any other exception thrown while parsing | Failed result with `ErrorMessage` and the caught `Exception`. | The exception reaches the caller. |
+| Situation                                | `Parse(source)`                                                                  | `TryParse(source, out value)`     |
+| ---------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------- |
+| Failure                                  | Failed result with `ErrorMessage`. `Exception` is `null`.                        | Returns `false`.                  |
+| `Fail` or `FatalError`                   | Failed result with your message and the current location. `Exception` is `null`. | Returns `false`.                  |
+| Any other exception thrown while parsing | Failed result with `ErrorMessage` and the caught `Exception`.                    | The exception reaches the caller. |
 
 A failed top-level result has `Length == 0` and a default value. A failed
 top-level `TryParse` call also sets the output to `default(T)`.
@@ -187,19 +187,19 @@ instead.
 These rules apply while a parser runs. Mistakes in how you build a parser throw an
 exception right away, and the exception reaches the caller:
 
-| Call | Exception |
-| --- | --- |
-| `Repeat(0)`, `Repeat(0, 0)`, `Separated(..., max: 0)` | `ArgumentOutOfRangeException` |
-| `Repeat(3, 2)` or `Separated(..., min: 3, max: 2)` | `ArgumentOutOfRangeException` |
-| `Set('z', 'a')` | `ArgumentOutOfRangeException` |
-| `Set("")`, `Set("z-a")`, `Set(@"\q")`, `Set(@"\p{IsGreek}")` | `ArgumentException` |
-| `L("")`, `OneOf("")`, `OneOf("yes", "")`, `Choice<T>()` with no parsers | `ArgumentException` |
-| `As("")`, `Where(..., "")`, `Fail<T>("")` | `ArgumentException` |
-| `Regex(...)` with a pattern that does not start with `^` | `ArgumentException` |
-| `Literal.Number<T>` with a kind that does not fit `T`, or `BinaryNumber` for `BigInteger` in an app that targets .NET 8 | `ArgumentException` |
-| `Literal.Number<char>()`, or another unsupported type | `InvalidOperationException` |
-| Assigning `Deferred.Parser` twice | `InvalidOperationException` |
-| Assigning `null` to `Deferred.Parser` | `ArgumentNullException` |
-| Using a `Deferred` without a parser where its value is thrown away | `InvalidOperationException` |
+| Call                                                                                                                    | Exception                     |
+| ----------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `Repeat(0)`, `Repeat(0, 0)`, `Separated(..., max: 0)`                                                                   | `ArgumentOutOfRangeException` |
+| `Repeat(3, 2)` or `Separated(..., min: 3, max: 2)`                                                                      | `ArgumentOutOfRangeException` |
+| `Set('z', 'a')`                                                                                                         | `ArgumentOutOfRangeException` |
+| `Set("")`, `Set("z-a")`, `Set(@"\q")`, `Set(@"\p{IsGreek}")`                                                            | `ArgumentException`           |
+| `L("")`, `OneOf("")`, `OneOf("yes", "")`, `Choice<T>()` with no parsers                                                 | `ArgumentException`           |
+| `As("")`, `Where(..., "")`, `Fail<T>("")`                                                                               | `ArgumentException`           |
+| `Regex(...)` with a pattern that does not start with `^`                                                                | `ArgumentException`           |
+| `Literal.Number<T>` with a kind that does not fit `T`, or `BinaryNumber` for `BigInteger` in an app that targets .NET 8 | `ArgumentException`           |
+| `Literal.Number<char>()`, or another unsupported type                                                                   | `InvalidOperationException`   |
+| Assigning `Deferred.Parser` twice                                                                                       | `InvalidOperationException`   |
+| Assigning `null` to `Deferred.Parser`                                                                                   | `ArgumentNullException`       |
+| Using a `Deferred` without a parser where its value is thrown away                                                      | `InvalidOperationException`   |
 
 Next: [Writing your own parser](custom-parsers.md).

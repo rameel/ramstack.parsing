@@ -110,6 +110,72 @@ The rules for `TryParse`:
 - **Fatal error**: call `FatalError(message)` only when the parse must stop
   completely. A mismatch is a failure, not a fatal error.
 
+## Call other parsers and go back on failure
+
+A custom parser can call other parsers with the same context. Each successful
+call moves the position. So when a later step fails, the parser must go back to
+where it started. Save a bookmark before the first step.
+
+This parser reads a 24-hour time such as `09:30`. It reuses `TwoDigitParser`
+from the previous section and checks the range of the hours and minutes:
+
+```csharp
+public sealed class ClockTimeParser : Parser<TimeSpan>
+{
+    private static readonly Parser<int> TwoDigits = new TwoDigitParser();
+    private static readonly Parser<char> Colon = L(':');
+
+    public ClockTimeParser() : base("time")
+    {
+    }
+
+    public override bool TryParse(ref ParseContext context, out TimeSpan value)
+    {
+        var start = context.BookmarkPosition();
+
+        if (TwoDigits.TryParse(ref context, out var hours)
+            && Colon.TryParse(ref context, out _)
+            && TwoDigits.TryParse(ref context, out var minutes)
+            && hours < 24
+            && minutes < 60)
+        {
+            value = new TimeSpan(hours, minutes, 0);
+            context.SetMatched(start.Position, context.Position - start.Position);
+            return true;
+        }
+
+        // Go back first, so that "time" is reported at the start of the input.
+        context.RestorePosition(start);
+        context.ReportExpected(Name);
+        value = default;
+        return false;
+    }
+}
+```
+
+```csharp
+var time = new ClockTimeParser().ThenIgnore(Eof);
+
+Console.WriteLine(time.Parse("09:30").Value);        // 09:30:00
+Console.WriteLine(time.Parse("25:00").ErrorMessage); // (1:1) Expected time
+Console.WriteLine(time.Parse("12-30").ErrorMessage); // (1:3) Expected ':'
+
+var text = new ClockTimeParser().Text();
+Console.WriteLine(text.Parse("09:30").Value);        // 09:30
+```
+
+Three details matter here:
+
+- Each inner parser marks its own segment. After the last call, the matched
+  segment holds only the minutes. `SetMatched` marks the whole time, so `Text()`
+  returns `09:30`.
+- For `25:00`, the parser has already read all five characters when the range
+  check fails. `RestorePosition` moves back to the start and makes the matched
+  segment empty.
+- The inner parsers record their own expectations, such as `':'` for `12-30`.
+  The message uses the furthest position, so that precise expectation wins over
+  `time` at the start.
+
 ## Naming and void conversion
 
 The base class has two methods that other methods call: `ToNamedParser(string? name)`

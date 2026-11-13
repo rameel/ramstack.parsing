@@ -33,8 +33,8 @@ if (number.TryParse(ref context, out var first)
 | `Remaining` | Read the span from the current position to the end. |
 | `Position` | Read the current zero-based offset. |
 | `MatchedSegment` | Read the segment that a parser marked most recently. |
-| `Advance(count)` | Read `count` characters and mark them as the matched segment. Pass a count from 0 to `Remaining.Length`. Other values are not checked: the context moves to the end of the input instead of throwing. |
-| `SetMatched(index, length)` | Mark the segment that `Map` and `Text` receive, without changing the position. Values outside the source are cut to fit. |
+| `Advance(count)` | Read `count` characters and mark them as the matched segment. `count` must be from 0 to `Remaining.Length`. |
+| `SetMatched(index, length)` | Mark the segment that `Map` and `Text` receive, without changing the position. The segment must lie inside `Source`. |
 | `BookmarkPosition()` | Save a `PositionBookmark` so that you can go back. |
 | `RestorePosition(bookmark)` | Go back to the saved position and make the matched segment empty. It does not undo error messages or the work of callbacks. |
 | `ReportExpected(text)` / `ReportExpected(string[])` | Record what was expected at the current position, when error messages are on. |

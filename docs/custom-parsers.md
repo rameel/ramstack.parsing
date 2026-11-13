@@ -1,35 +1,62 @@
 # Writing your own parser
 
-[Parser guide](README.md)
+[Documentation index](README.md)
 
-Use the built-in combinators for ordinary grammars. When matching needs custom
-logic, derive from `Parser<T>` and implement `TryParse(ref ParseContext, out T)`.
+Most grammars need only the built-in methods. This page is for the rare case when
+you need your own matching logic. It also shows `ParseContext`, the object that
+holds the input and the current position. The examples use the
+[standard imports](README.md#reading-the-examples).
 
-## ParseContext
+## ParseContext: share a position between parsers
 
-`ParseContext` holds the input and current position shared by the parsers in one parse.
-The low-level `TryParse(ref context, out value)` overload does not catch exceptions;
-use its boolean return value to decide whether the output is valid.
+The low-level `TryParse(ref ParseContext, out value)` overload uses a context that
+you supply. Unlike the top-level methods, it does not catch exceptions, and it
+does not reset the output on every kind of failure. Use its Boolean result to
+decide whether the output is valid.
 
-| Member                                                   | Purpose                                                                                         |
-| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `Source`, `Remaining`                                    | Read the whole input span or the unread suffix.                                                 |
-| `Position`                                               | Read the current zero-based offset.                                                             |
-| `MatchedSegment`                                         | Read the most recently marked `Match`.                                                          |
-| `Advance(count)`                                         | Consume characters and mark them as the matched segment. Use a count within `Remaining.Length`. |
-| `SetMatched(index, length)`                              | Mark a source segment without changing the position.                                            |
-| `BookmarkPosition()`, `RestorePosition(bookmark)`        | Save and restore the position. Restoration also clears the matched segment.                     |
-| `ReportExpected(text)`                                   | Record an expectation at the current position.                                                  |
-| `SuppressDiagnostics()`, `RestoreDiagnosticState(state)` | Temporarily suppress diagnostics and restore their previous state.                              |
+```csharp
+var context = new ParseContext("12:34");
+var number = Literal.Number<int>();
 
-Position restoration does not undo diagnostics or callback side effects.
-Use the boolean return value to check success: the context can retain expectations
-from an earlier branch that failed. `ParseContext` and `Match` are ref structs
-and cannot be stored in ordinary heap objects.
+if (number.TryParse(ref context, out var first)
+    && L(':').TryParse(ref context, out _)
+    && number.TryParse(ref context, out var second))
+{
+    Console.WriteLine($"{first}, {second}"); // 12, 34
+    Console.WriteLine(context.Position);    // 5
+}
+```
 
-## A parser for two ASCII digits
+| Member | Use |
+| --- | --- |
+| `Source` | Read the whole input span. |
+| `Remaining` | Read the span from the current position to the end. |
+| `Position` | Read the current zero-based offset. |
+| `MatchedSegment` | Read the segment that a parser marked most recently. |
+| `Advance(count)` | Read `count` characters and mark them as the matched segment. Pass a count from 0 to `Remaining.Length`. Other values are not checked: the context moves to the end of the input instead of throwing. |
+| `SetMatched(index, length)` | Mark the segment that `Map` and `Text` receive, without changing the position. Values outside the source are cut to fit. |
+| `BookmarkPosition()` | Save a `PositionBookmark` so that you can go back. |
+| `RestorePosition(bookmark)` | Go back to the saved position and make the matched segment empty. It does not undo error messages or the work of callbacks. |
+| `ReportExpected(text)` / `ReportExpected(string[])` | Record what was expected at the current position, when error messages are on. |
+| `DiagnosticState` | Get or set `Normal` or `Suppressed`. Error messages are recorded only in the `Normal` state. |
+| `SuppressDiagnostics()` | Turn error messages off and return the previous state. |
+| `SuppressDiagnosticsIfNamed(name)` | Turn error messages off when the name is not `null`, and return the previous state. |
+| `RestoreDiagnosticState(state)` | Restore a saved state. |
+| `ToString()` | Format the recorded expectations with a line and column. An empty string means that nothing was recorded. |
 
-Add this class to your application:
+Error messages may remain from an attempt that failed, even when a later parser
+succeeds. Do not use `context.ToString()` to decide whether parsing succeeded. Use
+the Boolean result from `TryParse`.
+
+`ParseContext` and `Match` are ref structs that hold spans. Use them only inside
+the current synchronous parse. You cannot store them in normal heap objects.
+
+## Write a custom parser
+
+To write your own matching logic, derive from `Parser<T>` and implement
+`TryParse`.
+
+This parser reads exactly two ASCII digits and returns their integer value:
 
 ```csharp
 public sealed class TwoDigitParser : Parser<int>
@@ -41,6 +68,7 @@ public sealed class TwoDigitParser : Parser<int>
     public override bool TryParse(ref ParseContext context, out int value)
     {
         var source = context.Remaining;
+
         if (source.Length >= 2
             && source[0] >= '0' && source[0] <= '9'
             && source[1] >= '0' && source[1] <= '9')
@@ -52,30 +80,45 @@ public sealed class TwoDigitParser : Parser<int>
 
         value = default;
         context.ReportExpected(Name);
-
+        context.Advance(0);
         return false;
     }
 }
 ```
 
-Then use it with the same combinators as a built-in parser:
+After you add that class to your app, use it like any other parser:
 
 ```csharp
 var number = new TwoDigitParser().ThenIgnore(Eof);
-Console.WriteLine(number.Parse("42").Value);        // 42
+
+Console.WriteLine(number.Parse("42").Value);      // 42
 Console.WriteLine(number.Parse("4x").ErrorMessage); // (1:1) Expected two ASCII digits
-Console.WriteLine(number.Parse("123").Success);     // False
+Console.WriteLine(number.Parse("123").Success);   // False
 ```
 
-On success, set the value, advance the position, and mark the matched segment.
-For a single segment, `Advance` does both position and match updates.
+The rules for `TryParse`:
 
-On failure, set the value to `default`, leave the position at the starting point,
-and clear the matched segment. If nothing was consumed, `Advance(0)` clears it.
-If input was consumed, restore a bookmark. Record an expectation before restoring
-when it belongs at the position where matching failed.
+- **On success**, move the context forward by the length you read, and set the
+  value. Mark the segment that `Map` and `Text` should see. `Advance` does both
+  for a single segment.
+- **On failure**, leave the position where the parser started, set the output to
+  `default`, and return `false`. If you did not move, call `context.Advance(0)`.
+  This makes the matched segment empty, so a failed attempt does not leave an older
+  match behind. If you already moved, go back with a bookmark: `RestorePosition`
+  also makes the segment empty. If the expectation belongs at the failed position,
+  record it with `ReportExpected` before you go back.
+- **Fatal error**: call `FatalError(message)` only when the parse must stop
+  completely. A mismatch is a failure, not a fatal error.
 
-The base class supplies wrappers for `As` and `Void`, so custom implementations
-of naming and void conversion are usually unnecessary. Any optimized void
-conversion must preserve the same accepted input and validation as the value
-parser.
+## Naming and void conversion
+
+The base class has two methods that other methods call: `ToNamedParser(string? name)`
+is used by `As`, and `ToVoidParser()` is used by `Void` and by many combinators.
+The default versions wrap your parser, which is enough for most custom parsers.
+
+You can override them (as `protected override`) to make your parser faster, for
+example to skip building a value that is not needed. If you do, keep the same
+matching behavior and the same checks as the normal version. A void parser must
+accept and reject exactly the same input.
+
+Next: [Complete examples](examples.md).

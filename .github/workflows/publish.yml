@@ -26,6 +26,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Verify tag commit is main HEAD
+        run: test "$GITHUB_SHA" = "$(git ls-remote origin refs/heads/main | cut -f1)"
+
       - name: Build Solution
         run: dotnet build -c Release -p:SkipInternalsVisibleTo=true
 

@@ -13,6 +13,11 @@ Requires .NET 6 or later.
 dotnet add package Ramstack.Parsing
 ```
 
+## Documentation
+
+See the [documentation](https://github.com/rameel/ramstack.parsing/blob/main/docs/README.md) for method guides, parsing details,
+and complete examples in plain English.
+
 ## Example
 
 This parser evaluates arithmetic expressions with parentheses, unary minus, and operator precedence:
